@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+
+{% block title %}Attendance Reports - SMS{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-chart-bar"></i> Attendance Reports</h2>
+        <p class="text-muted">Generate and view attendance reports and analytics</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Report Generation -->
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h6 class="m-0"><i class="fas fa-file-alt"></i> Generate Report</h6>
+            </div>
+            <div class="card-body">
+                <form id="reportForm">
+                    <div class="mb-3">
+                        <label for="reportType" class="form-label">Report Type</label>
+                        <select class="form-select" id="reportType">
+                            <option value="monthly">Monthly Summary</option>
+                            <option value="student">Student-wise Report</option>
+                            <option value="class">Class-wise Report</option>
+                            <option value="subject">Subject-wise Report</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="reportClass" class="form-label">Class</label>
+                        <select class="form-select" id="reportClass">
+                            <option value="">All Classes</option>
+                            <option value="cs-6a">CS-6A</option>
+                            <option value="cs-5b">CS-5B</option>
+                            <option value="cs-7a">CS-7A</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="reportMonth" class="form-label">Month</label>
+                        <select class="form-select" id="reportMonth">
+                            <option value="2026-02">February 2026</option>
+                            <option value="2026-01">January 2026</option>
+                            <option value="2025-12">December 2025</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-primary" onclick="generateReport()">
+                            <i class="fas fa-chart-line"></i> Generate Report
+                        </button>
+                        <button type="button" class="btn btn-success" onclick="exportReport('pdf')">
+                            <i class="fas fa-file-pdf"></i> Export PDF
+                        </button>
+                        <button type="button" class="btn btn-info" onclick="exportReport('excel')">
+                            <i class="fas fa-file-excel"></i> Export Excel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Report Display -->
+    <div class="col-lg-8 mb-4">
+        <!-- Summary Statistics -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card bg-gradient-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6>Overall Attendance Rate</h6>
+                                <h3>87.5%</h3>
+                                <small>This Month</small>
+                            </div>
+                            <i class="fas fa-percentage fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-gradient-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6>Best Performing Class</h6>
+                                <h3>CS-6A</h3>
+                                <small>92.3% Attendance</small>
+                            </div>
+                            <i class="fas fa-trophy fa-3x opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chart Area -->
+        <div class="card shadow mb-4">
+            <div class="card-header bg-info text-white">
+                <h6 class="m-0"><i class="fas fa-chart-area"></i> Attendance Trends</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="attendanceChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+        
+        <!-- Detailed Report Table -->
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                <h6 class="m-0"><i class="fas fa-table"></i> Detailed Report</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Student/Class</th>
+                                <th>Total Classes</th>
+                                <th>Present</th>
+                                <th>Absent</th>
+                                <th>Late</th>
+                                <th>Excused</th>
+                                <th>Attendance %</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <strong>Alice Johnson</strong><br>
+                                    <small class="text-muted">STU000001</small>
+                                </td>
+                                <td>20</td>
+                                <td><span class="badge bg-success">18</span></td>
+                                <td><span class="badge bg-danger">1</span></td>
+                                <td><span class="badge bg-warning">1</span></td>
+                                <td><span class="badge bg-info">0</span></td>
+                                <td>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar bg-success" style="width: 90%">90%</div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-success">Good</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Bob Smith</strong><br>
+                                    <small class="text-muted">STU000002</small>
+                                </td>
+                                <td>20</td>
+                                <td><span class="badge bg-success">16</span></td>
+                                <td><span class="badge bg-danger">3</span></td>
+                                <td><span class="badge bg-warning">1</span></td>
+                                <td><span class="badge bg-info">0</span></td>
+                                <td>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar bg-warning" style="width: 80%">80%</div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-warning">Average</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Charlie Brown</strong><br>
+                                    <small class="text-muted">STU000003</small>
+                                </td>
+                                <td>20</td>
+                                <td><span class="badge bg-success">14</span></td>
+                                <td><span class="badge bg-danger">5</span></td>
+                                <td><span class="badge bg-warning">1</span></td>
+                                <td><span class="badge bg-info">0</span></td>
+                                <td>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar bg-danger" style="width: 70%">70%</div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-danger">Poor</span></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <strong>Diana Prince</strong><br>
+                                    <small class="text-muted">STU000004</small>
+                                </td>
+                                <td>20</td>
+                                <td><span class="badge bg-success">19</span></td>
+                                <td><span class="badge bg-danger">0</span></td>
+                                <td><span class="badge bg-warning">0</span></td>
+                                <td><span class="badge bg-info">1</span></td>
+                                <td>
+                                    <div class="progress" style="height: 20px;">
+                                        <div class="progress-bar bg-success" style="width: 95%">95%</div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-success">Excellent</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Initialize attendance chart
+const ctx = document.getElementById('attendanceChart').getContext('2d');
+const attendanceChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+        datasets: [{
+            label: 'CS-6A',
+            data: [92, 88, 94, 90],
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.1
+        }, {
+            label: 'CS-5B',
+            data: [85, 82, 87, 84],
+            borderColor: 'rgb(255, 99, 132)',
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            tension: 0.1
+        }, {
+            label: 'CS-7A',
+            data: [78, 80, 83, 81],
+            borderColor: 'rgb(255, 205, 86)',
+            backgroundColor: 'rgba(255, 205, 86, 0.2)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Weekly Attendance Trends'
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 100,
+                ticks: {
+                    callback: function(value) {
+                        return value + '%';
+                    }
+                }
+            }
+        }
+    }
+});
+
+function generateReport() {
+    const reportType = document.getElementById('reportType').value;
+    const reportClass = document.getElementById('reportClass').value;
+    const reportMonth = document.getElementById('reportMonth').value;
+    
+    console.log('Generating report:', { reportType, reportClass, reportMonth });
+    
+    // Show loading state
+    const tbody = document.querySelector('tbody');
+    tbody.innerHTML = '<tr><td colspan="8" class="text-center"><i class="fas fa-spinner fa-spin"></i> Generating report...</td></tr>';
+    
+    // Simulate report generation
+    setTimeout(() => {
+        location.reload();
+    }, 2000);
+}
+
+function exportReport(format) {
+    console.log(`Exporting report as ${format}`);
+    
+    // In real app, this would trigger a download
+    alert(`Report export as ${format.toUpperCase()} started. The file will be downloaded shortly.`);
+}
+</script>
+{% endblock %}

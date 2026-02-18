@@ -1,0 +1,2168 @@
+{% extends 'base.html' %}
+
+{% block title %}Teacher Dashboard - SMS{% endblock %}
+
+{% block content %}
+<!-- Enhanced Professional Header -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="teacher-dashboard-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="header-icon-wrapper">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="header-text">
+                        <h1 class="header-title">Teacher Dashboard</h1>
+                        <p class="header-subtitle">
+                            <i class="fas fa-hand-wave me-1"></i>
+                            Welcome back, <span class="teacher-name">{{ user.get_full_name|default:user.username }}</span>!
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Notification Bell -->
+                <div class="header-right">
+                    <div class="dropdown">
+                        <button class="notification-bell-btn" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationDropdown">
+                            <li class="dropdown-header d-flex justify-content-between align-items-center">
+                                <span><i class="fas fa-bell me-2"></i>Notifications</span>
+                                <a href="{% url 'notifications:notification_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <div id="notificationList">
+                                <li class="dropdown-item text-center text-muted py-3">
+                                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                                </li>
+                            </div>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if profile_missing %}
+<div class="row">
+    <div class="col-12">
+        <div class="alert alert-warning" role="alert">
+            <h4 class="alert-heading"><i class="fas fa-exclamation-triangle"></i> Profile Setup Required</h4>
+            <p>Your teacher profile is not set up yet. Please contact the administrator to complete your profile setup.</p>
+            <hr>
+            <p class="mb-0">Once your profile is created, you'll be able to access all teacher features including class management, attendance marking, and assignment creation.</p>
+        </div>
+    </div>
+</div>
+{% else %}
+
+<!-- Enhanced Quick Statistics -->
+<div class="row mb-4 g-3">
+    <div class="col-xl-2 col-lg-4 col-md-6 col-6">
+        <div class="stat-card stat-card-primary">
+            <div class="stat-icon">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-number">{{ total_students }}</h3>
+                <p class="stat-label">Total Students</p>
+            </div>
+            <div class="stat-decoration"></div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-lg-4 col-md-6 col-6">
+        <div class="stat-card stat-card-success">
+            <div class="stat-icon">
+                <i class="fas fa-book"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-number">{{ total_subjects }}</h3>
+                <p class="stat-label">Subjects Teaching</p>
+            </div>
+            <div class="stat-decoration"></div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-lg-4 col-md-6 col-6">
+        <div class="stat-card stat-card-info">
+            <div class="stat-icon">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-number">{{ pending_assignments }}</h3>
+                <p class="stat-label">Active Assignments</p>
+            </div>
+            <div class="stat-decoration"></div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-lg-4 col-md-6 col-6">
+        <div class="stat-card stat-card-warning">
+            <div class="stat-icon">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-number">{{ upcoming_exams }}</h3>
+                <p class="stat-label">Upcoming Exams</p>
+            </div>
+            <div class="stat-decoration"></div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-lg-4 col-md-6 col-6">
+        <div class="stat-card stat-card-secondary">
+            <div class="stat-icon">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-number">{{ total_assignments_created }}</h3>
+                <p class="stat-label">Total Assignments</p>
+            </div>
+            <div class="stat-decoration"></div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-lg-4 col-md-6 col-6">
+        <div class="stat-card stat-card-danger">
+            <div class="stat-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="stat-content">
+                <h3 class="stat-number">{{ avg_grade }}%</h3>
+                <p class="stat-label">Average Grade</p>
+            </div>
+            <div class="stat-decoration"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Statistics Charts - Professional Design -->
+<div class="row mb-4">
+    <!-- Assignment Submissions Chart -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card chart-card shadow-lg border-0 h-100">
+            <div class="card-header chart-header-gradient-primary">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="chart-header-icon me-3">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 text-white fw-bold">Assignment Submissions</h6>
+                            <small class="text-white-50">Submission tracking</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <div class="chart-container-responsive">
+                    <canvas id="assignmentChart"></canvas>
+                </div>
+                <div class="chart-legend-section mt-4">
+                    {% for stat in assignment_stats %}
+                    <div class="chart-stat-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-indicator stat-indicator-primary me-2"></div>
+                                <span class="stat-label">{{ stat.class_name }}</span>
+                            </div>
+                            <span class="stat-badge badge-gradient-primary">{{ stat.submission_rate }}%</span>
+                        </div>
+                        <div class="progress progress-modern mt-2">
+                            <div class="progress-bar progress-bar-gradient-primary" style="width: {{ stat.submission_rate }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Passing Rate Chart -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card chart-card shadow-lg border-0 h-100">
+            <div class="card-header chart-header-gradient-success">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="chart-header-icon me-3">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 text-white fw-bold">Student Passing Rate</h6>
+                            <small class="text-white-50">Performance metrics</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <div class="chart-container-responsive">
+                    <canvas id="passingChart"></canvas>
+                </div>
+                <div class="chart-legend-section mt-4">
+                    {% for stat in passing_stats %}
+                    <div class="chart-stat-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-indicator {% if stat.passing_rate >= 80 %}stat-indicator-success{% elif stat.passing_rate >= 60 %}stat-indicator-warning{% else %}stat-indicator-danger{% endif %} me-2"></div>
+                                <span class="stat-label">{{ stat.class_name }}</span>
+                            </div>
+                            <span class="stat-badge {% if stat.passing_rate >= 80 %}badge-gradient-success{% elif stat.passing_rate >= 60 %}badge-gradient-warning{% else %}badge-gradient-danger{% endif %}">
+                                {{ stat.passing_rate }}%
+                            </span>
+                        </div>
+                        <div class="progress progress-modern mt-2">
+                            <div class="progress-bar {% if stat.passing_rate >= 80 %}progress-bar-gradient-success{% elif stat.passing_rate >= 60 %}progress-bar-gradient-warning{% else %}progress-bar-gradient-danger{% endif %}" style="width: {{ stat.passing_rate }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Syllabus Progress Chart -->
+    <div class="col-lg-4 col-md-12 mb-4">
+        <div class="card chart-card shadow-lg border-0 h-100">
+            <div class="card-header chart-header-gradient-info">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <div class="chart-header-icon me-3">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <div>
+                            <h6 class="mb-0 text-white fw-bold">Syllabus Progress</h6>
+                            <small class="text-white-50">Course completion</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <div class="chart-container-responsive">
+                    <canvas id="syllabusChart"></canvas>
+                </div>
+                <div class="chart-legend-section mt-4">
+                    {% for progress in syllabus_progress %}
+                    <div class="chart-stat-item">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center">
+                                <div class="stat-indicator stat-indicator-info me-2"></div>
+                                <div>
+                                    <span class="stat-label d-block">{{ progress.subject_name|truncatechars:20 }}</span>
+                                    <small class="text-muted">{{ progress.class_name }}</small>
+                                </div>
+                            </div>
+                            <span class="stat-badge badge-gradient-info">{{ progress.progress_percentage }}%</span>
+                        </div>
+                        <div class="progress progress-modern">
+                            <div class="progress-bar progress-bar-gradient-info progress-bar-animated" style="width: {{ progress.progress_percentage }}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- My Classes - Grouped by Class/Semester -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow-lg border-0 classes-main-card">
+            <div class="card-header classes-header border-0">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="d-flex align-items-center">
+                        <div class="header-icon-box me-3">
+                            <i class="fas fa-chalkboard"></i>
+                        </div>
+                        <div>
+                            <h4 class="m-0 fw-bold text-white">My Classes</h4>
+                            <small class="text-white-50">Manage your teaching assignments</small>
+                        </div>
+                    </div>
+                    <span class="badge badge-custom mt-2 mt-md-0">
+                        <i class="fas fa-book-reader me-1"></i>
+                        {{ teacher_assignments.count }} Subject{{ teacher_assignments.count|pluralize }}
+                    </span>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                {% if teacher_assignments %}
+                    {% regroup teacher_assignments by class_assigned.name as classes_grouped %}
+                    
+                    {% for class_group in classes_grouped %}
+                    <!-- Class Section Header -->
+                    <div class="class-section-header-enhanced mb-4">
+                        <div class="d-flex align-items-center justify-content-between flex-wrap">
+                            <div class="d-flex align-items-center mb-2 mb-md-0">
+                                <div class="class-icon-badge me-3">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-1 fw-bold class-title">
+                                        {{ class_group.grouper }}
+                                    </h5>
+                                    <div class="class-meta">
+                                        <span class="meta-item">
+                                            <i class="fas fa-book me-1"></i>
+                                            {{ class_group.list|length }} Subject{{ class_group.list|length|pluralize }}
+                                        </span>
+                                        <span class="meta-divider">•</span>
+                                        <span class="meta-item">
+                                            <i class="fas fa-users me-1"></i>
+                                            {% with first_class=class_group.list.0.class_assigned %}
+                                                {{ first_class.studentenrollment_set.count|default:0 }} Student{{ first_class.studentenrollment_set.count|pluralize }}
+                                            {% endwith %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Subjects in this Class -->
+                    <div class="row mb-4">
+                        {% for assignment in class_group.list %}
+                        <div class="col-xl-4 col-lg-6 col-12 mb-3">
+                            <div class="card border-0 h-100 subject-card-enhanced">
+                                <!-- Subject Header -->
+                                <div class="card-header subject-header border-0">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-2 fw-bold text-white subject-name">
+                                                <i class="fas fa-book-open me-2"></i>{{ assignment.subject.name }}
+                                            </h6>
+                                            <span class="section-badge">
+                                                <i class="fas fa-tag me-1"></i>Section {{ assignment.class_assigned.section }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Subject Body -->
+                                <div class="card-body p-3">
+                                    <!-- Student Count -->
+                                    <div class="student-count-box mb-3">
+                                        <div class="d-flex align-items-center">
+                                            <div class="student-icon-circle me-3">
+                                                <i class="fas fa-user-graduate"></i>
+                                            </div>
+                                            <div>
+                                                <h5 class="mb-0 fw-bold text-primary">
+                                                    {{ assignment.class_assigned.studentenrollment_set.count|default:0 }}
+                                                </h5>
+                                                <small class="text-muted">Student{{ assignment.class_assigned.studentenrollment_set.count|pluralize }} Enrolled</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Quick Actions -->
+                                    <div class="action-buttons">
+                                        <a href="{% url 'academic:teacher_class_students' assignment.class_assigned.id %}" class="action-btn action-btn-primary">
+                                            <i class="fas fa-users"></i>
+                                            <span>Students</span>
+                                        </a>
+                                        <a href="{% url 'attendance:mark_attendance' %}?class={{ assignment.class_assigned.id }}&subject={{ assignment.subject.id }}" class="action-btn action-btn-success">
+                                            <i class="fas fa-check-circle"></i>
+                                            <span>Attendance</span>
+                                        </a>
+                                        <a href="{% url 'academic:create_assignment' %}?class={{ assignment.class_assigned.id }}&subject={{ assignment.subject.id }}" class="action-btn action-btn-info">
+                                            <i class="fas fa-plus"></i>
+                                            <span>Assignment</span>
+                                        </a>
+                                        <a href="{% url 'examination:exam_list' %}" class="action-btn action-btn-warning">
+                                            <i class="fas fa-clipboard-list"></i>
+                                            <span>Exams</span>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <!-- Subject Footer - Today's Session -->
+                                {% for session in todays_sessions %}
+                                    {% if session.teacher_assignment.class_assigned.id == assignment.class_assigned.id and session.teacher_assignment.subject.id == assignment.subject.id %}
+                                    <div class="card-footer session-footer border-0">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <small class="text-muted d-block mb-1">
+                                                    <i class="fas fa-clock me-1"></i>Today's Session
+                                                </small>
+                                                <small class="fw-bold text-dark">{{ session.start_time|time:"g:i A" }} - {{ session.end_time|time:"g:i A" }}</small>
+                                            </div>
+                                            <div>
+                                                {% if session.is_completed %}
+                                                    <span class="badge bg-success px-3 py-2">
+                                                        <i class="fas fa-check me-1"></i>Done
+                                                    </span>
+                                                {% else %}
+                                                    <a href="{% url 'attendance:mark_attendance_session' session.id %}" class="btn btn-sm btn-primary px-3">
+                                                        Mark Now
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if not forloop.last %}
+                    <div class="section-divider"></div>
+                    {% endif %}
+                    {% endfor %}
+                    
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-chalkboard-teacher fa-4x text-muted mb-3 opacity-50"></i>
+                    <h6 class="text-muted mb-2">No Classes Assigned</h6>
+                    <p class="text-muted">Contact the administrator to get assigned to classes</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Parent Messages -->
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+                <h6 class="m-0"><i class="fas fa-envelope"></i> Messages from Parents</h6>
+                <a href="{% url 'accounts:message_inbox' %}" class="btn btn-sm btn-light">
+                    <i class="fas fa-inbox"></i> View All Messages
+                </a>
+            </div>
+            <div class="card-body">
+                {% if parent_messages %}
+                <div class="list-group list-group-flush">
+                    {% for message in parent_messages %}
+                    <a href="{% url 'accounts:message_detail' message.id %}" class="list-group-item list-group-item-action {% if not message.teacher_read %}bg-light border-start border-primary border-3{% endif %}">
+                        <div class="d-flex w-100 justify-content-between align-items-start">
+                            <div class="flex-grow-1">
+                                <div class="d-flex align-items-center mb-2">
+                                    {% if not message.teacher_read %}
+                                    <span class="badge bg-primary me-2">New</span>
+                                    {% endif %}
+                                    <h6 class="mb-0 fw-bold">{{ message.subject }}</h6>
+                                </div>
+                                <p class="mb-2 text-muted">
+                                    <i class="fas fa-user me-1"></i>
+                                    <strong>From:</strong> {{ message.sender.get_full_name|default:message.sender.username }}
+                                    {% if message.student %}
+                                    <span class="ms-2">
+                                        <i class="fas fa-child me-1"></i>
+                                        <strong>About:</strong> {{ message.student.user.get_full_name }}
+                                    </span>
+                                    {% endif %}
+                                </p>
+                                <p class="mb-1 text-truncate" style="max-width: 600px;">{{ message.message|truncatewords:20 }}</p>
+                            </div>
+                            <div class="text-end ms-3">
+                                <small class="text-muted d-block">
+                                    <i class="fas fa-clock me-1"></i>{{ message.created_at|timesince }} ago
+                                </small>
+                                {% if message.status == 'replied' %}
+                                <span class="badge bg-success mt-2">Replied</span>
+                                {% elif message.status == 'read' %}
+                                <span class="badge bg-secondary mt-2">Read</span>
+                                {% else %}
+                                <span class="badge bg-warning mt-2">Unread</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-envelope-open fa-4x text-muted mb-3"></i>
+                    <h6 class="text-muted">No Messages from Parents</h6>
+                    <p class="text-muted">You'll see messages from parents here when they contact you</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Attendance Overview -->
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-white">
+                <h6 class="m-0"><i class="fas fa-calendar-check"></i> Attendance Overview</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for stat in attendance_stats %}
+                    <div class="col-md-3 mb-3">
+                        <div class="card border-left-primary">
+                            <div class="card-body">
+                                <div class="text-center">
+                                    <h5 class="text-primary">{{ stat.attendance_rate }}%</h5>
+                                    <p class="text-muted mb-1">{{ stat.class_name }}</p>
+                                    <small class="text-muted">{{ stat.total_sessions }} sessions</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Students with Unpaid Fees -->
+{% if students_with_unpaid_fees %}
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-danger text-white">
+                <h6 class="m-0"><i class="fas fa-exclamation-triangle"></i> Students with Unpaid Fees</h6>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Note:</strong> The following students have outstanding fee payments. They cannot view their exam results until fees are paid.
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Student ID</th>
+                                <th>Class</th>
+                                <th>Unpaid Amount</th>
+                                <th>Fee Items</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in students_with_unpaid_fees %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-danger rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                        <strong>{{ item.student.user.get_full_name }}</strong>
+                                    </div>
+                                </td>
+                                <td>{{ item.student.student_id }}</td>
+                                <td>{{ item.class.name }}</td>
+                                <td>
+                                    <span class="badge bg-danger fs-6">${{ item.total_unpaid|floatformat:2 }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-warning">{{ item.fee_count }} unpaid fee{{ item.fee_count|pluralize }}</span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-3">
+                    <small class="text-muted">
+                        <i class="fas fa-lightbulb me-1"></i>
+                        <strong>Tip:</strong> Inform parents about pending fees or direct students to the administration office for payment.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+    <!-- Recent Activities -->
+    <div class="col-12 mb-4">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-gradient-info text-white border-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 fw-bold"><i class="fas fa-history me-2"></i>Recent Activities</h6>
+                    <small class="opacity-75">Latest teacher actions</small>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if recent_sessions %}
+                <div class="row">
+                    {% for session in recent_sessions %}
+                    <div class="col-lg-6 col-12 mb-3">
+                        <div class="activity-item p-3 border rounded-3 bg-light">
+                            <div class="d-flex align-items-center">
+                                <div class="activity-icon me-3">
+                                    <i class="fas fa-check-circle text-success fa-lg"></i>
+                                </div>
+                                <div class="activity-content flex-grow-1">
+                                    <div class="activity-title fw-medium">
+                                        {% if session.is_completed %}
+                                            Attendance Marked
+                                        {% else %}
+                                            Session Created
+                                        {% endif %}
+                                    </div>
+                                    <div class="activity-description text-muted small">
+                                        {{ session.teacher_assignment.subject.name }} - {{ session.teacher_assignment.class_assigned.name }}
+                                    </div>
+                                </div>
+                                <div class="activity-time">
+                                    <small class="text-muted">{{ session.date|timesince }} ago</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <div class="empty-state">
+                        <i class="fas fa-history fa-4x text-muted mb-3 opacity-50"></i>
+                        <h6 class="text-muted mb-2">No Recent Activities</h6>
+                        <p class="text-muted mb-4">Start by marking attendance or creating assignments to see your activity history</p>
+                        <div class="d-flex justify-content-center gap-2">
+                            <a href="{% url 'attendance:mark_attendance' %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-check-circle me-1"></i>Mark Attendance
+                            </a>
+                            <a href="{% url 'academic:create_assignment' %}" class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-plus me-1"></i>Create Assignment
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- My Assignments -->
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                <h6 class="m-0"><i class="fas fa-tasks"></i> My Created Assignments</h6>
+                <a href="{% url 'academic:create_assignment' %}" class="btn btn-sm btn-light">
+                    <i class="fas fa-plus"></i> Create New Assignment
+                </a>
+            </div>
+            <div class="card-body">
+                {% if created_assignments %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Assignment Title</th>
+                                <th>Subject</th>
+                                <th>Class</th>
+                                <th>Due Date</th>
+                                <th>Submissions</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for assignment in created_assignments %}
+                            <tr>
+                                <td>
+                                    <strong>{{ assignment.title }}</strong><br>
+                                    <small class="text-muted">{{ assignment.assignment_type|title }}</small>
+                                </td>
+                                <td>{{ assignment.subject.name }}</td>
+                                <td>{{ assignment.class_assigned.name }}</td>
+                                <td>
+                                    <span class="{% if assignment.due_date < today %}text-danger{% else %}text-info{% endif %}">
+                                        {{ assignment.due_date|date:"M d, Y g:i A" }}
+                                    </span>
+                                    {% if assignment.due_date < today %}
+                                        <br><span class="badge bg-danger">Overdue</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-primary">
+                                        {{ assignment.assignmentsubmission_set.count }} submissions
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if assignment.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{% url 'academic:assignment_detail' assignment.id %}" class="btn btn-sm btn-outline-info" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{% url 'academic:edit_assignment' assignment.id %}" class="btn btn-sm btn-outline-warning" title="Edit Assignment">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'academic:assignment_submissions' assignment.id %}" class="btn btn-sm btn-outline-success" title="View Submissions">
+                                            <i class="fas fa-file-alt"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-tasks fa-3x text-muted mb-3"></i>
+                    <h6 class="text-muted">No Assignments Created Yet</h6>
+                    <p class="text-muted">Create your first assignment to get started</p>
+                    <a href="{% url 'academic:create_assignment' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create Assignment
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Subject Assignments (Teaching Schedule) - Grouped by Class -->
+        <div class="card shadow-sm border-0 mt-4">
+            <div class="card-header bg-gradient-info text-white border-0">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="m-0 fw-bold"><i class="fas fa-calendar-alt me-2"></i>My Teaching Schedule</h5>
+                    <span class="badge bg-white text-info">{{ teacher_assignments.count }} Subject{{ teacher_assignments.count|pluralize }}</span>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                {% if teacher_assignments %}
+                    {% regroup teacher_assignments by class_assigned.name as schedule_grouped %}
+                    
+                    {% for class_group in schedule_grouped %}
+                    <!-- Class Schedule Section -->
+                    <div class="schedule-section mb-4">
+                        <div class="schedule-header">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div>
+                                    <h5 class="mb-1 text-info fw-bold">
+                                        <i class="fas fa-school me-2"></i>{{ class_group.grouper }}
+                                    </h5>
+                                    <p class="text-muted mb-0 small">
+                                        <i class="fas fa-book me-1"></i>{{ class_group.list|length }} Subject{{ class_group.list|length|pluralize }}
+                                        <span class="mx-2">•</span>
+                                        <i class="fas fa-users me-1"></i>
+                                        {% with first_class=class_group.list.0.class_assigned %}
+                                            {{ first_class.studentenrollment_set.count|default:0 }} Student{{ first_class.studentenrollment_set.count|pluralize }}
+                                        {% endwith %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Subjects Table for this Class -->
+                        <div class="table-responsive">
+                            <table class="table table-hover table-bordered schedule-table">
+                                <thead>
+                                    <tr>
+                                        <th width="35%">Subject</th>
+                                        <th width="20%">Section</th>
+                                        <th width="20%">Students</th>
+                                        <th width="25%">Quick Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for assignment in class_group.list %}
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="subject-icon me-2">
+                                                    <i class="fas fa-book-open"></i>
+                                                </div>
+                                                <div>
+                                                    <strong class="d-block">{{ assignment.subject.name }}</strong>
+                                                    <small class="text-muted">{{ assignment.subject.code }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-warning text-dark px-3 py-2 fw-bold">
+                                                Section {{ assignment.class_assigned.section }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-primary px-3 py-2">
+                                                <i class="fas fa-users me-1"></i>
+                                                {{ assignment.class_assigned.studentenrollment_set.count|default:0 }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url 'attendance:mark_attendance' %}?class={{ assignment.class_assigned.id }}&subject={{ assignment.subject.id }}" 
+                                                   class="btn btn-sm btn-outline-success" 
+                                                   title="Mark Attendance">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </a>
+                                                <a href="{% url 'academic:create_assignment' %}?class={{ assignment.class_assigned.id }}&subject={{ assignment.subject.id }}" 
+                                                   class="btn btn-sm btn-outline-primary" 
+                                                   title="Create Assignment">
+                                                    <i class="fas fa-plus"></i>
+                                                </a>
+                                                <a href="{% url 'academic:teacher_class_students' assignment.class_assigned.id %}" 
+                                                   class="btn btn-sm btn-outline-info" 
+                                                   title="View Students">
+                                                    <i class="fas fa-users"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    {% if not forloop.last %}
+                    <hr class="my-4">
+                    {% endif %}
+                    {% endfor %}
+                    
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-chalkboard-teacher fa-4x text-muted mb-3 opacity-50"></i>
+                    <h6 class="text-muted mb-2">No Subject Assignments</h6>
+                    <p class="text-muted">Contact admin to get assigned to subjects and classes</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endif %}
+
+<!-- Quick Actions - Horizontal Layout at Bottom -->
+<div class="row mt-5">
+    <div class="col-12">
+        <div class="card shadow-sm border-0 quick-actions-horizontal">
+            <div class="card-header bg-gradient-primary text-white border-0 text-center">
+                <h5 class="m-0 fw-bold"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
+                <small class="opacity-75">Frequently used teacher tools</small>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <!-- Create Assignment -->
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                        <a href="{% url 'academic:create_assignment' %}" class="quick-action-horizontal">
+                            <div class="action-icon-horizontal bg-primary">
+                                <i class="fas fa-plus-circle"></i>
+                            </div>
+                            <div class="action-title-horizontal">Create Assignment</div>
+                            <div class="action-subtitle-horizontal">Add new assignment</div>
+                        </a>
+                    </div>
+                    
+                    <!-- Mark Attendance -->
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                        <a href="{% url 'attendance:mark_attendance' %}" class="quick-action-horizontal">
+                            <div class="action-icon-horizontal bg-success">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="action-title-horizontal">Mark Attendance</div>
+                            <div class="action-subtitle-horizontal">Record attendance</div>
+                        </a>
+                    </div>
+                    
+                    <!-- Create Exam -->
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                        <a href="{% url 'examination:create_exam' %}" class="quick-action-horizontal">
+                            <div class="action-icon-horizontal bg-info">
+                                <i class="fas fa-clipboard-list"></i>
+                            </div>
+                            <div class="action-title-horizontal">Create Exam</div>
+                            <div class="action-subtitle-horizontal">Schedule exam</div>
+                        </a>
+                    </div>
+                    
+                    <!-- My Assignments -->
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                        <a href="{% url 'academic:assignment_list' %}" class="quick-action-horizontal">
+                            <div class="action-icon-horizontal bg-secondary">
+                                <i class="fas fa-tasks"></i>
+                            </div>
+                            <div class="action-title-horizontal">My Assignments</div>
+                            <div class="action-subtitle-horizontal">Manage assignments</div>
+                        </a>
+                    </div>
+                    
+                    <!-- Enter Grades -->
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                        <a href="{% url 'examination:result_list' %}" class="quick-action-horizontal">
+                            <div class="action-icon-horizontal bg-warning">
+                                <i class="fas fa-edit"></i>
+                            </div>
+                            <div class="action-title-horizontal">Enter Grades</div>
+                            <div class="action-subtitle-horizontal">Record results</div>
+                        </a>
+                    </div>
+                    
+                    <!-- View Reports -->
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                        <a href="{% url 'attendance:attendance_reports' %}" class="quick-action-horizontal">
+                            <div class="action-icon-horizontal bg-dark">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <div class="action-title-horizontal">View Reports</div>
+                            <div class="action-subtitle-horizontal">Analytics & reports</div>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Secondary Row -->
+                <div class="row g-3 mt-2">
+                    <!-- Send Notification -->
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                        <a href="{% url 'notifications:create_notification' %}" class="quick-action-horizontal">
+                            <div class="action-icon-horizontal bg-purple">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div class="action-title-horizontal">Send Notification</div>
+                            <div class="action-subtitle-horizontal">Notify students</div>
+                        </a>
+                    </div>
+                    
+                    <!-- Parent Messages -->
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                        <a href="{% url 'accounts:message_inbox' %}" class="quick-action-horizontal">
+                            <div class="action-icon-horizontal bg-info">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="action-title-horizontal">Parent Messages</div>
+                            <div class="action-subtitle-horizontal">View messages</div>
+                        </a>
+                    </div>
+                    
+                    <!-- Profile -->
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                        <a href="{% url 'accounts:profile' %}" class="quick-action-horizontal">
+                            <div class="action-icon-horizontal bg-teal">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="action-title-horizontal">My Profile</div>
+                            <div class="action-subtitle-horizontal">Update profile</div>
+                        </a>
+                    </div>
+                    
+                    <!-- All Notifications -->
+                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+                        <a href="{% url 'notifications:notification_list' %}" class="quick-action-horizontal">
+                            <div class="action-icon-horizontal bg-indigo">
+                                <i class="fas fa-inbox"></i>
+                            </div>
+                            <div class="action-title-horizontal">All Notifications</div>
+                            <div class="action-subtitle-horizontal">View messages</div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js for Interactive Charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Chart Data as JSON -->
+{{ chart_data_json|safe }}
+
+<!-- Chart Initialization -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing charts...');
+    
+    // Check if chart data exists
+    if (typeof window.chartData === 'undefined') {
+        console.log('No chart data available');
+        return;
+    }
+    
+    // Assignment Submissions Chart
+    const assignmentCtx = document.getElementById('assignmentChart');
+    if (assignmentCtx && window.chartData.assignmentStats && window.chartData.assignmentStats.length > 0) {
+        console.log('Creating assignment chart...');
+        
+        const labels = window.chartData.assignmentStats.map(stat => stat.className);
+        const submissionRates = window.chartData.assignmentStats.map(stat => stat.submissionRate);
+        const notSubmittedRates = submissionRates.map(rate => 100 - rate);
+        
+        new Chart(assignmentCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Submitted',
+                    data: submissionRates,
+                    backgroundColor: '#3B82F6',
+                    borderRadius: 6,
+                }, {
+                    label: 'Not Submitted',
+                    data: notSubmittedRates,
+                    backgroundColor: '#E5E7EB',
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    }
+
+    // Student Passing Rate Chart
+    const passingCtx = document.getElementById('passingChart');
+    if (passingCtx && window.chartData.passingStats && window.chartData.passingStats.length > 0) {
+        console.log('Creating passing chart...');
+        
+        const labels = window.chartData.passingStats.map(stat => stat.className);
+        const passingRates = window.chartData.passingStats.map(stat => stat.passingRate);
+        const failingRates = passingRates.map(rate => 100 - rate);
+        
+        new Chart(passingCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Passed',
+                    data: passingRates,
+                    backgroundColor: '#10B981',
+                    borderRadius: 6,
+                }, {
+                    label: 'Failed',
+                    data: failingRates,
+                    backgroundColor: '#EF4444',
+                    borderRadius: 6,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                },
+                scales: {
+                    x: {
+                        stacked: true
+                    },
+                    y: {
+                        stacked: true,
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    }
+
+    // Syllabus Progress Chart
+    const syllabusCtx = document.getElementById('syllabusChart');
+    if (syllabusCtx && window.chartData.syllabusProgress && window.chartData.syllabusProgress.length > 0) {
+        console.log('Creating syllabus chart...');
+        
+        const progressData = window.chartData.syllabusProgress.map(progress => progress.progressPercentage);
+        const avgProgress = progressData.length > 0 ? 
+            progressData.reduce((a, b) => a + b, 0) / progressData.length : 0;
+        
+        new Chart(syllabusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Completed', 'Remaining'],
+                datasets: [{
+                    data: [avgProgress, 100 - avgProgress],
+                    backgroundColor: ['#EC4899', '#3B82F6'],
+                    borderWidth: 0,
+                    cutout: '65%'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    console.log('All charts initialized successfully');
+});
+
+// Notification Bell Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const notificationBadge = document.getElementById('notificationBadge');
+    const notificationList = document.getElementById('notificationList');
+    const notificationDropdown = document.getElementById('notificationDropdown');
+    
+    // Function to update notification count
+    function updateNotificationCount() {
+        fetch('{% url "notifications:get_unread_count" %}')
+            .then(response => response.json())
+            .then(data => {
+                const count = data.unread_count;
+                if (count > 0) {
+                    notificationBadge.textContent = count > 99 ? '99+' : count;
+                    notificationBadge.style.display = 'block';
+                } else {
+                    notificationBadge.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching notification count:', error);
+            });
+    }
+    
+    // Function to load recent notifications
+    function loadRecentNotifications() {
+        fetch('{% url "notifications:get_recent_notifications" %}')
+            .then(response => response.json())
+            .then(data => {
+                const notifications = data.notifications;
+                
+                if (notifications.length === 0) {
+                    notificationList.innerHTML = `
+                        <li class="dropdown-item text-center text-muted py-3">
+                            <i class="fas fa-bell-slash"></i><br>
+                            No notifications
+                        </li>
+                    `;
+                } else {
+                    notificationList.innerHTML = notifications.map(notification => {
+                        const priorityColor = {
+                            'urgent': 'danger',
+                            'high': 'warning', 
+                            'medium': 'info',
+                            'low': 'secondary'
+                        }[notification.priority] || 'secondary';
+                        
+                        const typeIcon = {
+                            'academic': 'graduation-cap',
+                            'attendance': 'calendar-check',
+                            'exam': 'clipboard-list',
+                            'fee': 'dollar-sign',
+                            'event': 'calendar-alt',
+                            'general': 'bell'
+                        }[notification.notification_type] || 'bell';
+                        
+                        return `
+                            <li class="dropdown-item ${notification.is_read ? '' : 'bg-light'}" style="white-space: normal;">
+                                <div class="d-flex align-items-start">
+                                    <div class="me-2">
+                                        <i class="fas fa-${typeIcon} text-${priorityColor}"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1 fw-bold" style="font-size: 0.9rem;">${notification.title}</h6>
+                                        <p class="mb-1 text-muted" style="font-size: 0.8rem;">${notification.message}</p>
+                                        <small class="text-muted">
+                                            <i class="fas fa-user me-1"></i>${notification.sender} • 
+                                            <i class="fas fa-clock me-1"></i>${notification.created_at}
+                                        </small>
+                                    </div>
+                                    ${!notification.is_read ? '<div class="ms-2"><span class="badge bg-primary rounded-pill" style="width: 8px; height: 8px;"></span></div>' : ''}
+                                </div>
+                            </li>
+                        `;
+                    }).join('');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching notifications:', error);
+                notificationList.innerHTML = `
+                    <li class="dropdown-item text-center text-danger py-3">
+                        <i class="fas fa-exclamation-triangle"></i><br>
+                        Error loading notifications
+                    </li>
+                `;
+            });
+    }
+    
+    // Load notifications when dropdown is opened
+    notificationDropdown.addEventListener('click', function() {
+        loadRecentNotifications();
+    });
+    
+    // Initial load
+    updateNotificationCount();
+    
+    // Update every 30 seconds
+    setInterval(updateNotificationCount, 30000);
+});
+</script>
+
+<!-- Notification Bell Styles -->
+<style>
+.notification-bell-container {
+    position: relative;
+}
+
+.notification-bell-btn {
+    border: 2px solid #dee2e6;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.notification-bell-btn:hover {
+    background-color: #f8f9fa;
+    border-color: #6c757d;
+    transform: scale(1.05);
+}
+
+.notification-bell-btn:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.notification-dropdown {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border-radius: 0.5rem;
+}
+
+.notification-dropdown .dropdown-item {
+    border-bottom: 1px solid #f8f9fa;
+    padding: 0.75rem 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.notification-dropdown .dropdown-item:last-child {
+    border-bottom: none;
+}
+
+.notification-dropdown .dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.notification-dropdown .dropdown-header {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    padding: 0.75rem 1rem;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.notification-dropdown .bg-light {
+    background-color: #e3f2fd !important;
+}
+
+@media (max-width: 768px) {
+    .notification-dropdown {
+        width: 300px !important;
+    }
+    
+    .notification-bell-btn {
+        width: 45px;
+        height: 45px;
+    }
+}
+
+/* Quick Actions Horizontal Styles */
+.bg-gradient-primary {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+}
+
+.bg-gradient-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+}
+
+.bg-purple {
+    background-color: #6f42c1 !important;
+}
+
+.bg-teal {
+    background-color: #20c997 !important;
+}
+
+.bg-indigo {
+    background-color: #6610f2 !important;
+}
+
+/* Recent Activities Styles */
+.activity-item {
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef !important;
+}
+
+.activity-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-color: #dee2e6 !important;
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(40, 167, 69, 0.1);
+    border-radius: 50%;
+}
+
+.activity-title {
+    color: #2c3e50;
+    font-size: 0.9rem;
+}
+
+.activity-description {
+    font-size: 0.8rem;
+    line-height: 1.3;
+}
+
+.empty-state {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.quick-actions-horizontal {
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.quick-action-horizontal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    padding: 1.5rem 1rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+    border: 1px solid #e9ecef;
+    height: 100%;
+    min-height: 140px;
+    position: relative;
+    overflow: hidden;
+}
+
+.quick-action-horizontal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.05) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.quick-action-horizontal:hover {
+    color: inherit;
+    text-decoration: none;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    border-color: #dee2e6;
+}
+
+.quick-action-horizontal:hover::before {
+    opacity: 1;
+}
+
+.action-icon-horizontal {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.action-icon-horizontal i {
+    color: white;
+    font-size: 1.5rem;
+}
+
+.action-title-horizontal {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+    position: relative;
+    z-index: 1;
+}
+
+.action-subtitle-horizontal {
+    font-size: 0.75rem;
+    color: #6c757d;
+    line-height: 1.3;
+    position: relative;
+    z-index: 1;
+}
+
+/* Hover effects for icons */
+.quick-action-horizontal:hover .action-icon-horizontal {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+/* Responsive adjustments for horizontal Quick Actions */
+@media (max-width: 1200px) {
+    .action-icon-horizontal {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .action-icon-horizontal i {
+        font-size: 1.3rem;
+    }
+    
+    .action-title-horizontal {
+        font-size: 0.85rem;
+    }
+    
+    .action-subtitle-horizontal {
+        font-size: 0.7rem;
+    }
+    
+    .quick-action-horizontal {
+        min-height: 120px;
+        padding: 1.25rem 0.75rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .action-icon-horizontal {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .action-icon-horizontal i {
+        font-size: 1.2rem;
+    }
+    
+    .action-title-horizontal {
+        font-size: 0.8rem;
+    }
+    
+    .action-subtitle-horizontal {
+        font-size: 0.65rem;
+    }
+    
+    .quick-action-horizontal {
+        min-height: 110px;
+        padding: 1rem 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .quick-action-horizontal {
+        min-height: 100px;
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .action-icon-horizontal {
+        width: 40px;
+        height: 40px;
+        margin-bottom: 0.75rem;
+    }
+    
+    .action-icon-horizontal i {
+        font-size: 1.1rem;
+    }
+    
+    .action-title-horizontal {
+        font-size: 0.75rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .action-subtitle-horizontal {
+        font-size: 0.6rem;
+    }
+}
+
+/* ============================================
+   PROFESSIONAL TEACHER DASHBOARD ENHANCEMENTS
+   ============================================ */
+
+/* Modern Dashboard Header */
+.dashboard-title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.dashboard-subtitle {
+    font-size: 1.1rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* Enhanced Card Styling */
+.card {
+    border: none;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+}
+
+.card-header {
+    border: none;
+    border-radius: 15px 15px 0 0 !important;
+    padding: 1.25rem 1.5rem;
+    font-weight: 600;
+}
+
+/* Gradient Headers */
+.bg-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.bg-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+}
+
+.bg-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%) !important;
+}
+
+.bg-warning {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%) !important;
+}
+
+.bg-danger {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%) !important;
+}
+
+.bg-secondary {
+    background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%) !important;
+}
+
+/* Professional Stats Cards */
+.bg-opacity-10 {
+    position: relative;
+    overflow: hidden;
+}
+
+.bg-opacity-10::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(180deg); }
+}
+
+/* Enhanced Table Styling */
+.table {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    padding: 1rem;
+}
+
+.table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    transform: scale(1.01);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Professional Buttons */
+.btn {
+    border-radius: 10px;
+    padding: 0.625rem 1.25rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.btn-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    color: white;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+}
+
+/* Badge Enhancements */
+.badge {
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+/* List Group Modern Style */
+.list-group-item {
+    border: none;
+    border-radius: 10px !important;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.list-group-item:hover {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    transform: translateX(5px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+/* Progress Bar Enhancement */
+.progress {
+    height: 8px;
+    border-radius: 10px;
+    background: #e9ecef;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    transition: width 0.6s ease;
+}
+
+/* Notification Bell Enhancement */
+.notification-bell-btn {
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border: 2px solid #e9ecef;
+}
+
+.notification-bell-btn:hover {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-color: #667eea;
+    transform: scale(1.1);
+}
+
+/* Chart Card Enhancement */
+.chart-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.chart-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+    background-size: 200% 100%;
+    animation: gradientShift 3s ease infinite;
+}
+
+@keyframes gradientShift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+/* Empty State Styling */
+.empty-state {
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.empty-state i {
+    opacity: 0.3;
+    margin-bottom: 1.5rem;
+}
+
+.empty-state h6 {
+    color: #6c757d;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #adb5bd;
+    font-size: 0.95rem;
+}
+
+/* Activity Item Enhancement */
+.activity-item {
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.activity-item:hover {
+    border-left-color: #667eea;
+    background: linear-gradient(90deg, rgba(102, 126, 234, 0.05) 0%, transparent 100%) !important;
+}
+
+/* Icon Enhancements */
+.rounded-circle {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Smooth Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.card, .alert {
+    animation: fadeInUp 0.5s ease-out;
+}
+
+/* Professional Shadow System */
+.shadow-sm {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+}
+
+.shadow {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12) !important;
+}
+
+.shadow-lg {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+    .dashboard-title {
+        font-size: 1.75rem;
+    }
+    
+    .dashboard-subtitle {
+        font-size: 1rem;
+    }
+    
+    .card-header {
+        padding: 1rem;
+    }
+}
+
+/* Loading Animation */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.loading {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Professional Color Palette */
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+    --danger-gradient: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+}
+
+/* ============================================
+   PROFESSIONAL CHART SECTION ENHANCEMENTS
+   ============================================ */
+
+/* Chart Card Enhancements */
+.chart-card {
+    border-radius: 20px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+}
+
+.chart-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important;
+}
+
+/* Gradient Chart Headers */
+.chart-header-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1.5rem;
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.chart-header-gradient-primary::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: shimmer 4s infinite;
+}
+
+.chart-header-gradient-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    padding: 1.5rem;
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.chart-header-gradient-success::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: shimmer 4s infinite;
+}
+
+.chart-header-gradient-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    padding: 1.5rem;
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.chart-header-gradient-info::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: shimmer 4s infinite;
+}
+
+/* Chart Header Icon */
+.chart-header-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,255,255,0.3);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+/* Responsive Chart Container */
+.chart-container-responsive {
+    position: relative;
+    height: 280px;
+    width: 100%;
+    padding: 10px;
+}
+
+@media (max-width: 1200px) {
+    .chart-container-responsive {
+        height: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    .chart-container-responsive {
+        height: 220px;
+    }
+}
+
+@media (max-width: 576px) {
+    .chart-container-responsive {
+        height: 200px;
+    }
+}
+
+/* Chart Legend Section */
+.chart-legend-section {
+    border-top: 2px solid #f0f0f0;
+    padding-top: 1.5rem;
+}
+
+.chart-stat-item {
+    padding: 1rem;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+}
+
+.chart-stat-item:hover {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    transform: translateX(5px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border-left-color: #667eea;
+}
+
+/* Stat Indicators */
+.stat-indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.stat-indicator-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.stat-indicator-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.stat-indicator-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.stat-indicator-warning {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.stat-indicator-danger {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+}
+
+/* Stat Labels */
+.stat-label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #495057;
+}
+
+/* Gradient Badges */
+.stat-badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+.stat-badge:hover {
+    transform: scale(1.1);
+}
+
+.badge-gradient-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.badge-gradient-success {
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+}
+
+.badge-gradient-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.badge-gradient-warning {
+    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+}
+
+.badge-gradient-danger {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+}
+
+/* Modern Progress Bars */
+.progress-modern {
+    height: 10px;
+    border-radius: 10px;
+    background: #e9ecef;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.progress-bar-gradient-primary {
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+}
+
+.progress-bar-gradient-success {
+    background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(17, 153, 142, 0.4);
+}
+
+.progress-bar-gradient-info {
+    background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(79, 172, 254, 0.4);
+}
+
+.progress-bar-gradient-warning {
+    background: linear-gradient(90deg, #fa709a 0%, #fee140 100%);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(250, 112, 154, 0.4);
+}
+
+.progress-bar-gradient-danger {
+    background: linear-gradient(90deg, #ff6b6b 0%, #ee5a6f 100%);
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(255, 107, 107, 0.4);
+}
+
+.progress-bar-animated {
+    animation: progressAnimation 2s ease-in-out infinite;
+}
+
+@keyframes progressAnimation {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+/* Chart Card Body */
+.chart-card .card-body {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+/* Responsive Chart Headers */
+@media (max-width: 768px) {
+    .chart-header-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+    
+    .chart-header-gradient-primary,
+    .chart-header-gradient-success,
+    .chart-header-gradient-info {
+        padding: 1rem;
+    }
+    
+    .chart-header-gradient-primary h6,
+    .chart-header-gradient-success h6,
+    .chart-header-gradient-info h6 {
+        font-size: 0.9rem;
+    }
+    
+    .chart-header-gradient-primary small,
+    .chart-header-gradient-success small,
+    .chart-header-gradient-info small {
+        font-size: 0.75rem;
+    }
+}
+
+/* Chart Loading State */
+.chart-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 280px;
+    color: #6c757d;
+}
+
+.chart-loading i {
+    font-size: 3rem;
+    animation: pulse 2s infinite;
+}
+
+/* Chart Empty State */
+.chart-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 280px;
+    color: #adb5bd;
+}
+
+.chart-empty i {
+    font-size: 4rem;
+    opacity: 0.3;
+    margin-bottom: 1rem;
+}
+
+.chart-empty p {
+    font-size: 0.95rem;
+    margin: 0;
+}
+</style>
+
+{% endblock %}

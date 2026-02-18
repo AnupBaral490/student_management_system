@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Student Enrollments - SMS{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-user-graduate"></i> Manage Student Enrollments</h2>
+            <a href="{% url 'academic:create_student_enrollment' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Enroll Student
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ total_enrollments }}</h4>
+                        <p class="mb-0">Total Enrollments</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ active_enrollments }}</h4>
+                        <p class="mb-0">Active Enrollments</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-check-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ inactive_enrollments }}</h4>
+                        <p class="mb-0">Inactive Enrollments</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-pause-circle fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ departments.count }}</h4>
+                        <p class="mb-0">Departments</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-building fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Department Statistics -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0"><i class="fas fa-chart-bar"></i> Enrollment by Department</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for stat in dept_stats %}
+                    <div class="col-md-4 mb-3">
+                        <div class="border rounded p-3">
+                            <h6>{{ stat.department.name }}</h6>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted">{{ stat.department.code }}</span>
+                                <span class="badge bg-primary">{{ stat.enrollment_count }} students</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0"><i class="fas fa-filter"></i> Filters</h6>
+            </div>
+            <div class="card-body">
+                <form method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label for="department" class="form-label">Department</label>
+                        <select name="department" id="department" class="form-select">
+                            <option value="">All Departments</option>
+                            {% for dept in departments %}
+                                <option value="{{ dept.id }}" {% if department_filter == dept.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ dept.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="course" class="form-label">Course</label>
+                        <select name="course" id="course" class="form-select">
+                            <option value="">All Courses</option>
+                            {% for course in courses %}
+                                <option value="{{ course.id }}" {% if course_filter == course.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ course.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="status" class="form-label">Status</label>
+                        <select name="status" id="status" class="form-select">
+                            <option value="">All Status</option>
+                            <option value="active" {% if status_filter == "active" %}selected{% endif %}>Active</option>
+                            <option value="inactive" {% if status_filter == "inactive" %}selected{% endif %}>Inactive</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="search" class="form-label">Search Student</label>
+                        <input type="text" name="search" id="search" class="form-control" 
+                               placeholder="Name, username, or student ID" value="{{ search }}">
+                    </div>
+                    <div class="col-md-1">
+                        <label class="form-label">&nbsp;</label>
+                        <button type="submit" class="btn btn-primary d-block">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Enrollments Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="m-0"><i class="fas fa-list"></i> Student Enrollments</h6>
+            </div>
+            <div class="card-body">
+                {% if page_obj %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Student ID</th>
+                                    <th>Department</th>
+                                    <th>Course</th>
+                                    <th>Class</th>
+                                    <th>Enrolled Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for enrollment in page_obj %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if enrollment.student.user.profile_picture %}
+                                                <img src="{{ enrollment.student.user.profile_picture.url }}" 
+                                                     class="rounded-circle me-2" width="32" height="32">
+                                            {% else %}
+                                                <div class="bg-secondary rounded-circle me-2 d-flex align-items-center justify-content-center" 
+                                                     style="width: 32px; height: 32px;">
+                                                    <i class="fas fa-user text-white"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <strong>{{ enrollment.student.user.get_full_name|default:enrollment.student.user.username }}</strong>
+                                                <br><small class="text-muted">{{ enrollment.student.user.email }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{ enrollment.student.student_id }}</td>
+                                    <td>
+                                        <span class="badge bg-info">{{ enrollment.class_enrolled.course.department.code }}</span>
+                                        <br><small>{{ enrollment.class_enrolled.course.department.name }}</small>
+                                    </td>
+                                    <td>
+                                        <strong>{{ enrollment.class_enrolled.course.name }}</strong>
+                                        <br><small class="text-muted">{{ enrollment.class_enrolled.course.code }}</small>
+                                    </td>
+                                    <td>
+                                        Year {{ enrollment.class_enrolled.year }}, Sem {{ enrollment.class_enrolled.semester }} - {{ enrollment.class_enrolled.section }}
+                                        <br><small class="text-muted">{{ enrollment.class_enrolled.academic_year.year }}</small>
+                                    </td>
+                                    <td>{{ enrollment.enrollment_date|date:"M d, Y" }}</td>
+                                    <td>
+                                        {% if enrollment.is_active %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{% url 'academic:edit_student_enrollment' enrollment.id %}" 
+                                               class="btn btn-outline-primary" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            {% if enrollment.is_active %}
+                                                <button class="btn btn-outline-warning" 
+                                                        onclick="toggleEnrollmentStatus({{ enrollment.id }}, false)" 
+                                                        title="Deactivate">
+                                                    <i class="fas fa-pause"></i>
+                                                </button>
+                                            {% else %}
+                                                <button class="btn btn-outline-success" 
+                                                        onclick="toggleEnrollmentStatus({{ enrollment.id }}, true)" 
+                                                        title="Activate">
+                                                    <i class="fas fa-play"></i>
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if page_obj.has_other_pages %}
+                        <nav aria-label="Enrollment pagination">
+                            <ul class="pagination justify-content-center">
+                                {% if page_obj.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page=1{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.course %}&course={{ request.GET.course }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">First</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.course %}&course={{ request.GET.course }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Previous</a>
+                                    </li>
+                                {% endif %}
+
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                                </li>
+
+                                {% if page_obj.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.course %}&course={{ request.GET.course }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Next</a>
+                                    </li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.course %}&course={{ request.GET.course }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Last</a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </nav>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-user-graduate fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No Enrollments Found</h5>
+                        <p class="text-muted">No student enrollments match your current filters.</p>
+                        <a href="{% url 'academic:create_student_enrollment' %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Enroll First Student
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Department-Course filtering
+document.getElementById('department').addEventListener('change', function() {
+    const departmentId = this.value;
+    const courseSelect = document.getElementById('course');
+    
+    // Clear course options
+    courseSelect.innerHTML = '<option value="">All Courses</option>';
+    
+    if (departmentId) {
+        // Filter courses by department (you would implement this via AJAX)
+        // For now, we'll submit the form to reload with filtered courses
+        this.form.submit();
+    }
+});
+
+// Toggle enrollment status function
+function toggleEnrollmentStatus(enrollmentId, newStatus) {
+    if (confirm('Are you sure you want to change the enrollment status?')) {
+        // You would implement this via AJAX to update the status
+        // For now, we'll show a message
+        alert('Status toggle functionality would be implemented via AJAX');
+    }
+}
+</script>
+{% endblock %}

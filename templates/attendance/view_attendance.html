@@ -1,0 +1,205 @@
+{% extends 'base.html' %}
+
+{% block title %}View Attendance - SMS{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-calendar-check"></i> View Attendance</h2>
+        <p class="text-muted">View attendance records and statistics</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Filters -->
+    <div class="col-lg-3 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h6 class="m-0"><i class="fas fa-filter"></i> Filters</h6>
+            </div>
+            <div class="card-body">
+                <form method="get">
+                    {{ filter_form.as_p }}
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Apply Filters
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Attendance Records -->
+    <div class="col-lg-9 mb-4">
+        <!-- Summary Cards -->
+        {% if user.user_type == 'student' %}
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6>Present</h6>
+                                <h4>{{ attendance_percentage|default:0 }}%</h4>
+                            </div>
+                            <i class="fas fa-check-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-primary text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6>Total Sessions</h6>
+                                <h4>{{ total_sessions|default:0 }}</h4>
+                            </div>
+                            <i class="fas fa-calendar fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-success text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6>Present</h6>
+                                <h4>{{ present_sessions|default:0 }}</h4>
+                            </div>
+                            <i class="fas fa-check fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card bg-danger text-white">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6>Absent/Other</h6>
+                                <h4>{{ absent_sessions|default:0 }}</h4>
+                            </div>
+                            <i class="fas fa-times-circle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Attendance Table -->
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h6 class="m-0"><i class="fas fa-table"></i> Attendance Records</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                {% if user.user_type == 'teacher' or user.user_type == 'admin' %}
+                                <th>Student Information</th>
+                                {% endif %}
+                                <th>Subject</th>
+                                <th>Class</th>
+                                <th>Status</th>
+                                <th>Marked By</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if attendance_records %}
+                                {% for record in attendance_records %}
+                                <tr>
+                                    <td>{{ record.session.date|date:"M d, Y" }}</td>
+                                    {% if user.user_type == 'teacher' or user.user_type == 'admin' %}
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 35px; height: 35px;">
+                                                <i class="fas fa-user text-white"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold text-dark">{{ record.student.user.get_full_name|default:record.student.user.username }}</div>
+                                                <small class="text-muted">ID: {{ record.student.student_id }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    {% endif %}
+                                    <td>{{ record.session.teacher_assignment.subject.name }}</td>
+                                    <td>{{ record.session.teacher_assignment.class_assigned.name }}</td>
+                                    <td>
+                                        {% if record.status == 'present' %}
+                                            <span class="badge bg-success">Present</span>
+                                        {% elif record.status == 'absent' %}
+                                            <span class="badge bg-danger">Absent</span>
+                                        {% elif record.status == 'late' %}
+                                            <span class="badge bg-warning">Late</span>
+                                        {% elif record.status == 'excused' %}
+                                            <span class="badge bg-info">Excused</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ record.session.teacher_assignment.teacher.user.get_full_name|default:record.session.teacher_assignment.teacher.user.username }}</td>
+                                    <td>{{ record.remarks|default:"-" }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="{% if user.user_type == 'teacher' or user.user_type == 'admin' %}7{% else %}6{% endif %}" class="text-center text-muted">
+                                        <i class="fas fa-calendar-times fa-3x mb-3"></i>
+                                        <br>No attendance records found
+                                        {% if user.user_type == 'student' %}
+                                        <br><small>Your teachers haven't marked attendance yet</small>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                {% if attendance_records.has_other_pages %}
+                <nav aria-label="Attendance pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if attendance_records.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ attendance_records.previous_page_number }}">Previous</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Previous</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in attendance_records.paginator.page_range %}
+                            {% if attendance_records.number == num %}
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">{{ num }}</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if attendance_records.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ attendance_records.next_page_number }}">Next</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#" tabindex="-1">Next</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

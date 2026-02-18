@@ -1,0 +1,157 @@
+{% extends 'auth_base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Login - Student Management System{% endblock %}
+
+{% block content %}
+
+<style>
+    /* Full-page wrapper */
+    body, html {
+        height: 100%;
+        margin: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f4f6f9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Container that centers the login */
+    .login-container {
+        width: 100%;
+        max-width: 480px;
+        padding: 1rem;
+    }
+
+    /* Header */
+    .login-header i {
+        color: #4a4a60;
+        font-size: 3rem;
+        display: block;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .login-header h2 {
+        color: #333;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 5px;
+    }
+
+    .login-header p {
+        color: #555;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    /* Login card */
+    .login-card {
+        background-color: #fff;
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        transition: all 0.3s ease;
+    }
+
+    .login-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+    }
+
+    /* Card header */
+    .login-card .card-header {
+        background-color: #4a4a60;
+        border-radius: 12px 12px 0 0;
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.2rem;
+        text-align: center;
+        padding: 1rem;
+        margin: -2rem -2rem 1.5rem -2rem;
+    }
+
+    /* Form inputs */
+    .login-card .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border-radius: 10px;
+        border: 1px solid #ccc;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .login-card .form-control:focus {
+        border-color: #4a4a60;
+        box-shadow: 0 0 0 0.2rem rgba(74,74,96,0.2);
+    }
+
+    /* Button */
+    .login-card .btn-primary {
+        width: 100%;
+        padding: 0.8rem 1rem;
+        font-size: 1.05rem;
+        border-radius: 10px;
+        background-color: #4a4a60;
+        border: none;
+        color: #fff;
+        transition: all 0.3s ease;
+    }
+
+    .login-card .btn-primary:hover {
+        background-color: #38374d;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    /* Secure login text */
+    .secure-text {
+        color: #777;
+        font-size: 0.85rem;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 768px) {
+        .login-card {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="login-container">
+
+    <div class="login-header">
+        <i class="fas fa-graduation-cap"></i>
+        <h2>Student Management System</h2>
+        <p>Secure Educational Platform</p>
+    </div>
+
+    <div class="card login-card">
+        <div class="card-header">
+            <i class="fas fa-sign-in-alt"></i> Sign In
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <div class="d-grid gap-2 mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="secure-text">
+        <i class="fas fa-shield-alt"></i> Secure Login • 
+        <i class="fas fa-lock"></i> Protected System
+    </div>
+
+</div>
+
+{% endblock %}

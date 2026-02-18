@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - SMS{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
+        <p class="text-muted">Welcome back, {{ user.get_full_name|default:user.username }}!</p>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Statistics Cards -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Students</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_students }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Teachers</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_teachers }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-chalkboard-teacher fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Courses</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_courses|default:0 }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-book fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Parents</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_parents }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-school fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Quick Actions -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'accounts:admin_create_user' %}" class="btn btn-primary btn-block">
+                            <i class="fas fa-user-plus"></i> Add New User
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'accounts:admin_user_list' %}" class="btn btn-info btn-block">
+                            <i class="fas fa-users"></i> Manage Users
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'academic:department_list' %}" class="btn btn-success btn-block">
+                            <i class="fas fa-building"></i> Manage Departments
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'accounts:admin_user_list' %}?type=student" class="btn btn-outline-primary btn-block">
+                            <i class="fas fa-user-graduate"></i> Manage Students
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'academic:course_list' %}" class="btn btn-warning btn-block">
+                            <i class="fas fa-book"></i> Manage Courses
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'academic:class_list' %}" class="btn btn-secondary btn-block">
+                            <i class="fas fa-chalkboard"></i> Manage Classes
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'academic:manage_student_enrollment' %}" class="btn btn-outline-info btn-block">
+                            <i class="fas fa-user-check"></i> Manage Enrollments
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'academic:enrollment_list' %}" class="btn btn-outline-secondary btn-block">
+                            <i class="fas fa-list"></i> View Enrollments
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'academic:student_enrollment_report' %}" class="btn btn-outline-success btn-block">
+                            <i class="fas fa-chart-bar"></i> Enrollment Report
+                        </a>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <a href="{% url 'academic:teacher_assignments' %}" class="btn btn-outline-warning btn-block">
+                            <i class="fas fa-chalkboard-teacher"></i> Teacher Assignments
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Recent Activities</h6>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    {% for recent_user in recent_users %}
+                    <div class="list-group-item">
+                        <i class="fas fa-user-plus text-success"></i>
+                        New {{ recent_user.get_user_type_display|lower }} registered: {{ recent_user.get_full_name|default:recent_user.username }}
+                        <small class="text-muted float-end">{{ recent_user.date_joined|timesince }} ago</small>
+                    </div>
+                    {% empty %}
+                    <div class="list-group-item">
+                        <i class="fas fa-info-circle text-info"></i>
+                        No recent activities to display
+                        <small class="text-muted float-end">System ready</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+</style>
+{% endblock %}
