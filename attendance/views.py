@@ -156,6 +156,18 @@ def save_attendance_ajax(request):
 @user_passes_test(is_teacher_or_admin)
 def mark_attendance(request):
     """Main attendance marking view for teachers"""
+    
+    # Check if user is admin or has teacher profile
+    if request.user.user_type == 'admin':
+        # Admin users should be redirected to a selection page or shown all teachers
+        messages.warning(request, 'Please access attendance marking through a specific teacher account or select a teacher.')
+        return redirect('accounts:admin_user_list')
+    
+    # Check if teacher profile exists
+    if not hasattr(request.user, 'teacher_profile'):
+        messages.error(request, 'Teacher profile not found. Please contact the administrator.')
+        return redirect('accounts:dashboard')
+    
     if request.method == 'POST':
         if 'create_session' in request.POST:
             # Create new attendance session
@@ -234,6 +246,17 @@ def mark_attendance(request):
 def mark_attendance_session(request, session_id):
     """Mark attendance for a specific session"""
     session = get_object_or_404(AttendanceSession, id=session_id)
+    
+    # Check if user is admin or has teacher profile
+    if request.user.user_type == 'admin':
+        # Admin can view but should be warned
+        messages.info(request, 'Viewing as administrator. Attendance marking is typically done by teachers.')
+    elif not hasattr(request.user, 'teacher_profile'):
+        messages.error(request, 'Teacher profile not found. Please contact the administrator.')
+        return redirect('accounts:dashboard')
+    elif session.teacher_assignment.teacher != request.user.teacher_profile:
+        messages.error(request, 'You can only mark attendance for your own classes.')
+        return redirect('attendance:mark_attendance')
     
     # Check if user has permission to mark attendance for this session
     if request.user.user_type == 'teacher' and session.teacher_assignment.teacher != request.user.teacher_profile:
@@ -351,6 +374,11 @@ def view_attendance(request):
             }
     
     elif request.user.user_type == 'teacher':
+        # Check if teacher profile exists
+        if not hasattr(request.user, 'teacher_profile'):
+            messages.error(request, 'Teacher profile not found. Please contact the administrator.')
+            return redirect('accounts:dashboard')
+        
         filter_form = AttendanceFilterForm(request.GET, user=request.user)
         
         # Teacher can view attendance for their classes
@@ -549,6 +577,11 @@ def attendance_reports(request):
             context = {}
     
     elif request.user.user_type == 'teacher':
+        # Check if teacher profile exists
+        if not hasattr(request.user, 'teacher_profile'):
+            messages.error(request, 'Teacher profile not found. Please contact the administrator.')
+            return redirect('accounts:dashboard')
+        
         # Teacher's class attendance reports
         teacher_assignments = TeacherSubjectAssignment.objects.filter(
             teacher=request.user.teacher_profile

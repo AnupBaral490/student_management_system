@@ -3,73 +3,56 @@
 {% block title %}Admin Dashboard - SMS{% endblock %}
 
 {% block content %}
-<div class="row">
+<!-- Premium Admin Dashboard Header -->
+<div class="row mb-4">
     <div class="col-12">
-        <h2><i class="fas fa-tachometer-alt"></i> Admin Dashboard</h2>
-        <p class="text-muted">Welcome back, {{ user.get_full_name|default:user.username }}!</p>
-    </div>
-</div>
-
-<div class="row">
-    <!-- Statistics Cards -->
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-primary shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Students</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_students }}</div>
+        <div class="admin-dashboard-header-premium">
+            <div class="admin-header-bg-shape shape-1"></div>
+            <div class="admin-header-bg-shape shape-2"></div>
+            <div class="admin-header-bg-shape shape-3"></div>
+            
+            <div class="admin-header-content">
+                <div class="admin-header-left">
+                    <div class="admin-avatar-section">
+                        <div class="admin-avatar-wrapper">
+                            <div class="admin-avatar-ring"></div>
+                            <div class="admin-avatar-icon">
+                                <i class="fas fa-user-shield"></i>
+                            </div>
+                            <div class="admin-avatar-status"></div>
+                        </div>
                     </div>
-                    <div class="col-auto">
-                        <i class="fas fa-users fa-2x text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-success shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Teachers</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_teachers }}</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-chalkboard-teacher fa-2x text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-info shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Courses</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_courses|default:0 }}</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-book fa-2x text-gray-300"></i>
+                    <div class="admin-header-text">
+                        <div class="admin-greeting-badge">
+                            <i class="fas fa-crown"></i>
+                            <span>System Administrator</span>
+                        </div>
+                        <h1 class="admin-header-title">
+                            {{ user.get_full_name|default:user.username }}
+                        </h1>
+                        <p class="admin-header-subtitle">
+                            <span class="admin-role-badge">
+                                <i class="fas fa-tachometer-alt"></i>
+                                Admin Control Panel
+                            </span>
+                            <span class="divider">•</span>
+                            <span class="admin-date-info">
+                                <i class="far fa-calendar"></i>
+                                <span id="adminCurrentDate"></span>
+                            </span>
+                        </p>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-warning shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Total Parents</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_parents }}</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-school fa-2x text-gray-300"></i>
+                
+                <div class="admin-header-right">
+                    <div class="admin-header-actions">
+                        <a href="{% url 'accounts:admin_create_user' %}" class="admin-quick-action-btn" title="Add New User">
+                            <i class="fas fa-user-plus"></i>
+                        </a>
+                        <a href="{% url 'notifications:notification_list' %}" class="admin-notification-bell" title="Notifications">
+                            <i class="fas fa-bell"></i>
+                            <span class="admin-notification-pulse"></span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -77,109 +60,410 @@
     </div>
 </div>
 
-<div class="row">
-    <!-- Quick Actions -->
-    <div class="col-lg-6 mb-4">
-        <div class="card shadow">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <a href="{% url 'accounts:admin_create_user' %}" class="btn btn-primary btn-block">
-                            <i class="fas fa-user-plus"></i> Add New User
-                        </a>
+<!-- Premium Statistics Grid -->
+<div class="row mb-4 g-3">
+    <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+        <div class="admin-stat-card admin-stat-primary">
+            <div class="admin-stat-card-inner">
+                <div class="admin-stat-icon">
+                    <div class="admin-icon-circle">
+                        <i class="fas fa-user-graduate"></i>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <a href="{% url 'accounts:admin_user_list' %}" class="btn btn-info btn-block">
-                            <i class="fas fa-users"></i> Manage Users
-                        </a>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <a href="{% url 'academic:department_list' %}" class="btn btn-success btn-block">
-                            <i class="fas fa-building"></i> Manage Departments
-                        </a>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <a href="{% url 'accounts:admin_user_list' %}?type=student" class="btn btn-outline-primary btn-block">
-                            <i class="fas fa-user-graduate"></i> Manage Students
-                        </a>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <a href="{% url 'academic:course_list' %}" class="btn btn-warning btn-block">
-                            <i class="fas fa-book"></i> Manage Courses
-                        </a>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <a href="{% url 'academic:class_list' %}" class="btn btn-secondary btn-block">
-                            <i class="fas fa-chalkboard"></i> Manage Classes
-                        </a>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <a href="{% url 'academic:manage_student_enrollment' %}" class="btn btn-outline-info btn-block">
-                            <i class="fas fa-user-check"></i> Manage Enrollments
-                        </a>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <a href="{% url 'academic:enrollment_list' %}" class="btn btn-outline-secondary btn-block">
-                            <i class="fas fa-list"></i> View Enrollments
-                        </a>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <a href="{% url 'academic:student_enrollment_report' %}" class="btn btn-outline-success btn-block">
-                            <i class="fas fa-chart-bar"></i> Enrollment Report
-                        </a>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <a href="{% url 'academic:teacher_assignments' %}" class="btn btn-outline-warning btn-block">
-                            <i class="fas fa-chalkboard-teacher"></i> Teacher Assignments
-                        </a>
+                    <div class="admin-icon-glow"></div>
+                </div>
+                <div class="admin-stat-content">
+                    <div class="admin-stat-number" data-target="{{ total_students }}">0</div>
+                    <div class="admin-stat-label">Total Students</div>
+                    <div class="admin-stat-trend">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>Active</span>
                     </div>
                 </div>
             </div>
+            <div class="admin-stat-wave"></div>
+            <a href="{% url 'accounts:admin_user_list' %}?type=student" class="admin-stat-link">
+                <span>Manage</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
         </div>
     </div>
+    
+    <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+        <div class="admin-stat-card admin-stat-success">
+            <div class="admin-stat-card-inner">
+                <div class="admin-stat-icon">
+                    <div class="admin-icon-circle">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="admin-icon-glow"></div>
+                </div>
+                <div class="admin-stat-content">
+                    <div class="admin-stat-number" data-target="{{ total_teachers }}">0</div>
+                    <div class="admin-stat-label">Total Teachers</div>
+                    <div class="admin-stat-trend">
+                        <i class="fas fa-users"></i>
+                        <span>Teaching</span>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-stat-wave"></div>
+            <a href="{% url 'accounts:admin_user_list' %}?type=teacher" class="admin-stat-link">
+                <span>Manage</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+        <div class="admin-stat-card admin-stat-warning">
+            <div class="admin-stat-card-inner">
+                <div class="admin-stat-icon">
+                    <div class="admin-icon-circle">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="admin-icon-glow"></div>
+                </div>
+                <div class="admin-stat-content">
+                    <div class="admin-stat-number" data-target="{{ total_parents }}">0</div>
+                    <div class="admin-stat-label">Total Parents</div>
+                    <div class="admin-stat-trend">
+                        <i class="fas fa-user-friends"></i>
+                        <span>Registered</span>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-stat-wave"></div>
+            <a href="{% url 'accounts:admin_user_list' %}?type=parent" class="admin-stat-link">
+                <span>Manage</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-lg-6 col-md-6 col-12">
+        <div class="admin-stat-card admin-stat-info">
+            <div class="admin-stat-card-inner">
+                <div class="admin-stat-icon">
+                    <div class="admin-icon-circle">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="admin-icon-glow"></div>
+                </div>
+                <div class="admin-stat-content">
+                    <div class="admin-stat-number" data-target="{{ total_courses|default:0 }}">0</div>
+                    <div class="admin-stat-label">Total Courses</div>
+                    <div class="admin-stat-trend">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Available</span>
+                    </div>
+                </div>
+            </div>
+            <div class="admin-stat-wave"></div>
+            <a href="{% url 'academic:course_list' %}" class="admin-stat-link">
+                <span>Manage</span>
+                <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
 
+<!-- Activity Monitoring & Control Center -->
+<div class="row mb-4">
     <!-- Recent Activities -->
-    <div class="col-lg-6 mb-4">
-        <div class="card shadow">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Recent Activities</h6>
+    <div class="col-lg-8 mb-4">
+        <div class="admin-activity-card">
+            <div class="admin-activity-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="admin-activity-title">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Recent System Activities
+                        </h5>
+                        <p class="admin-activity-subtitle">Monitor all user activities in real-time</p>
+                    </div>
+                    <div class="admin-activity-filter">
+                        <button class="admin-filter-btn active" data-filter="all">All</button>
+                        <button class="admin-filter-btn" data-filter="student">Students</button>
+                        <button class="admin-filter-btn" data-filter="teacher">Teachers</button>
+                        <button class="admin-filter-btn" data-filter="parent">Parents</button>
+                    </div>
+                </div>
             </div>
-            <div class="card-body">
-                <div class="list-group list-group-flush">
+            <div class="admin-activity-body">
+                <div class="admin-activity-list">
                     {% for recent_user in recent_users %}
-                    <div class="list-group-item">
-                        <i class="fas fa-user-plus text-success"></i>
-                        New {{ recent_user.get_user_type_display|lower }} registered: {{ recent_user.get_full_name|default:recent_user.username }}
-                        <small class="text-muted float-end">{{ recent_user.date_joined|timesince }} ago</small>
+                    <div class="admin-activity-item" data-type="{{ recent_user.user_type }}">
+                        <div class="admin-activity-icon-wrapper 
+                            {% if recent_user.user_type == 'student' %}admin-activity-icon-primary
+                            {% elif recent_user.user_type == 'teacher' %}admin-activity-icon-success
+                            {% elif recent_user.user_type == 'parent' %}admin-activity-icon-warning
+                            {% else %}admin-activity-icon-info{% endif %}">
+                            <i class="fas 
+                                {% if recent_user.user_type == 'student' %}fa-user-graduate
+                                {% elif recent_user.user_type == 'teacher' %}fa-chalkboard-teacher
+                                {% elif recent_user.user_type == 'parent' %}fa-users
+                                {% else %}fa-user{% endif %}"></i>
+                        </div>
+                        <div class="admin-activity-details">
+                            <div class="admin-activity-title-text">
+                                New {{ recent_user.get_user_type_display }} Registered
+                            </div>
+                            <div class="admin-activity-description">
+                                {{ recent_user.get_full_name|default:recent_user.username }} joined the system
+                            </div>
+                            <div class="admin-activity-meta">
+                                <span class="admin-activity-time">
+                                    <i class="far fa-clock"></i>
+                                    {{ recent_user.date_joined|timesince }} ago
+                                </span>
+                                <span class="admin-activity-badge">{{ recent_user.user_type|upper }}</span>
+                            </div>
+                        </div>
+                        <div class="admin-activity-actions">
+                            <a href="{% url 'accounts:admin_edit_user' recent_user.id %}" class="admin-action-btn admin-action-edit" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'accounts:admin_delete_user' recent_user.id %}" class="admin-action-btn admin-action-delete" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
                     </div>
                     {% empty %}
-                    <div class="list-group-item">
-                        <i class="fas fa-info-circle text-info"></i>
-                        No recent activities to display
-                        <small class="text-muted float-end">System ready</small>
+                    <div class="admin-activity-empty">
+                        <i class="fas fa-inbox fa-3x"></i>
+                        <p>No recent activities to display</p>
+                        <small>System is ready and waiting for new activities</small>
                     </div>
                     {% endfor %}
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Quick Control Panel -->
+    <div class="col-lg-4 mb-4">
+        <div class="admin-control-panel">
+            <div class="admin-control-header">
+                <h5 class="admin-control-title">
+                    <i class="fas fa-sliders-h me-2"></i>
+                    Quick Controls
+                </h5>
+                <p class="admin-control-subtitle">Manage system operations</p>
+            </div>
+            <div class="admin-control-body">
+                <div class="admin-control-section">
+                    <h6 class="admin-control-section-title">User Management</h6>
+                    <a href="{% url 'accounts:admin_create_user' %}" class="admin-control-item">
+                        <div class="admin-control-icon admin-control-icon-primary">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="admin-control-text">
+                            <div class="admin-control-name">Add New User</div>
+                            <div class="admin-control-desc">Create student, teacher, or parent</div>
+                        </div>
+                        <i class="fas fa-chevron-right admin-control-arrow"></i>
+                    </a>
+                    <a href="{% url 'accounts:admin_user_list' %}" class="admin-control-item">
+                        <div class="admin-control-icon admin-control-icon-success">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <div class="admin-control-text">
+                            <div class="admin-control-name">Manage All Users</div>
+                            <div class="admin-control-desc">View, edit, and delete users</div>
+                        </div>
+                        <i class="fas fa-chevron-right admin-control-arrow"></i>
+                    </a>
+                    <a href="{% url 'accounts:admin_user_list' %}" class="admin-control-item">
+                        <div class="admin-control-icon admin-control-icon-warning">
+                            <i class="fas fa-key"></i>
+                        </div>
+                        <div class="admin-control-text">
+                            <div class="admin-control-name">Password Management</div>
+                            <div class="admin-control-desc">Select user to reset password</div>
+                        </div>
+                        <i class="fas fa-chevron-right admin-control-arrow"></i>
+                    </a>
+                </div>
+                
+                <div class="admin-control-section">
+                    <h6 class="admin-control-section-title">Academic Management</h6>
+                    <a href="{% url 'academic:course_list' %}" class="admin-control-item">
+                        <div class="admin-control-icon admin-control-icon-info">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="admin-control-text">
+                            <div class="admin-control-name">Manage Courses</div>
+                            <div class="admin-control-desc">Add and edit courses</div>
+                        </div>
+                        <i class="fas fa-chevron-right admin-control-arrow"></i>
+                    </a>
+                    <a href="{% url 'academic:manage_student_enrollment' %}" class="admin-control-item">
+                        <div class="admin-control-icon admin-control-icon-purple">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="admin-control-text">
+                            <div class="admin-control-name">Manage Enrollments</div>
+                            <div class="admin-control-desc">Enroll students in courses</div>
+                        </div>
+                        <i class="fas fa-chevron-right admin-control-arrow"></i>
+                    </a>
+                    <a href="{% url 'academic:teacher_assignments' %}" class="admin-control-item">
+                        <div class="admin-control-icon admin-control-icon-danger">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="admin-control-text">
+                            <div class="admin-control-name">Teacher Assignments</div>
+                            <div class="admin-control-desc">Assign teachers to classes</div>
+                        </div>
+                        <i class="fas fa-chevron-right admin-control-arrow"></i>
+                    </a>
+                </div>
+                
+                <div class="admin-control-section">
+                    <h6 class="admin-control-section-title">Reports & Analytics</h6>
+                    <a href="{% url 'academic:student_enrollment_report' %}" class="admin-control-item">
+                        <div class="admin-control-icon admin-control-icon-teal">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="admin-control-text">
+                            <div class="admin-control-name">Enrollment Report</div>
+                            <div class="admin-control-desc">View enrollment statistics</div>
+                        </div>
+                        <i class="fas fa-chevron-right admin-control-arrow"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<style>
-.border-left-primary {
-    border-left: 0.25rem solid #4e73df !important;
-}
-.border-left-success {
-    border-left: 0.25rem solid #1cc88a !important;
-}
-.border-left-info {
-    border-left: 0.25rem solid #36b9cc !important;
-}
-.border-left-warning {
-    border-left: 0.25rem solid #f6c23e !important;
-}
-</style>
+<!-- System Overview -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="admin-system-overview">
+            <div class="admin-overview-header">
+                <h5 class="admin-overview-title">
+                    <i class="fas fa-server me-2"></i>
+                    System Overview
+                </h5>
+            </div>
+            <div class="admin-overview-body">
+                <div class="row g-3">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="admin-overview-card">
+                            <div class="admin-overview-icon admin-overview-icon-primary">
+                                <i class="fas fa-user-graduate"></i>
+                            </div>
+                            <div class="admin-overview-content">
+                                <div class="admin-overview-label">Student Activities</div>
+                                <div class="admin-overview-value">{{ total_students }} Active</div>
+                                <a href="{% url 'accounts:admin_user_list' %}?type=student" class="admin-overview-link">View All →</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="admin-overview-card">
+                            <div class="admin-overview-icon admin-overview-icon-success">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                            </div>
+                            <div class="admin-overview-content">
+                                <div class="admin-overview-label">Teacher Activities</div>
+                                <div class="admin-overview-value">{{ total_teachers }} Active</div>
+                                <a href="{% url 'accounts:admin_user_list' %}?type=teacher" class="admin-overview-link">View All →</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="admin-overview-card">
+                            <div class="admin-overview-icon admin-overview-icon-warning">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="admin-overview-content">
+                                <div class="admin-overview-label">Parent Activities</div>
+                                <div class="admin-overview-value">{{ total_parents }} Active</div>
+                                <a href="{% url 'accounts:admin_user_list' %}?type=parent" class="admin-overview-link">View All →</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="admin-overview-card">
+                            <div class="admin-overview-icon admin-overview-icon-info">
+                                <i class="fas fa-book-open"></i>
+                            </div>
+                            <div class="admin-overview-content">
+                                <div class="admin-overview-label">Course Activities</div>
+                                <div class="admin-overview-value">{{ total_courses|default:0 }} Active</div>
+                                <a href="{% url 'academic:course_list' %}" class="admin-overview-link">View All →</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Counter Animation Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Date Display
+    const dateElement = document.getElementById('adminCurrentDate');
+    if (dateElement) {
+        const today = new Date();
+        const options = { month: 'short', day: 'numeric', year: 'numeric' };
+        dateElement.textContent = today.toLocaleDateString('en-US', options);
+    }
+    
+    // Animated Counter
+    const counters = document.querySelectorAll('.admin-stat-number');
+    counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-target'));
+        const duration = 2000;
+        const increment = target / (duration / 16);
+        let current = 0;
+        
+        const updateCounter = () => {
+            current += increment;
+            if (current < target) {
+                counter.textContent = Math.floor(current);
+                requestAnimationFrame(updateCounter);
+            } else {
+                counter.textContent = target;
+            }
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    updateCounter();
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        
+        observer.observe(counter);
+    });
+    
+    // Activity Filter
+    const filterBtns = document.querySelectorAll('.admin-filter-btn');
+    const activityItems = document.querySelectorAll('.admin-activity-item');
+    
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const filter = this.getAttribute('data-filter');
+            
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            activityItems.forEach(item => {
+                if (filter === 'all' || item.getAttribute('data-type') === filter) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+});
+</script>
 {% endblock %}
