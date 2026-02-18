@@ -3,43 +3,64 @@
 {% block title %}Teacher Dashboard - SMS{% endblock %}
 
 {% block content %}
-<!-- Enhanced Professional Header -->
+/* Ultra Professional Dashboard Header */
 <div class="row mb-4">
     <div class="col-12">
-        <div class="teacher-dashboard-header">
-            <div class="header-content">
-                <div class="header-left">
-                    <div class="header-icon-wrapper">
-                        <i class="fas fa-chalkboard-teacher"></i>
+        <div class="teacher-dashboard-header-premium">
+            <!-- Animated Background Elements -->
+            <div class="header-bg-shape shape-1"></div>
+            <div class="header-bg-shape shape-2"></div>
+            <div class="header-bg-shape shape-3"></div>
+            <div class="header-bg-pattern"></div>
+            
+            <div class="header-content-premium">
+                <div class="header-left-premium">
+                    <div class="header-avatar-section">
+                        <div class="avatar-wrapper">
+                            <div class="avatar-ring"></div>
+                            <div class="avatar-icon">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <div class="avatar-status"></div>
+                        </div>
                     </div>
-                    <div class="header-text">
-                        <h1 class="header-title">Teacher Dashboard</h1>
-                        <p class="header-subtitle">
-                            <i class="fas fa-hand-wave me-1"></i>
-                            Welcome back, <span class="teacher-name">{{ user.get_full_name|default:user.username }}</span>!
+                    <div class="header-text-premium">
+                        <div class="greeting-badge">
+                            <i class="fas fa-sun"></i>
+                            <span>Good Day</span>
+                        </div>
+                        <h1 class="header-title-premium">
+                            {{ user.get_full_name|default:user.username }}
+                        </h1>
+                        <p class="header-subtitle-premium">
+                            <span class="role-badge">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                Teacher Dashboard
+                            </span>
+                            <span class="divider">•</span>
+                            <span class="date-info">
+                                <i class="far fa-calendar"></i>
+                                <span id="currentDate"></span>
+                            </span>
                         </p>
                     </div>
                 </div>
                 
-                <!-- Notification Bell -->
-                <div class="header-right">
-                    <div class="dropdown">
-                        <button class="notification-bell-btn" type="button" id="notificationDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-bell"></i>
-                            <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+                <div class="header-right-premium">
+                    <div class="header-actions">
+                        <!-- Quick Action Button -->
+                        <button class="quick-action-btn" title="Quick Actions">
+                            <i class="fas fa-bolt"></i>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end notification-dropdown" aria-labelledby="notificationDropdown">
-                            <li class="dropdown-header d-flex justify-content-between align-items-center">
-                                <span><i class="fas fa-bell me-2"></i>Notifications</span>
-                                <a href="{% url 'notifications:notification_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <div id="notificationList">
-                                <li class="dropdown-item text-center text-muted py-3">
-                                    <i class="fas fa-spinner fa-spin"></i> Loading...
-                                </li>
+                        
+                        <!-- Notification Bell - Click to go to notifications page -->
+                        <a href="{% url 'notifications:notification_list' %}" class="notification-bell-premium-link" title="View All Notifications">
+                            <div class="notification-bell-premium">
+                                <i class="fas fa-bell"></i>
+                                <span class="notification-pulse"></span>
+                                <span class="notification-badge-premium" id="notificationBadge" style="display: none;">0</span>
                             </div>
-                        </ul>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -60,81 +81,184 @@
 </div>
 {% else %}
 
-<!-- Enhanced Quick Statistics -->
+<!-- Premium Statistics Grid -->
 <div class="row mb-4 g-3">
     <div class="col-xl-2 col-lg-4 col-md-6 col-6">
-        <div class="stat-card stat-card-primary">
-            <div class="stat-icon">
-                <i class="fas fa-users"></i>
+        <div class="stat-card-premium stat-primary">
+            <div class="stat-card-inner">
+                <div class="stat-icon-premium">
+                    <div class="icon-circle">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="icon-glow"></div>
+                </div>
+                <div class="stat-content-premium">
+                    <div class="stat-number-premium" data-target="{{ total_students }}">0</div>
+                    <div class="stat-label-premium">Total Students</div>
+                    <div class="stat-trend">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>Active</span>
+                    </div>
+                </div>
             </div>
-            <div class="stat-content">
-                <h3 class="stat-number">{{ total_students }}</h3>
-                <p class="stat-label">Total Students</p>
-            </div>
-            <div class="stat-decoration"></div>
+            <div class="stat-wave"></div>
         </div>
     </div>
+    
     <div class="col-xl-2 col-lg-4 col-md-6 col-6">
-        <div class="stat-card stat-card-success">
-            <div class="stat-icon">
-                <i class="fas fa-book"></i>
+        <div class="stat-card-premium stat-success">
+            <div class="stat-card-inner">
+                <div class="stat-icon-premium">
+                    <div class="icon-circle">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <div class="icon-glow"></div>
+                </div>
+                <div class="stat-content-premium">
+                    <div class="stat-number-premium" data-target="{{ total_subjects }}">0</div>
+                    <div class="stat-label-premium">Subjects Teaching</div>
+                    <div class="stat-trend">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Teaching</span>
+                    </div>
+                </div>
             </div>
-            <div class="stat-content">
-                <h3 class="stat-number">{{ total_subjects }}</h3>
-                <p class="stat-label">Subjects Teaching</p>
-            </div>
-            <div class="stat-decoration"></div>
+            <div class="stat-wave"></div>
         </div>
     </div>
+    
     <div class="col-xl-2 col-lg-4 col-md-6 col-6">
-        <div class="stat-card stat-card-info">
-            <div class="stat-icon">
-                <i class="fas fa-tasks"></i>
+        <div class="stat-card-premium stat-info">
+            <div class="stat-card-inner">
+                <div class="stat-icon-premium">
+                    <div class="icon-circle">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                    <div class="icon-glow"></div>
+                </div>
+                <div class="stat-content-premium">
+                    <div class="stat-number-premium" data-target="{{ pending_assignments }}">0</div>
+                    <div class="stat-label-premium">Active Assignments</div>
+                    <div class="stat-trend">
+                        <i class="fas fa-clock"></i>
+                        <span>Pending</span>
+                    </div>
+                </div>
             </div>
-            <div class="stat-content">
-                <h3 class="stat-number">{{ pending_assignments }}</h3>
-                <p class="stat-label">Active Assignments</p>
-            </div>
-            <div class="stat-decoration"></div>
+            <div class="stat-wave"></div>
         </div>
     </div>
+    
     <div class="col-xl-2 col-lg-4 col-md-6 col-6">
-        <div class="stat-card stat-card-warning">
-            <div class="stat-icon">
-                <i class="fas fa-calendar-alt"></i>
+        <div class="stat-card-premium stat-warning">
+            <div class="stat-card-inner">
+                <div class="stat-icon-premium">
+                    <div class="icon-circle">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="icon-glow"></div>
+                </div>
+                <div class="stat-content-premium">
+                    <div class="stat-number-premium" data-target="{{ upcoming_exams }}">0</div>
+                    <div class="stat-label-premium">Upcoming Exams</div>
+                    <div class="stat-trend">
+                        <i class="fas fa-bell"></i>
+                        <span>Scheduled</span>
+                    </div>
+                </div>
             </div>
-            <div class="stat-content">
-                <h3 class="stat-number">{{ upcoming_exams }}</h3>
-                <p class="stat-label">Upcoming Exams</p>
-            </div>
-            <div class="stat-decoration"></div>
+            <div class="stat-wave"></div>
         </div>
     </div>
+    
     <div class="col-xl-2 col-lg-4 col-md-6 col-6">
-        <div class="stat-card stat-card-secondary">
-            <div class="stat-icon">
-                <i class="fas fa-file-alt"></i>
+        <div class="stat-card-premium stat-purple">
+            <div class="stat-card-inner">
+                <div class="stat-icon-premium">
+                    <div class="icon-circle">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="icon-glow"></div>
+                </div>
+                <div class="stat-content-premium">
+                    <div class="stat-number-premium" data-target="{{ total_assignments_created }}">0</div>
+                    <div class="stat-label-premium">Total Assignments</div>
+                    <div class="stat-trend">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Created</span>
+                    </div>
+                </div>
             </div>
-            <div class="stat-content">
-                <h3 class="stat-number">{{ total_assignments_created }}</h3>
-                <p class="stat-label">Total Assignments</p>
-            </div>
-            <div class="stat-decoration"></div>
+            <div class="stat-wave"></div>
         </div>
     </div>
+    
     <div class="col-xl-2 col-lg-4 col-md-6 col-6">
-        <div class="stat-card stat-card-danger">
-            <div class="stat-icon">
-                <i class="fas fa-chart-line"></i>
+        <div class="stat-card-premium stat-danger">
+            <div class="stat-card-inner">
+                <div class="stat-icon-premium">
+                    <div class="icon-circle">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="icon-glow"></div>
+                </div>
+                <div class="stat-content-premium">
+                    <div class="stat-number-premium" data-target="{{ avg_grade }}">0</div>
+                    <div class="stat-label-premium">Average Grade</div>
+                    <div class="stat-trend">
+                        <i class="fas fa-percentage"></i>
+                        <span>Performance</span>
+                    </div>
+                </div>
             </div>
-            <div class="stat-content">
-                <h3 class="stat-number">{{ avg_grade }}%</h3>
-                <p class="stat-label">Average Grade</p>
-            </div>
-            <div class="stat-decoration"></div>
+            <div class="stat-wave"></div>
         </div>
     </div>
 </div>
+
+<!-- Counter Animation Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Date Display
+    const dateElement = document.getElementById('currentDate');
+    if (dateElement) {
+        const today = new Date();
+        const options = { month: 'short', day: 'numeric', year: 'numeric' };
+        dateElement.textContent = today.toLocaleDateString('en-US', options);
+    }
+    
+    // Animated Counter
+    const counters = document.querySelectorAll('.stat-number-premium');
+    counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-target'));
+        const duration = 2000;
+        const increment = target / (duration / 16);
+        let current = 0;
+        
+        const updateCounter = () => {
+            current += increment;
+            if (current < target) {
+                counter.textContent = Math.floor(current);
+                requestAnimationFrame(updateCounter);
+            } else {
+                counter.textContent = target + (counter.parentElement.querySelector('.stat-label-premium').textContent.includes('Grade') ? '%' : '');
+            }
+        };
+        
+        // Start animation when element is in viewport
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    updateCounter();
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        
+        observer.observe(counter);
+    });
+});
+</script>
 
 <!-- Enhanced Statistics Charts - Professional Design -->
 <div class="row mb-4">
