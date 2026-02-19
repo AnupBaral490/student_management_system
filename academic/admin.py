@@ -18,6 +18,33 @@ class ClassInline(admin.TabularInline):
     fields = ('name', 'year', 'semester', 'section', 'academic_year', 'class_teacher')
     autocomplete_fields = ['class_teacher']
 
+# Inline admin classes for Class management
+class StudentEnrollmentInline(admin.TabularInline):
+    model = StudentEnrollment
+    extra = 0
+    fields = ('student', 'enrollment_date', 'is_active')
+    readonly_fields = ('enrollment_date',)
+    autocomplete_fields = ['student']
+    verbose_name = "Enrolled Student"
+    verbose_name_plural = "Enrolled Students"
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related('student__user')
+
+class TeacherSubjectAssignmentInline(admin.TabularInline):
+    model = TeacherSubjectAssignment
+    extra = 0
+    fields = ('teacher', 'subject', 'academic_year')
+    readonly_fields = ('academic_year',)
+    autocomplete_fields = ['teacher', 'subject']
+    verbose_name = "Teacher Assignment"
+    verbose_name_plural = "Teacher Assignments"
+    
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related('teacher__user', 'subject', 'academic_year')
+
 # Custom form for Course admin with multiple student selection
 class CourseAdminForm(ModelForm):
     students = ModelMultipleChoiceField(
@@ -228,14 +255,25 @@ class SubjectAdmin(admin.ModelAdmin):
 
 @admin.register(Class)
 class ClassAdmin(admin.ModelAdmin):
-    list_display = ('name', 'course', 'year', 'semester', 'section', 'academic_year', 'class_teacher', 'get_student_count')
+    list_display = ('name', 'course', 'year', 'semester', 'section', 'academic_year', 'class_teacher', 'get_student_count', 'get_teacher_count')
     search_fields = ('name', 'section')
     list_filter = ('course', 'year', 'semester', 'academic_year')
     autocomplete_fields = ['class_teacher']
+    inlines = [StudentEnrollmentInline, TeacherSubjectAssignmentInline]
+    
+    fieldsets = (
+        ('Class Information', {
+            'fields': ('name', 'course', 'year', 'semester', 'section', 'academic_year', 'class_teacher')
+        }),
+    )
     
     def get_student_count(self, obj):
         return obj.studentenrollment_set.filter(is_active=True).count()
     get_student_count.short_description = 'Students Enrolled'
+    
+    def get_teacher_count(self, obj):
+        return TeacherSubjectAssignment.objects.filter(class_assigned=obj).values('teacher').distinct().count()
+    get_teacher_count.short_description = 'Teachers Assigned'
 
 @admin.register(StudentEnrollment)
 class StudentEnrollmentAdmin(admin.ModelAdmin):
