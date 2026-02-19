@@ -167,170 +167,382 @@
     </div>
 </div>
 
-<!-- Activity Monitoring & Control Center -->
+<!-- Comprehensive Control Tabs -->
 <div class="row mb-4">
-    <!-- Recent Activities -->
-    <div class="col-lg-8 mb-4">
-        <div class="admin-activity-card">
-            <div class="admin-activity-header">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h5 class="admin-activity-title">
-                            <i class="fas fa-chart-line me-2"></i>
-                            Recent System Activities
-                        </h5>
-                        <p class="admin-activity-subtitle">Monitor all user activities in real-time</p>
-                    </div>
-                    <div class="admin-activity-filter">
-                        <button class="admin-filter-btn active" data-filter="all">All</button>
-                        <button class="admin-filter-btn" data-filter="student">Students</button>
-                        <button class="admin-filter-btn" data-filter="teacher">Teachers</button>
-                        <button class="admin-filter-btn" data-filter="parent">Parents</button>
-                    </div>
-                </div>
-            </div>
-            <div class="admin-activity-body">
-                <div class="admin-activity-list">
-                    {% for recent_user in recent_users %}
-                    <div class="admin-activity-item" data-type="{{ recent_user.user_type }}">
-                        <div class="admin-activity-icon-wrapper 
-                            {% if recent_user.user_type == 'student' %}admin-activity-icon-primary
-                            {% elif recent_user.user_type == 'teacher' %}admin-activity-icon-success
-                            {% elif recent_user.user_type == 'parent' %}admin-activity-icon-warning
-                            {% else %}admin-activity-icon-info{% endif %}">
-                            <i class="fas 
-                                {% if recent_user.user_type == 'student' %}fa-user-graduate
-                                {% elif recent_user.user_type == 'teacher' %}fa-chalkboard-teacher
-                                {% elif recent_user.user_type == 'parent' %}fa-users
-                                {% else %}fa-user{% endif %}"></i>
-                        </div>
-                        <div class="admin-activity-details">
-                            <div class="admin-activity-title-text">
-                                New {{ recent_user.get_user_type_display }} Registered
-                            </div>
-                            <div class="admin-activity-description">
-                                {{ recent_user.get_full_name|default:recent_user.username }} joined the system
-                            </div>
-                            <div class="admin-activity-meta">
-                                <span class="admin-activity-time">
-                                    <i class="far fa-clock"></i>
-                                    {{ recent_user.date_joined|timesince }} ago
-                                </span>
-                                <span class="admin-activity-badge">{{ recent_user.user_type|upper }}</span>
-                            </div>
-                        </div>
-                        <div class="admin-activity-actions">
-                            <a href="{% url 'accounts:admin_edit_user' recent_user.id %}" class="admin-action-btn admin-action-edit" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <a href="{% url 'accounts:admin_delete_user' recent_user.id %}" class="admin-action-btn admin-action-delete" title="Delete">
-                                <i class="fas fa-trash"></i>
+    <div class="col-12">
+        <div class="admin-control-tabs-card">
+            <ul class="nav nav-pills admin-control-nav" id="adminControlTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="users-tab" data-bs-toggle="pill" data-bs-target="#users" type="button" role="tab">
+                        <i class="fas fa-users"></i>
+                        <span>User Management</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="academic-tab" data-bs-toggle="pill" data-bs-target="#academic" type="button" role="tab">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Academic</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="attendance-tab" data-bs-toggle="pill" data-bs-target="#attendance" type="button" role="tab">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Attendance</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="exams-tab" data-bs-toggle="pill" data-bs-target="#exams" type="button" role="tab">
+                        <i class="fas fa-clipboard-list"></i>
+                        <span>Examinations</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="activities-tab" data-bs-toggle="pill" data-bs-target="#activities" type="button" role="tab">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Activities</span>
+                    </button>
+                </li>
+            </ul>
+            
+            <div class="tab-content admin-tab-content" id="adminControlTabsContent">
+                <!-- User Management Tab -->
+                <div class="tab-pane fade show active" id="users" role="tabpanel">
+                    <div class="row g-3">
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'accounts:admin_create_user' %}" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-primary">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Add New User</h6>
+                                    <p class="admin-feature-desc">Create students, teachers, or parents</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
                             </a>
                         </div>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'accounts:admin_user_list' %}" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-success">
+                                    <i class="fas fa-users-cog"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Manage All Users</h6>
+                                    <p class="admin-feature-desc">View, edit, and delete users</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'accounts:admin_user_list' %}?type=student" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-info">
+                                    <i class="fas fa-user-graduate"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Manage Students</h6>
+                                    <p class="admin-feature-desc">{{ total_students }} students registered</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'accounts:admin_user_list' %}?type=teacher" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-warning">
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Manage Teachers</h6>
+                                    <p class="admin-feature-desc">{{ total_teachers }} teachers active</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'accounts:admin_user_list' %}?type=parent" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-purple">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Manage Parents</h6>
+                                    <p class="admin-feature-desc">{{ total_parents }} parents registered</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'accounts:admin_user_list' %}" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-danger">
+                                    <i class="fas fa-key"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Password Management</h6>
+                                    <p class="admin-feature-desc">Reset user passwords</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
+                        </div>
                     </div>
-                    {% empty %}
-                    <div class="admin-activity-empty">
-                        <i class="fas fa-inbox fa-3x"></i>
-                        <p>No recent activities to display</p>
-                        <small>System is ready and waiting for new activities</small>
-                    </div>
-                    {% endfor %}
                 </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Quick Control Panel -->
-    <div class="col-lg-4 mb-4">
-        <div class="admin-control-panel">
-            <div class="admin-control-header">
-                <h5 class="admin-control-title">
-                    <i class="fas fa-sliders-h me-2"></i>
-                    Quick Controls
-                </h5>
-                <p class="admin-control-subtitle">Manage system operations</p>
-            </div>
-            <div class="admin-control-body">
-                <div class="admin-control-section">
-                    <h6 class="admin-control-section-title">User Management</h6>
-                    <a href="{% url 'accounts:admin_create_user' %}" class="admin-control-item">
-                        <div class="admin-control-icon admin-control-icon-primary">
-                            <i class="fas fa-user-plus"></i>
+
+                <!-- Academic Tab -->
+                <div class="tab-pane fade" id="academic" role="tabpanel">
+                    <div class="row g-3">
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'academic:course_list' %}" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-primary">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Manage Courses</h6>
+                                    <p class="admin-feature-desc">Add, edit, and view courses</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
                         </div>
-                        <div class="admin-control-text">
-                            <div class="admin-control-name">Add New User</div>
-                            <div class="admin-control-desc">Create student, teacher, or parent</div>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'academic:create_course_enhanced' %}" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-success">
+                                    <i class="fas fa-plus-circle"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Create New Course</h6>
+                                    <p class="admin-feature-desc">Add courses to the system</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
                         </div>
-                        <i class="fas fa-chevron-right admin-control-arrow"></i>
-                    </a>
-                    <a href="{% url 'accounts:admin_user_list' %}" class="admin-control-item">
-                        <div class="admin-control-icon admin-control-icon-success">
-                            <i class="fas fa-users-cog"></i>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'academic:class_list' %}" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-info">
+                                    <i class="fas fa-chalkboard"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Manage Classes</h6>
+                                    <p class="admin-feature-desc">View and manage all classes</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
                         </div>
-                        <div class="admin-control-text">
-                            <div class="admin-control-name">Manage All Users</div>
-                            <div class="admin-control-desc">View, edit, and delete users</div>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'academic:subject_list' %}" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-warning">
+                                    <i class="fas fa-book-reader"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Manage Subjects</h6>
+                                    <p class="admin-feature-desc">Add and edit subjects</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
                         </div>
-                        <i class="fas fa-chevron-right admin-control-arrow"></i>
-                    </a>
-                    <a href="{% url 'accounts:admin_user_list' %}" class="admin-control-item">
-                        <div class="admin-control-icon admin-control-icon-warning">
-                            <i class="fas fa-key"></i>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'academic:manage_student_enrollment' %}" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-purple">
+                                    <i class="fas fa-user-check"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Student Enrollment</h6>
+                                    <p class="admin-feature-desc">Enroll students in courses</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
                         </div>
-                        <div class="admin-control-text">
-                            <div class="admin-control-name">Password Management</div>
-                            <div class="admin-control-desc">Select user to reset password</div>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'academic:teacher_assignments' %}" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-danger">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Teacher Assignments</h6>
+                                    <p class="admin-feature-desc">Assign teachers to classes</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
                         </div>
-                        <i class="fas fa-chevron-right admin-control-arrow"></i>
-                    </a>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'academic:department_list' %}" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-teal">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Manage Departments</h6>
+                                    <p class="admin-feature-desc">View and manage departments</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'academic:student_enrollment_report' %}" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-indigo">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Enrollment Report</h6>
+                                    <p class="admin-feature-desc">View enrollment statistics</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'academic:assignment_list' %}" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-pink">
+                                    <i class="fas fa-tasks"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">View Assignments</h6>
+                                    <p class="admin-feature-desc">Monitor all assignments</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="admin-control-section">
-                    <h6 class="admin-control-section-title">Academic Management</h6>
-                    <a href="{% url 'academic:course_list' %}" class="admin-control-item">
-                        <div class="admin-control-icon admin-control-icon-info">
-                            <i class="fas fa-book"></i>
+                <!-- Attendance Tab -->
+                <div class="tab-pane fade" id="attendance" role="tabpanel">
+                    <div class="row g-3">
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'attendance:attendance_reports' %}" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-primary">
+                                    <i class="fas fa-chart-pie"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Attendance Reports</h6>
+                                    <p class="admin-feature-desc">View all attendance records</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
                         </div>
-                        <div class="admin-control-text">
-                            <div class="admin-control-name">Manage Courses</div>
-                            <div class="admin-control-desc">Add and edit courses</div>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'attendance:view_attendance' %}" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-success">
+                                    <i class="fas fa-list-alt"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">View Attendance</h6>
+                                    <p class="admin-feature-desc">View detailed attendance data</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
                         </div>
-                        <i class="fas fa-chevron-right admin-control-arrow"></i>
-                    </a>
-                    <a href="{% url 'academic:manage_student_enrollment' %}" class="admin-control-item">
-                        <div class="admin-control-icon admin-control-icon-purple">
-                            <i class="fas fa-user-check"></i>
+                        <div class="col-lg-4 col-md-6">
+                            <div class="admin-feature-card admin-feature-disabled">
+                                <div class="admin-feature-icon admin-feature-icon-info">
+                                    <i class="fas fa-calendar-check"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Mark Attendance</h6>
+                                    <p class="admin-feature-desc">Teacher-only feature</p>
+                                </div>
+                                <span class="badge bg-secondary">Teacher Only</span>
+                            </div>
                         </div>
-                        <div class="admin-control-text">
-                            <div class="admin-control-name">Manage Enrollments</div>
-                            <div class="admin-control-desc">Enroll students in courses</div>
-                        </div>
-                        <i class="fas fa-chevron-right admin-control-arrow"></i>
-                    </a>
-                    <a href="{% url 'academic:teacher_assignments' %}" class="admin-control-item">
-                        <div class="admin-control-icon admin-control-icon-danger">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                        </div>
-                        <div class="admin-control-text">
-                            <div class="admin-control-name">Teacher Assignments</div>
-                            <div class="admin-control-desc">Assign teachers to classes</div>
-                        </div>
-                        <i class="fas fa-chevron-right admin-control-arrow"></i>
-                    </a>
+                    </div>
                 </div>
                 
-                <div class="admin-control-section">
-                    <h6 class="admin-control-section-title">Reports & Analytics</h6>
-                    <a href="{% url 'academic:student_enrollment_report' %}" class="admin-control-item">
-                        <div class="admin-control-icon admin-control-icon-teal">
-                            <i class="fas fa-chart-bar"></i>
+                <!-- Examinations Tab -->
+                <div class="tab-pane fade" id="exams" role="tabpanel">
+                    <div class="row g-3">
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'examination:exam_list' %}" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-primary">
+                                    <i class="fas fa-clipboard-list"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Manage Exams</h6>
+                                    <p class="admin-feature-desc">Create and manage exams</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
                         </div>
-                        <div class="admin-control-text">
-                            <div class="admin-control-name">Enrollment Report</div>
-                            <div class="admin-control-desc">View enrollment statistics</div>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'examination:result_list' %}" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-success">
+                                    <i class="fas fa-poll"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">View Results</h6>
+                                    <p class="admin-feature-desc">Monitor exam results</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
                         </div>
-                        <i class="fas fa-chevron-right admin-control-arrow"></i>
-                    </a>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="{% url 'examination:create_exam' %}" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-info">
+                                    <i class="fas fa-plus-square"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Create Exam</h6>
+                                    <p class="admin-feature-desc">Schedule new examinations</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Activities Tab -->
+                <div class="tab-pane fade" id="activities" role="tabpanel">
+                    <div class="admin-activity-monitor">
+                        <div class="admin-activity-header">
+                            <h5 class="admin-activity-title">
+                                <i class="fas fa-chart-line me-2"></i>
+                                Recent System Activities
+                            </h5>
+                            <div class="admin-activity-filter">
+                                <button class="admin-filter-btn active" data-filter="all">All</button>
+                                <button class="admin-filter-btn" data-filter="student">Students</button>
+                                <button class="admin-filter-btn" data-filter="teacher">Teachers</button>
+                                <button class="admin-filter-btn" data-filter="parent">Parents</button>
+                            </div>
+                        </div>
+                        <div class="admin-activity-list">
+                            {% for recent_user in recent_users %}
+                            <div class="admin-activity-item" data-type="{{ recent_user.user_type }}">
+                                <div class="admin-activity-icon-wrapper 
+                                    {% if recent_user.user_type == 'student' %}admin-activity-icon-primary
+                                    {% elif recent_user.user_type == 'teacher' %}admin-activity-icon-success
+                                    {% elif recent_user.user_type == 'parent' %}admin-activity-icon-warning
+                                    {% else %}admin-activity-icon-info{% endif %}">
+                                    <i class="fas 
+                                        {% if recent_user.user_type == 'student' %}fa-user-graduate
+                                        {% elif recent_user.user_type == 'teacher' %}fa-chalkboard-teacher
+                                        {% elif recent_user.user_type == 'parent' %}fa-users
+                                        {% else %}fa-user{% endif %}"></i>
+                                </div>
+                                <div class="admin-activity-details">
+                                    <div class="admin-activity-title-text">
+                                        New {{ recent_user.get_user_type_display }} Registered
+                                    </div>
+                                    <div class="admin-activity-description">
+                                        {{ recent_user.get_full_name|default:recent_user.username }} joined the system
+                                    </div>
+                                    <div class="admin-activity-meta">
+                                        <span class="admin-activity-time">
+                                            <i class="far fa-clock"></i>
+                                            {{ recent_user.date_joined|timesince }} ago
+                                        </span>
+                                        <span class="admin-activity-badge">{{ recent_user.user_type|upper }}</span>
+                                    </div>
+                                </div>
+                                <div class="admin-activity-actions">
+                                    <a href="{% url 'accounts:admin_edit_user' recent_user.id %}" class="admin-action-btn admin-action-edit" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'accounts:admin_delete_user' recent_user.id %}" class="admin-action-btn admin-action-delete" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="admin-activity-empty">
+                                <i class="fas fa-inbox fa-3x"></i>
+                                <p>No recent activities to display</p>
+                                <small>System is ready and waiting for new activities</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -344,7 +556,7 @@
             <div class="admin-overview-header">
                 <h5 class="admin-overview-title">
                     <i class="fas fa-server me-2"></i>
-                    System Overview
+                    System Overview & Quick Access
                 </h5>
             </div>
             <div class="admin-overview-body">
