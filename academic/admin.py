@@ -277,11 +277,23 @@ class ClassAdmin(admin.ModelAdmin):
 
 @admin.register(StudentEnrollment)
 class StudentEnrollmentAdmin(admin.ModelAdmin):
-    list_display = ('get_student_name', 'get_student_id', 'get_course_name', 'get_department_name', 'class_enrolled', 'enrollment_date', 'is_active')
+    list_display = ('get_student_name', 'get_student_id', 'enrollment_date', 'is_active')
     search_fields = ('student__user__username', 'student__student_id', 'student__user__first_name', 'student__user__last_name', 'class_enrolled__course__name', 'class_enrolled__course__department__name')
-    list_filter = ('enrollment_date', 'is_active', 'class_enrolled__course__department', 'class_enrolled__course', 'class_enrolled__year', 'class_enrolled__semester')
+    list_filter = (
+        'is_active',
+        ('class_enrolled__course', admin.RelatedOnlyFieldListFilter),
+        ('class_enrolled', admin.RelatedOnlyFieldListFilter),
+        ('class_enrolled__course__department', admin.RelatedOnlyFieldListFilter),
+        'class_enrolled__year',
+        'class_enrolled__semester',
+        'enrollment_date',
+    )
     actions = ['activate_enrollment', 'deactivate_enrollment', 'bulk_enroll_students']
     autocomplete_fields = ['student']
+    ordering = ('class_enrolled__course__name', 'class_enrolled__year', 'class_enrolled__semester', 'class_enrolled__section', 'student__user__first_name')
+    list_per_page = 100
+    
+    change_list_template = 'admin/academic/studentenrollment_change_list.html'
     
     fieldsets = (
         ('Student Information', {
@@ -293,31 +305,83 @@ class StudentEnrollmentAdmin(admin.ModelAdmin):
         }),
     )
     
+    def changelist_view(self, request, extra_context=None):
+        """Override to add grouped data"""
+        from collections import defaultdict
+        
+        # Get the filtered queryset
+        response = super().changelist_view(request, extra_context=extra_context)
+        
+        # If it's not a TemplateResponse, return as is
+        if not hasattr(response, 'context_data'):
+            return response
+        
+        # Get all enrollments with optimized query
+        enrollments = self.get_queryset(request).select_related(
+            'student__user',
+            'class_enrolled__course__department',
+            'class_enrolled__course',
+            'class_enrolled__academic_year'
+        )
+        
+        # Apply filters from the changelist
+        cl = response.context_data['cl']
+        enrollments = cl.get_queryset(request)
+        
+        # Group enrollments by class
+        grouped_enrollments = defaultdict(list)
+        for enrollment in enrollments:
+            class_key = enrollment.class_enrolled
+            grouped_enrollments[class_key].append(enrollment)
+        
+        # Sort groups by course name, year, semester
+        sorted_groups = sorted(
+            grouped_enrollments.items(),
+            key=lambda x: (
+                x[0].course.name,
+                x[0].year,
+                x[0].semester,
+                x[0].section
+            )
+        )
+        
+        # Add to context
+        extra_context = extra_context or {}
+        extra_context['grouped_enrollments'] = sorted_groups
+        extra_context['total_classes'] = len(sorted_groups)
+        
+        response.context_data.update(extra_context)
+        return response
+    
+    def get_queryset(self, request):
+        """Optimize queryset with select_related to reduce database queries"""
+        qs = super().get_queryset(request)
+        return qs.select_related(
+            'student__user',
+            'class_enrolled__course__department',
+            'class_enrolled__course',
+            'class_enrolled__academic_year'
+        )
+    
     def get_student_name(self, obj):
         return obj.student.user.get_full_name() or obj.student.user.username
     get_student_name.short_description = 'Student Name'
+    get_student_name.admin_order_field = 'student__user__first_name'
     
     def get_student_id(self, obj):
         return obj.student.student_id
     get_student_id.short_description = 'Student ID'
-    
-    def get_course_name(self, obj):
-        return obj.class_enrolled.course.name
-    get_course_name.short_description = 'Course'
-    
-    def get_department_name(self, obj):
-        return obj.class_enrolled.course.department.name
-    get_department_name.short_description = 'Department'
+    get_student_id.admin_order_field = 'student__student_id'
     
     def activate_enrollment(self, request, queryset):
         queryset.update(is_active=True)
-        self.message_user(request, f"{queryset.count()} enrollments activated.")
-    activate_enrollment.short_description = "Activate selected enrollments"
+        self.message_user(request, f"✅ {queryset.count()} enrollments activated.")
+    activate_enrollment.short_description = "✅ Activate selected enrollments"
     
     def deactivate_enrollment(self, request, queryset):
         queryset.update(is_active=False)
-        self.message_user(request, f"{queryset.count()} enrollments deactivated.")
-    deactivate_enrollment.short_description = "Deactivate selected enrollments"
+        self.message_user(request, f"❌ {queryset.count()} enrollments deactivated.")
+    deactivate_enrollment.short_description = "❌ Deactivate selected enrollments"
     
     def bulk_enroll_students(self, request, queryset):
         """Bulk enroll multiple students in the same class"""
@@ -335,10 +399,10 @@ class StudentEnrollmentAdmin(admin.ModelAdmin):
                     enrollment.save()
                     updated_count += 1
             
-            self.message_user(request, f"{updated_count} students enrolled in {class_enrolled}")
+            self.message_user(request, f"📝 {updated_count} students enrolled in {class_enrolled}")
         else:
-            self.message_user(request, "Please select multiple enrollments for bulk operation.")
-    bulk_enroll_students.short_description = "Enroll selected students in same class as first selected"
+            self.message_user(request, "⚠️ Please select multiple enrollments for bulk operation.")
+    bulk_enroll_students.short_description = "📝 Enroll selected students in same class as first selected"
 
 @admin.register(TeacherSubjectAssignment)
 class TeacherSubjectAssignmentAdmin(admin.ModelAdmin):
