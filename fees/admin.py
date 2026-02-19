@@ -74,8 +74,13 @@ class StudentFeeForm(forms.ModelForm):
         # Customize student field to show full name and student ID
         if 'student' in self.fields:
             students = StudentProfile.objects.select_related('user').order_by('user__first_name', 'user__last_name')
-            # Create choices with student name and ID
-            self.fields['student'].label_from_instance = lambda obj: f"{obj.user.get_full_name()} ({obj.student_id})"
+            # Create choices with student name (or username if no name) and ID
+            def get_student_label(obj):
+                full_name = obj.user.get_full_name()
+                display_name = full_name if full_name else obj.user.username
+                return f"{display_name} ({obj.student_id})"
+            
+            self.fields['student'].label_from_instance = get_student_label
 
 
 @admin.register(StudentFee)
