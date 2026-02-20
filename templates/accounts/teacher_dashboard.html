@@ -671,7 +671,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <div class="bg-danger rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
                                             <i class="fas fa-user text-white"></i>
                                         </div>
-                                        <strong>{{ item.student.user.get_full_name }}</strong>
+                                        <strong>
+                                            {% if item.student.user.get_full_name %}
+                                                {{ item.student.user.get_full_name }}
+                                            {% else %}
+                                                {{ item.student.user.username }}
+                                            {% endif %}
+                                        </strong>
                                     </div>
                                 </td>
                                 <td>{{ item.student.student_id }}</td>
