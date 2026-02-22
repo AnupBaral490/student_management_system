@@ -6732,3 +6732,50 @@ body {
         margin-top: 0.5rem !important;
     }
 }
+
+
+/* =================================================
+   BLACK BOLD TEXT FOR TEACHER DASHBOARD HEADER
+================================================= */
+
+.teacher-dashboard-header-premium .header-title-premium {
+    color: #1f2937 !important;
+    font-weight: 900 !important;
+    text-shadow: none !important;
+}
+
+.teacher-dashboard-header-premium .greeting-badge {
+    background: rgba(255, 255, 255, 0.9) !important;
+    color: #1f2937 !important;
+    font-weight: 700 !important;
+}
+
+.teacher-dashboard-header-premium .greeting-badge i {
+    color: #fbbf24 !important;
+}
+
+.teacher-dashboard-header-premium .role-badge {
+    color: #111827 !important;
+    font-weight: 700 !important;
+}
+
+.teacher-dashboard-header-premium .role-badge i {
+    color: #3b82f6 !important;
+}
+
+.teacher-dashboard-header-premium .date-info {
+    color: #374151 !important;
+    font-weight: 600 !important;
+}
+
+.teacher-dashboard-header-premium .date-info i {
+    color: #6b7280 !important;
+}
+
+.teacher-dashboard-header-premium .divider {
+    color: #9ca3af !important;
+}
+
+.teacher-dashboard-header-premium .header-subtitle-premium {
+    opacity: 1 !important;
+}

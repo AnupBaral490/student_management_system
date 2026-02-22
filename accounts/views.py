@@ -451,12 +451,12 @@ def dashboard(request):
             
             # Get upcoming exams (from examination app if available)
             try:
-                from examination.models import Exam
-                upcoming_exams = Exam.objects.filter(
-                    teacher=teacher_profile,
+                from examination.models import Examination
+                upcoming_exams = Examination.objects.filter(
+                    created_by=teacher_profile,
                     exam_date__gte=today_date
                 ).count()
-            except ImportError:
+            except (ImportError, AttributeError):
                 upcoming_exams = 0
             
             # Overall statistics
