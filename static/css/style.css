@@ -5149,3 +5149,287 @@ body {
         display: none;
     }
 }
+
+
+/* =================================================
+   SUBJECT-GROUPED ATTENDANCE STYLES
+================================================= */
+.subject-attendance-section {
+    margin-bottom: 2rem;
+}
+
+.subject-header-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 1.5rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.25);
+    color: white;
+}
+
+.subject-icon-badge {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    flex-shrink: 0;
+}
+
+.subject-icon-badge i {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.subject-header-card h5 {
+    color: white;
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.subject-header-card small {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.9rem;
+}
+
+.subject-stats {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.badge-subject-stat {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    padding: 0.6rem 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    white-space: nowrap;
+    font-size: 0.9rem;
+}
+
+.subject-attendance-table {
+    margin-top: 1rem;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.subject-attendance-table thead {
+    background: #f8f9fa;
+}
+
+.subject-attendance-table thead th {
+    border: none;
+    padding: 1rem;
+    font-weight: 700;
+    color: #495057;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.subject-attendance-table tbody tr {
+    transition: all 0.3s ease;
+}
+
+.subject-attendance-table tbody tr:hover {
+    background: #f8f9fa;
+    transform: translateX(4px);
+}
+
+.subject-attendance-table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.subject-divider {
+    margin: 2.5rem 0;
+    border: none;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, #e9ecef 50%, transparent 100%);
+}
+
+/* Tablet Responsive */
+@media (max-width: 991px) {
+    .subject-header-card {
+        padding: 1.25rem;
+    }
+
+    .subject-header-card h5 {
+        font-size: 1.25rem;
+    }
+
+    .subject-icon-badge {
+        width: 48px;
+        height: 48px;
+    }
+
+    .subject-icon-badge i {
+        font-size: 1.35rem;
+    }
+
+    .badge-subject-stat {
+        padding: 0.55rem 0.9rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .subject-header-card {
+        padding: 1.25rem 1rem;
+    }
+
+    .subject-header-card .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 1rem;
+    }
+
+    .subject-header-card .d-flex > div:first-child {
+        width: 100%;
+    }
+
+    .subject-stats {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .subject-icon-badge {
+        width: 45px;
+        height: 45px;
+    }
+
+    .subject-icon-badge i {
+        font-size: 1.25rem;
+    }
+
+    .subject-header-card h5 {
+        font-size: 1.15rem;
+    }
+
+    .subject-header-card small {
+        font-size: 0.85rem;
+    }
+
+    .badge-subject-stat {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.8rem;
+    }
+
+    .subject-attendance-table thead th {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.75rem;
+    }
+
+    .subject-attendance-table tbody td {
+        padding: 0.75rem 0.5rem;
+        font-size: 0.85rem;
+    }
+}
+
+/* Small Mobile Responsive */
+@media (max-width: 576px) {
+    .subject-header-card {
+        padding: 1rem 0.85rem;
+        border-radius: 14px;
+    }
+
+    .subject-header-card .d-flex.align-items-center {
+        gap: 0.75rem;
+    }
+
+    .subject-icon-badge {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+    }
+
+    .subject-icon-badge i {
+        font-size: 1.1rem;
+    }
+
+    .subject-header-card h5 {
+        font-size: 1rem;
+        line-height: 1.3;
+    }
+
+    .subject-header-card small {
+        font-size: 0.8rem;
+    }
+
+    .badge-subject-stat {
+        padding: 0.45rem 0.65rem;
+        font-size: 0.75rem;
+        border-radius: 10px;
+    }
+
+    .subject-attendance-table {
+        border-radius: 10px;
+    }
+
+    .subject-attendance-table thead th {
+        padding: 0.6rem 0.4rem;
+        font-size: 0.7rem;
+    }
+
+    .subject-attendance-table tbody td {
+        padding: 0.6rem 0.4rem;
+        font-size: 0.8rem;
+    }
+
+    .subject-attendance-table .badge {
+        padding: 0.35rem 0.6rem;
+        font-size: 0.75rem;
+    }
+
+    .subject-divider {
+        margin: 1.5rem 0;
+    }
+}
+
+/* Extra Small Mobile */
+@media (max-width: 400px) {
+    .subject-header-card {
+        padding: 0.85rem 0.75rem;
+    }
+
+    .subject-icon-badge {
+        width: 36px;
+        height: 36px;
+    }
+
+    .subject-icon-badge i {
+        font-size: 1rem;
+    }
+
+    .subject-header-card h5 {
+        font-size: 0.95rem;
+    }
+
+    .subject-header-card small {
+        font-size: 0.75rem;
+    }
+
+    .badge-subject-stat {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.7rem;
+    }
+
+    .subject-attendance-table thead th {
+        padding: 0.5rem 0.3rem;
+        font-size: 0.65rem;
+    }
+
+    .subject-attendance-table tbody td {
+        padding: 0.5rem 0.3rem;
+        font-size: 0.75rem;
+    }
+}
