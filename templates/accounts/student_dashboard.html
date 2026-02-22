@@ -423,7 +423,13 @@
                                 {% if enrollment.class_enrolled.class_teacher %}
                                 <div class="info-item-modern">
                                     <span class="info-label-modern">Class Teacher</span>
-                                    <span class="info-value-modern">{{ enrollment.class_enrolled.class_teacher.user.get_full_name }}</span>
+                                    <span class="info-value-modern">
+                                        {% if enrollment.class_enrolled.class_teacher.user.first_name or enrollment.class_enrolled.class_teacher.user.last_name %}
+                                            {{ enrollment.class_enrolled.class_teacher.user.get_full_name }}
+                                        {% else %}
+                                            {{ enrollment.class_enrolled.class_teacher.user.username }}
+                                        {% endif %}
+                                    </span>
                                 </div>
                                 {% endif %}
                             </div>

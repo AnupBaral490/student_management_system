@@ -43,11 +43,22 @@
                         <select name="teacher_id" id="teacher_id" class="form-select" required>
                             <option value="">Select a teacher</option>
                             {% if teacher %}
-                            <option value="{{ teacher.id }}" selected>{{ teacher.user.get_full_name }}</option>
+                            <option value="{{ teacher.id }}" selected>
+                                {% if teacher.user.first_name or teacher.user.last_name %}
+                                    {{ teacher.user.get_full_name }}
+                                {% else %}
+                                    {{ teacher.user.username }}
+                                {% endif %}
+                            </option>
                             {% endif %}
                             {% for teacher_data in teachers %}
                             <option value="{{ teacher_data.teacher.id }}">
-                                {{ teacher_data.teacher.user.get_full_name }}{% if teacher_data.subjects %} - {% for subject in teacher_data.subjects %}{{ subject.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
+                                {% if teacher_data.teacher.user.first_name or teacher_data.teacher.user.last_name %}
+                                    {{ teacher_data.teacher.user.get_full_name }}
+                                {% else %}
+                                    {{ teacher_data.teacher.user.username }}
+                                {% endif %}
+                                {% if teacher_data.subjects %} - {% for subject in teacher_data.subjects %}{{ subject.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
                             </option>
                             {% endfor %}
                         </select>

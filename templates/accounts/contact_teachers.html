@@ -32,8 +32,14 @@
                                         <i class="fas fa-user-tie fa-3x"></i>
                                     </div>
                                     {% endif %}
-                                    <h5 class="mb-1">{{ teacher_info.teacher.user.get_full_name }}</h5>
-                                    <p class="text-muted small mb-0">{{ teacher_info.teacher.employee_id }}</p>
+                                    <h5 class="mb-1">
+                                        {% if teacher_info.teacher.user.first_name or teacher_info.teacher.user.last_name %}
+                                            {{ teacher_info.teacher.user.get_full_name }}
+                                        {% else %}
+                                            {{ teacher_info.teacher.user.username }}
+                                        {% endif %}
+                                    </h5>
+                                    <p class="text-muted small mb-0"><i class="fas fa-id-badge me-1"></i>ID: {{ teacher_info.teacher.employee_id }}</p>
                                 </div>
                                 
                                 <div class="teacher-info">
