@@ -5184,10 +5184,10 @@ body {
 }
 
 .subject-header-card h5 {
-    color: white;
+    color: #000000;
     margin: 0;
     font-size: 1.4rem;
-    font-weight: 700;
+    font-weight: 900;
 }
 
 .subject-header-card small {

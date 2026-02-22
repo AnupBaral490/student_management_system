@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Notification, NotificationRead
+from accounts.models import User
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
@@ -8,6 +9,12 @@ class NotificationAdmin(admin.ModelAdmin):
     list_filter = ('notification_type', 'priority', 'send_email', 'created_at')
     date_hierarchy = 'created_at'
     filter_horizontal = ('recipients',)
+    
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == "sender":
+            # Only show admin users in the sender dropdown
+            kwargs["queryset"] = User.objects.filter(user_type='admin')
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 @admin.register(NotificationRead)
 class NotificationReadAdmin(admin.ModelAdmin):
