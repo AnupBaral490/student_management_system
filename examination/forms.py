@@ -75,3 +75,4 @@ class ExamResultForm(forms.ModelForm):
         if marks is not None and marks < 0:
             raise ValidationError('Marks cannot be negative.')
         return marks
+

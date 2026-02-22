@@ -298,6 +298,7 @@ def view_attendance(request):
     
     if request.user.user_type == 'student':
         # Student can only view their own attendance
+        print("=== STUDENT ATTENDANCE VIEW STARTED ===")
         try:
             student_profile = request.user.student_profile
             enrollment = student_profile.get_current_enrollment()
@@ -306,6 +307,7 @@ def view_attendance(request):
                 messages.warning(request, 'You are not enrolled in any class.')
                 context = {
                     'attendance_records': [],
+                    'subject_groups_list': [],
                     'filter_form': None,
                     'enrollment': None,
                     'total_sessions': 0,
@@ -348,8 +350,39 @@ def view_attendance(request):
             absent_sessions = total_sessions - present_sessions
             attendance_percentage = (present_sessions / total_sessions * 100) if total_sessions > 0 else 0
             
+            # Group records by subject with statistics
+            from collections import defaultdict
+            subject_groups = defaultdict(lambda: {'records': [], 'total': 0, 'present': 0, 'percentage': 0})
+            
+            for record in attendance_records:
+                subject_name = record.session.teacher_assignment.subject.name
+                subject_groups[subject_name]['records'].append(record)
+                subject_groups[subject_name]['total'] += 1
+                if record.status in ['present', 'late']:
+                    subject_groups[subject_name]['present'] += 1
+            
+            # Calculate percentages and convert to list
+            subject_groups_list = []
+            for subject_name, data in subject_groups.items():
+                total = data['total']
+                present = data['present']
+                percentage = round((present / total * 100), 2) if total > 0 else 0
+                subject_groups_list.append({
+                    'subject_name': subject_name,
+                    'records': data['records'],
+                    'total': total,
+                    'present': present,
+                    'percentage': percentage
+                })
+            
+            # Debug print
+            print(f"DEBUG: User type: {request.user.user_type}")
+            print(f"DEBUG: Subject groups count: {len(subject_groups_list)}")
+            print(f"DEBUG: Subject groups: {[g['subject_name'] for g in subject_groups_list]}")
+            
             context = {
                 'attendance_records': attendance_records,
+                'subject_groups_list': subject_groups_list,
                 'filter_form': filter_form,
                 'enrollment': enrollment,
                 'total_sessions': total_sessions,
@@ -365,6 +398,7 @@ def view_attendance(request):
             messages.error(request, 'An error occurred while loading attendance data.')
             context = {
                 'attendance_records': [],
+                'subject_groups_list': [],
                 'filter_form': None,
                 'enrollment': None,
                 'total_sessions': 0,
@@ -667,3 +701,4 @@ def attendance_reports(request):
         }
     
     return render(request, 'attendance/attendance_reports.html', context)
+

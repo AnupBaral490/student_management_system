@@ -10,3 +10,4 @@ urlpatterns = [
     path('api/unread-count/', views.get_unread_count, name='get_unread_count'),
     path('api/recent/', views.get_recent_notifications, name='get_recent_notifications'),
 ]
+
