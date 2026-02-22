@@ -89,15 +89,21 @@
                                 <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
-                                            {% if data.student.user.profile_pic %}
-                                            <img src="{{ data.student.user.profile_pic.url }}" alt="{{ data.student.user.get_full_name }}" 
+                                            {% if data.student.user.profile_picture %}
+                                            <img src="{{ data.student.user.profile_picture.url }}" alt="{{ data.student.user.get_full_name|default:data.student.user.username }}" 
                                                  class="rounded-circle me-2" style="width: 35px; height: 35px; object-fit: cover;">
                                             {% else %}
                                             <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 35px; height: 35px;">
                                                 <i class="fas fa-user text-white"></i>
                                             </div>
                                             {% endif %}
-                                            <strong>{{ data.student.user.get_full_name }}</strong>
+                                            <strong>
+                                                {% if data.student.user.first_name or data.student.user.last_name %}
+                                                    {{ data.student.user.first_name }} {{ data.student.user.last_name }}
+                                                {% else %}
+                                                    {{ data.student.user.username }}
+                                                {% endif %}
+                                            </strong>
                                         </div>
                                     </td>
                                     <td>{{ data.student.student_id }}</td>
