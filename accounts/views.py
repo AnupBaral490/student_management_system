@@ -113,6 +113,34 @@ def dashboard(request):
                 present_sessions = attendance_records.filter(status__in=['present', 'late']).count()
                 absent_sessions = total_sessions - present_sessions
                 attendance_percentage = (present_sessions / total_sessions * 100) if total_sessions > 0 else 0
+                
+                # Calculate GPA from exam results
+                from examination.models import ExamResult
+                exam_results = ExamResult.objects.filter(
+                    student=student_profile
+                ).select_related('examination')
+                
+                if exam_results.exists():
+                    # Grade point scale
+                    grade_points = {
+                        'A+': 4.0, 'A': 3.7, 'B+': 3.3, 'B': 3.0,
+                        'C+': 2.3, 'C': 2.0, 'D': 1.0, 'F': 0.0
+                    }
+                    
+                    # Weighted GPA calculation (based on exam total marks)
+                    weighted_points_sum = 0
+                    total_credits = 0
+                    
+                    for result in exam_results:
+                        grade_point = grade_points.get(result.grade, 0.0)
+                        credit = result.examination.total_marks
+                        weighted_points_sum += grade_point * credit
+                        total_credits += credit
+                    
+                    current_gpa = (weighted_points_sum / total_credits) if total_credits > 0 else 0.0
+                    current_gpa = round(current_gpa, 2)
+                else:
+                    current_gpa = 0.0
             else:
                 current_subjects = []
                 recent_assignments = []
@@ -121,6 +149,7 @@ def dashboard(request):
                 total_sessions = 0
                 present_sessions = 0
                 absent_sessions = 0
+                current_gpa = 0.0
             
             # Get recent grades (placeholder for now)
             recent_grades = []  # Will be implemented with examination system
@@ -166,6 +195,7 @@ def dashboard(request):
                 'present_sessions': present_sessions,
                 'absent_sessions': absent_sessions,
                 'recent_grades': recent_grades,
+                'current_gpa': current_gpa,
                 'today': django_timezone.now().date(),
                 'chart_data_json': chart_data_json,
                 'has_unpaid_fees': has_unpaid_fees,
@@ -185,6 +215,7 @@ def dashboard(request):
                 'present_sessions': 0,
                 'absent_sessions': 0,
                 'recent_grades': [],
+                'current_gpa': 0.0,
                 'profile_missing': True,
                 'today': django_timezone.now().date()
             })

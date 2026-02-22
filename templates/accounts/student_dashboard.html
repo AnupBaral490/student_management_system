@@ -3,44 +3,64 @@
 {% block title %}Student Dashboard - SMS{% endblock %}
 
 {% block content %}
-<!-- Dashboard Header -->
+<!-- Dashboard Header - Ultra Premium Design -->
 <div class="row mb-4">
     <div class="col-12">
-        <div class="dashboard-header-student-premium">
-            <div class="header-background-pattern"></div>
-            <div class="header-content-wrapper">
+        <div class="dashboard-header-ultra-premium">
+            <!-- Animated Background -->
+            <div class="header-bg-gradient"></div>
+            <div class="header-bg-pattern"></div>
+            <div class="header-floating-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+                <div class="shape shape-4"></div>
+            </div>
+            
+            <!-- Content -->
+            <div class="header-content-ultra">
+                <!-- Top Right Actions -->
+                <div class="header-top-actions">
+                    <a href="{% url 'accounts:profile' %}" class="action-icon-btn" title="My Profile">
+                        <i class="fas fa-user-circle"></i>
+                    </a>
+                    <a href="{% url 'notifications:notification_list' %}" class="action-icon-btn" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge"></span>
+                    </a>
+                </div>
+                
                 <div class="row align-items-center">
-                    <div class="col-lg-8 col-md-7">
-                        <div class="header-text-content">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="icon-wrapper-premium">
-                                    <i class="fas fa-user-graduate"></i>
-                                </div>
-                                <div class="ms-3">
-                                    <h1 class="dashboard-title-premium mb-1">
-                                        Student Dashboard
-                                    </h1>
-                                    <div class="title-underline"></div>
+                    <div class="col-lg-8 col-md-8">
+                        <div class="header-text-section text-start">
+                            <!-- Title Section -->
+                            <div class="title-section-ultra mb-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="icon-badge-ultra">
+                                        <i class="fas fa-graduation-cap"></i>
+                                        <div class="icon-pulse"></div>
+                                    </div>
+                                    <div class="ms-3">
+                                        <h1 class="dashboard-title-ultra">
+                                            Student Dashboard
+                                            <span class="title-sparkle">✨</span>
+                                        </h1>
+                                        <div class="title-line-ultra"></div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="welcome-section-premium">
-                                <p class="welcome-label mb-1">Welcome back,</p>
-                                <h3 class="student-name-premium">
-                                    <span class="name-text">{{ user.get_full_name|default:user.username }}</span>
-                                    <i class="fas fa-hand-sparkles ms-2 wave-animation"></i>
-                                </h3>
-                                <p class="welcome-subtitle">Ready to continue your learning journey?</p>
+                            
+                            <!-- Welcome Section -->
+                            <div class="welcome-section-ultra">
+                                <div class="welcome-badge">
+                                    <i class="fas fa-star me-2"></i>
+                                    <span>Welcome back</span>
+                                </div>
+                                <h2 class="student-name-ultra">
+                                    <span class="name-highlight">{{ user.get_full_name|default:user.username }}</span>
+                                    <span class="wave-emoji">👋</span>
+                                </h2>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-5 text-md-end mt-4 mt-md-0">
-                        <div class="header-actions-premium">
-                            <a href="{% url 'accounts:profile' %}" class="btn-icon-premium" title="My Profile">
-                                <i class="fas fa-user-circle"></i>
-                            </a>
-                            <a href="{% url 'notifications:notification_list' %}" class="btn-icon-premium" title="Notifications">
-                                <i class="fas fa-bell"></i>
-                            </a>
                         </div>
                     </div>
                 </div>
@@ -107,65 +127,167 @@
 </div>
 {% endif %}
 
-<!-- Quick Stats Cards -->
-<div class="row mb-4">
+<!-- Quick Stats Cards - Enhanced Professional Design -->
+<div class="row mb-4 g-4">
     <!-- Attendance Card -->
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="stat-card stat-card-primary">
-            <div class="stat-icon">
-                <i class="fas fa-calendar-check"></i>
-            </div>
-            <div class="stat-content">
-                <h3 class="stat-value">{{ attendance_percentage|default:"0" }}%</h3>
-                <p class="stat-label">Attendance Rate</p>
-                <div class="stat-progress">
-                    <div class="progress">
-                        <div class="progress-bar {% if attendance_percentage >= 75 %}bg-success{% elif attendance_percentage >= 50 %}bg-warning{% else %}bg-danger{% endif %}" 
-                             style="width: {{ attendance_percentage|default:"0" }}%"></div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card-premium stat-card-attendance">
+            <div class="stat-card-inner">
+                <div class="stat-header-premium">
+                    <div class="icon-circle icon-circle-primary">
+                        <i class="fas fa-calendar-check"></i>
+                        <div class="icon-glow"></div>
+                    </div>
+                    <div class="stat-badge">
+                        {% if attendance_percentage >= 90 %}
+                            <span class="badge-excellent">Excellent</span>
+                        {% elif attendance_percentage >= 75 %}
+                            <span class="badge-good">Good</span>
+                        {% elif attendance_percentage >= 60 %}
+                            <span class="badge-average">Average</span>
+                        {% else %}
+                            <span class="badge-low">Low</span>
+                        {% endif %}
                     </div>
                 </div>
+                <div class="stat-body-premium">
+                    <div class="stat-value-premium">
+                        <span class="stat-number-large">{{ attendance_percentage|floatformat:1|default:"0.0" }}</span>
+                        <span class="stat-unit">%</span>
+                    </div>
+                    <p class="stat-label-premium">Attendance Rate</p>
+                    <div class="stat-progress-premium">
+                        <div class="progress-track">
+                            <div class="progress-fill progress-fill-primary" 
+                                 style="width: {{ attendance_percentage|default:"0" }}%"
+                                 data-percentage="{{ attendance_percentage|default:"0" }}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="stat-meta-premium">
+                        <i class="fas fa-check-circle me-1"></i>
+                        <span>{{ present_sessions }}/{{ total_sessions }} sessions</span>
+                    </div>
+                </div>
+                <div class="stat-wave stat-wave-primary"></div>
             </div>
         </div>
     </div>
 
     <!-- Assignments Card -->
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="stat-card stat-card-warning">
-            <div class="stat-icon">
-                <i class="fas fa-tasks"></i>
-            </div>
-            <div class="stat-content">
-                <h3 class="stat-value">{{ recent_assignments|length|default:"0" }}</h3>
-                <p class="stat-label">Active Assignments</p>
-                <small class="stat-meta">View all assignments</small>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card-premium stat-card-assignments">
+            <div class="stat-card-inner">
+                <div class="stat-header-premium">
+                    <div class="icon-circle icon-circle-warning">
+                        <i class="fas fa-tasks"></i>
+                        <div class="icon-glow"></div>
+                    </div>
+                    <div class="stat-badge">
+                        {% if recent_assignments|length > 0 %}
+                            <span class="badge-active">Active</span>
+                        {% else %}
+                            <span class="badge-none">None</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="stat-body-premium">
+                    <div class="stat-value-premium">
+                        <span class="stat-number-large">{{ recent_assignments|length|default:"0" }}</span>
+                    </div>
+                    <p class="stat-label-premium">Active Assignments</p>
+                    <div class="stat-detail-premium">
+                        <a href="{% url 'academic:student_assignments' %}" class="stat-link">
+                            <i class="fas fa-arrow-right me-1"></i>
+                            View all assignments
+                        </a>
+                    </div>
+                </div>
+                <div class="stat-wave stat-wave-warning"></div>
             </div>
         </div>
     </div>
 
     <!-- Subjects Card -->
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="stat-card stat-card-success">
-            <div class="stat-icon">
-                <i class="fas fa-book"></i>
-            </div>
-            <div class="stat-content">
-                <h3 class="stat-value">{{ current_subjects|length|default:"0" }}</h3>
-                <p class="stat-label">Current Subjects</p>
-                <small class="stat-meta">This semester</small>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card-premium stat-card-subjects">
+            <div class="stat-card-inner">
+                <div class="stat-header-premium">
+                    <div class="icon-circle icon-circle-success">
+                        <i class="fas fa-book"></i>
+                        <div class="icon-glow"></div>
+                    </div>
+                    <div class="stat-badge">
+                        <span class="badge-semester">Semester</span>
+                    </div>
+                </div>
+                <div class="stat-body-premium">
+                    <div class="stat-value-premium">
+                        <span class="stat-number-large">{{ current_subjects|length|default:"0" }}</span>
+                    </div>
+                    <p class="stat-label-premium">Current Subjects</p>
+                    <div class="stat-detail-premium">
+                        {% if enrollment %}
+                            <span class="text-muted">
+                                <i class="fas fa-graduation-cap me-1"></i>
+                                {{ enrollment.class_enrolled.name }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted">Not enrolled</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="stat-wave stat-wave-success"></div>
             </div>
         </div>
     </div>
 
     <!-- GPA Card -->
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="stat-card stat-card-info">
-            <div class="stat-icon">
-                <i class="fas fa-chart-line"></i>
-            </div>
-            <div class="stat-content">
-                <h3 class="stat-value">--</h3>
-                <p class="stat-label">Current GPA</p>
-                <small class="stat-meta">Coming soon</small>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-card-premium stat-card-gpa">
+            <div class="stat-card-inner">
+                <div class="stat-header-premium">
+                    <div class="icon-circle icon-circle-info">
+                        <i class="fas fa-chart-line"></i>
+                        <div class="icon-glow"></div>
+                    </div>
+                    <div class="stat-badge">
+                        {% if current_gpa > 0 %}
+                            {% if current_gpa >= 3.7 %}
+                                <span class="badge-excellent">A+</span>
+                            {% elif current_gpa >= 3.0 %}
+                                <span class="badge-good">B+</span>
+                            {% elif current_gpa >= 2.0 %}
+                                <span class="badge-average">C+</span>
+                            {% else %}
+                                <span class="badge-low">D</span>
+                            {% endif %}
+                        {% else %}
+                            <span class="badge-none">N/A</span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="stat-body-premium">
+                    <div class="stat-value-premium">
+                        <span class="stat-number-large">{{ current_gpa|floatformat:2|default:"0.00" }}</span>
+                        <span class="stat-unit-small">/4.0</span>
+                    </div>
+                    <p class="stat-label-premium">Current GPA</p>
+                    <div class="stat-detail-premium">
+                        {% if current_gpa > 0 %}
+                            <span class="gpa-status">
+                                <i class="fas fa-star me-1"></i>
+                                {% if current_gpa >= 3.7 %}Excellent Performance{% elif current_gpa >= 3.0 %}Good Performance{% elif current_gpa >= 2.0 %}Average Performance{% else %}Needs Improvement{% endif %}
+                            </span>
+                        {% else %}
+                            <span class="text-muted">
+                                <i class="fas fa-info-circle me-1"></i>
+                                No exams yet
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="stat-wave stat-wave-info"></div>
             </div>
         </div>
     </div>

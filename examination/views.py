@@ -93,27 +93,47 @@ def result_list(request):
             obtained_marks_sum = sum(float(result.marks_obtained) for result in results)
             overall_percentage = (obtained_marks_sum / total_marks_sum * 100) if total_marks_sum > 0 else 0
             
-            # Calculate GPA (simplified: A+=4.0, A=3.7, B+=3.3, B=3.0, etc.)
+            # Calculate GPA using weighted average based on exam total marks
+            # This gives more weight to exams with higher total marks
             grade_points = {
                 'A+': 4.0, 'A': 3.7, 'B+': 3.3, 'B': 3.0,
                 'C+': 2.3, 'C': 2.0, 'D': 1.0, 'F': 0.0
             }
-            total_points = sum(grade_points.get(result.grade, 0.0) for result in results)
-            gpa = total_points / total_exams if total_exams > 0 else 0.0
             
-            # Determine overall grade
+            # Weighted GPA calculation
+            weighted_points_sum = 0
+            total_credits = 0
+            
+            for result in results:
+                grade_point = grade_points.get(result.grade, 0.0)
+                # Use total marks as credit/weight
+                credit = result.examination.total_marks
+                weighted_points_sum += grade_point * credit
+                total_credits += credit
+            
+            gpa = (weighted_points_sum / total_credits) if total_credits > 0 else 0.0
+            
+            # Alternative: Simple average GPA (uncomment to use this instead)
+            # total_points = sum(grade_points.get(result.grade, 0.0) for result in results)
+            # gpa = total_points / total_exams if total_exams > 0 else 0.0
+            
+            # Determine overall grade based on overall percentage
             if overall_percentage >= 90:
                 overall_grade = 'A+'
-            elif overall_percentage >= 85:
-                overall_grade = 'A'
             elif overall_percentage >= 80:
-                overall_grade = 'A-'
-            elif overall_percentage >= 75:
-                overall_grade = 'B+'
+                overall_grade = 'A'
             elif overall_percentage >= 70:
+                overall_grade = 'B+'
+            elif overall_percentage >= 60:
                 overall_grade = 'B'
-            else:
+            elif overall_percentage >= 50:
                 overall_grade = 'C+'
+            elif overall_percentage >= 40:
+                overall_grade = 'C'
+            elif overall_percentage >= 30:
+                overall_grade = 'D'
+            else:
+                overall_grade = 'F'
             
             student_stats = {
                 'total_exams': total_exams,
