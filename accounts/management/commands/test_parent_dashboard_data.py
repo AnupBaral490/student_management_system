@@ -122,13 +122,26 @@ class Command(BaseCommand):
                     for result in all_results[:5]:  # Show first 5
                         self.stdout.write(f'  - {result.examination.name}: {result.marks_obtained}/{result.examination.total_marks} ({result.grade})')
                         
-                    # Calculate GPA
+                    # Calculate GPA (using same method as student dashboard)
                     if all_results.exists():
-                        total_percentage = sum(
-                            (float(r.marks_obtained) / r.examination.total_marks * 100) 
-                            for r in all_results if r.examination.total_marks > 0
-                        )
-                        gpa = total_percentage / all_results.count() / 25
+                        # Grade point scale
+                        grade_points = {
+                            'A+': 4.0, 'A': 3.7, 'B+': 3.3, 'B': 3.0,
+                            'C+': 2.3, 'C': 2.0, 'D': 1.0, 'F': 0.0
+                        }
+                        
+                        # Weighted GPA calculation (based on exam total marks)
+                        weighted_points_sum = 0
+                        total_credits = 0
+                        
+                        for result in all_results:
+                            grade_point = grade_points.get(result.grade, 0.0)
+                            credit = result.examination.total_marks
+                            weighted_points_sum += grade_point * credit
+                            total_credits += credit
+                        
+                        gpa = (weighted_points_sum / total_credits) if total_credits > 0 else 0.0
+                        gpa = round(gpa, 2)
                         self.stdout.write(f'\n  GPA: {gpa:.2f}/4.0')
                         
             except Exception as e:

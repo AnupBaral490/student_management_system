@@ -680,18 +680,31 @@ def dashboard(request):
                                     'percentage': 0
                                 })
                         
-                        # Calculate GPA from results
+                        # Calculate GPA from results (using same method as student dashboard)
                         try:
                             all_results = ExamResult.objects.filter(
                                 student=child,
                                 examination__subject__in=subjects
                             )
                             if all_results.exists():
-                                total_percentage = sum(
-                                    (float(r.marks_obtained) / r.examination.total_marks * 100) 
-                                    for r in all_results if r.examination.total_marks > 0
-                                )
-                                gpa = total_percentage / all_results.count() / 25  # Convert to 4.0 scale
+                                # Grade point scale (same as student dashboard)
+                                grade_points = {
+                                    'A+': 4.0, 'A': 3.7, 'B+': 3.3, 'B': 3.0,
+                                    'C+': 2.3, 'C': 2.0, 'D': 1.0, 'F': 0.0
+                                }
+                                
+                                # Weighted GPA calculation (based on exam total marks)
+                                weighted_points_sum = 0
+                                total_credits = 0
+                                
+                                for result in all_results:
+                                    grade_point = grade_points.get(result.grade, 0.0)
+                                    credit = result.examination.total_marks
+                                    weighted_points_sum += grade_point * credit
+                                    total_credits += credit
+                                
+                                gpa = (weighted_points_sum / total_credits) if total_credits > 0 else 0.0
+                                gpa = round(gpa, 2)
                         except Exception as e:
                             print(f"Error calculating GPA for {child}: {e}")
                         
@@ -757,6 +770,7 @@ def dashboard(request):
                         traceback.print_exc()
                 
                 # Always add child info, even if some data is missing
+                absent_sessions = total_sessions - present_sessions
                 child_info = {
                     'profile': child,
                     'user': child.user,
@@ -765,6 +779,7 @@ def dashboard(request):
                     'gpa': round(gpa, 2),
                     'total_sessions': total_sessions,
                     'present_sessions': present_sessions,
+                    'absent_sessions': absent_sessions,
                     'subjects': subjects_with_grades,
                     'has_unpaid_fees': has_unpaid_fees,
                     'unpaid_fees': unpaid_fees,
