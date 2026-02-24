@@ -966,128 +966,202 @@ document.addEventListener('DOMContentLoaded', function() {
 
 {% endif %}
 
-<!-- Quick Actions - Horizontal Layout at Bottom -->
+<!-- Quick Actions - Premium Professional Design -->
 <div class="row mt-5">
     <div class="col-12">
-        <div class="card shadow-sm border-0 quick-actions-horizontal">
-            <div class="card-header bg-gradient-primary text-white border-0 text-center">
-                <h5 class="m-0 fw-bold"><i class="fas fa-bolt me-2"></i>Quick Actions</h5>
-                <small class="opacity-75">Frequently used teacher tools</small>
-            </div>
-            <div class="card-body p-4">
-                <div class="row g-3">
-                    <!-- Create Assignment -->
-                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-                        <a href="{% url 'academic:create_assignment' %}" class="quick-action-horizontal">
-                            <div class="action-icon-horizontal bg-primary">
-                                <i class="fas fa-plus-circle"></i>
-                            </div>
-                            <div class="action-title-horizontal">Create Assignment</div>
-                            <div class="action-subtitle-horizontal">Add new assignment</div>
-                        </a>
+        <div class="card shadow-lg border-0 quick-actions-premium">
+            <!-- Premium Header with Gradient -->
+            <div class="card-header quick-actions-header border-0">
+                <div class="header-content-wrapper">
+                    <div class="header-icon-badge">
+                        <i class="fas fa-bolt"></i>
+                        <div class="icon-pulse"></div>
                     </div>
-                    
-                    <!-- Mark Attendance -->
-                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-                        <a href="{% url 'attendance:mark_attendance' %}" class="quick-action-horizontal">
-                            <div class="action-icon-horizontal bg-success">
-                                <i class="fas fa-check-circle"></i>
-                            </div>
-                            <div class="action-title-horizontal">Mark Attendance</div>
-                            <div class="action-subtitle-horizontal">Record attendance</div>
-                        </a>
-                    </div>
-                    
-                    <!-- Create Exam -->
-                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-                        <a href="{% url 'examination:create_exam' %}" class="quick-action-horizontal">
-                            <div class="action-icon-horizontal bg-info">
-                                <i class="fas fa-clipboard-list"></i>
-                            </div>
-                            <div class="action-title-horizontal">Create Exam</div>
-                            <div class="action-subtitle-horizontal">Schedule exam</div>
-                        </a>
-                    </div>
-                    
-                    <!-- My Assignments -->
-                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-                        <a href="{% url 'academic:assignment_list' %}" class="quick-action-horizontal">
-                            <div class="action-icon-horizontal bg-secondary">
-                                <i class="fas fa-tasks"></i>
-                            </div>
-                            <div class="action-title-horizontal">My Assignments</div>
-                            <div class="action-subtitle-horizontal">Manage assignments</div>
-                        </a>
-                    </div>
-                    
-                    <!-- Enter Grades -->
-                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-                        <a href="{% url 'examination:result_list' %}" class="quick-action-horizontal">
-                            <div class="action-icon-horizontal bg-warning">
-                                <i class="fas fa-edit"></i>
-                            </div>
-                            <div class="action-title-horizontal">Enter Grades</div>
-                            <div class="action-subtitle-horizontal">Record results</div>
-                        </a>
-                    </div>
-                    
-                    <!-- View Reports -->
-                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-                        <a href="{% url 'attendance:attendance_reports' %}" class="quick-action-horizontal">
-                            <div class="action-icon-horizontal bg-dark">
-                                <i class="fas fa-chart-bar"></i>
-                            </div>
-                            <div class="action-title-horizontal">View Reports</div>
-                            <div class="action-subtitle-horizontal">Analytics & reports</div>
-                        </a>
+                    <div class="header-text">
+                        <h4 class="header-title mb-1">Quick Actions</h4>
+                        <p class="header-subtitle mb-0">Frequently used teacher tools</p>
                     </div>
                 </div>
-                
-                <!-- Secondary Row -->
-                <div class="row g-3 mt-2">
-                    <!-- Send Notification -->
-                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-                        <a href="{% url 'notifications:create_notification' %}" class="quick-action-horizontal">
-                            <div class="action-icon-horizontal bg-purple">
-                                <i class="fas fa-bell"></i>
+                <div class="header-decoration">
+                    <div class="decoration-circle circle-1"></div>
+                    <div class="decoration-circle circle-2"></div>
+                    <div class="decoration-circle circle-3"></div>
+                </div>
+            </div>
+            
+            <div class="card-body p-4">
+                <!-- Primary Actions Grid -->
+                <div class="actions-grid mb-4">
+                    <!-- Create Assignment -->
+                    <a href="{% url 'academic:create_assignment' %}" class="action-card action-primary">
+                        <div class="action-card-inner">
+                            <div class="action-icon-wrapper">
+                                <div class="action-icon">
+                                    <i class="fas fa-plus-circle"></i>
+                                </div>
+                                <div class="icon-bg-effect"></div>
                             </div>
-                            <div class="action-title-horizontal">Send Notification</div>
-                            <div class="action-subtitle-horizontal">Notify students</div>
-                        </a>
-                    </div>
+                            <div class="action-content">
+                                <h6 class="action-title">Create Assignment</h6>
+                                <p class="action-description">Add new assignment</p>
+                            </div>
+                            <div class="action-arrow">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        <div class="action-shine"></div>
+                    </a>
+                    
+                    <!-- Mark Attendance -->
+                    <a href="{% url 'attendance:mark_attendance' %}" class="action-card action-success">
+                        <div class="action-card-inner">
+                            <div class="action-icon-wrapper">
+                                <div class="action-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <div class="icon-bg-effect"></div>
+                            </div>
+                            <div class="action-content">
+                                <h6 class="action-title">Mark Attendance</h6>
+                                <p class="action-description">Record attendance</p>
+                            </div>
+                            <div class="action-arrow">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        <div class="action-shine"></div>
+                    </a>
+                    
+                    <!-- Create Exam -->
+                    <a href="{% url 'examination:create_exam' %}" class="action-card action-info">
+                        <div class="action-card-inner">
+                            <div class="action-icon-wrapper">
+                                <div class="action-icon">
+                                    <i class="fas fa-clipboard-list"></i>
+                                </div>
+                                <div class="icon-bg-effect"></div>
+                            </div>
+                            <div class="action-content">
+                                <h6 class="action-title">Create Exam</h6>
+                                <p class="action-description">Schedule exam</p>
+                            </div>
+                            <div class="action-arrow">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        <div class="action-shine"></div>
+                    </a>
+                    
+                    <!-- My Assignments -->
+                    <a href="{% url 'academic:assignment_list' %}" class="action-card action-purple">
+                        <div class="action-card-inner">
+                            <div class="action-icon-wrapper">
+                                <div class="action-icon">
+                                    <i class="fas fa-tasks"></i>
+                                </div>
+                                <div class="icon-bg-effect"></div>
+                            </div>
+                            <div class="action-content">
+                                <h6 class="action-title">My Assignments</h6>
+                                <p class="action-description">Manage assignments</p>
+                            </div>
+                            <div class="action-arrow">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        <div class="action-shine"></div>
+                    </a>
+                    
+                    <!-- Enter Grades -->
+                    <a href="{% url 'examination:result_list' %}" class="action-card action-warning">
+                        <div class="action-card-inner">
+                            <div class="action-icon-wrapper">
+                                <div class="action-icon">
+                                    <i class="fas fa-edit"></i>
+                                </div>
+                                <div class="icon-bg-effect"></div>
+                            </div>
+                            <div class="action-content">
+                                <h6 class="action-title">Enter Grades</h6>
+                                <p class="action-description">Record results</p>
+                            </div>
+                            <div class="action-arrow">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        <div class="action-shine"></div>
+                    </a>
+                    
+                    <!-- View Reports -->
+                    <a href="{% url 'attendance:attendance_reports' %}" class="action-card action-dark">
+                        <div class="action-card-inner">
+                            <div class="action-icon-wrapper">
+                                <div class="action-icon">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
+                                <div class="icon-bg-effect"></div>
+                            </div>
+                            <div class="action-content">
+                                <h6 class="action-title">View Reports</h6>
+                                <p class="action-description">Analytics & reports</p>
+                            </div>
+                            <div class="action-arrow">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                        </div>
+                        <div class="action-shine"></div>
+                    </a>
+                </div>
+                
+                <!-- Secondary Actions Grid -->
+                <div class="actions-grid-secondary">
+                    <!-- Send Notification -->
+                    <a href="{% url 'notifications:create_notification' %}" class="action-card-secondary action-secondary-purple">
+                        <div class="action-icon-small">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="action-text">
+                            <span class="action-title-small">Send Notification</span>
+                            <span class="action-subtitle-small">Notify students</span>
+                        </div>
+                        <i class="fas fa-chevron-right action-chevron"></i>
+                    </a>
                     
                     <!-- Parent Messages -->
-                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-                        <a href="{% url 'accounts:message_inbox' %}" class="quick-action-horizontal">
-                            <div class="action-icon-horizontal bg-info">
-                                <i class="fas fa-envelope"></i>
-                            </div>
-                            <div class="action-title-horizontal">Parent Messages</div>
-                            <div class="action-subtitle-horizontal">View messages</div>
-                        </a>
-                    </div>
+                    <a href="{% url 'accounts:message_inbox' %}" class="action-card-secondary action-secondary-info">
+                        <div class="action-icon-small">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="action-text">
+                            <span class="action-title-small">Parent Messages</span>
+                            <span class="action-subtitle-small">View messages</span>
+                        </div>
+                        <i class="fas fa-chevron-right action-chevron"></i>
+                    </a>
                     
-                    <!-- Profile -->
-                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-                        <a href="{% url 'accounts:profile' %}" class="quick-action-horizontal">
-                            <div class="action-icon-horizontal bg-teal">
-                                <i class="fas fa-user"></i>
-                            </div>
-                            <div class="action-title-horizontal">My Profile</div>
-                            <div class="action-subtitle-horizontal">Update profile</div>
-                        </a>
-                    </div>
+                    <!-- My Profile -->
+                    <a href="{% url 'accounts:profile' %}" class="action-card-secondary action-secondary-teal">
+                        <div class="action-icon-small">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="action-text">
+                            <span class="action-title-small">My Profile</span>
+                            <span class="action-subtitle-small">Update profile</span>
+                        </div>
+                        <i class="fas fa-chevron-right action-chevron"></i>
+                    </a>
                     
                     <!-- All Notifications -->
-                    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-                        <a href="{% url 'notifications:notification_list' %}" class="quick-action-horizontal">
-                            <div class="action-icon-horizontal bg-indigo">
-                                <i class="fas fa-inbox"></i>
-                            </div>
-                            <div class="action-title-horizontal">All Notifications</div>
-                            <div class="action-subtitle-horizontal">View messages</div>
-                        </a>
-                    </div>
+                    <a href="{% url 'notifications:notification_list' %}" class="action-card-secondary action-secondary-indigo">
+                        <div class="action-icon-small">
+                            <i class="fas fa-inbox"></i>
+                        </div>
+                        <div class="action-text">
+                            <span class="action-title-small">All Notifications</span>
+                            <span class="action-subtitle-small">View messages</span>
+                        </div>
+                        <i class="fas fa-chevron-right action-chevron"></i>
+                    </a>
                 </div>
             </div>
         </div>
@@ -1410,25 +1484,490 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 }
 
-/* Quick Actions Horizontal Styles */
-.bg-gradient-primary {
-    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+/* ============================================
+   PREMIUM QUICK ACTIONS SECTION
+   ============================================ */
+
+.quick-actions-premium {
+    border-radius: 20px;
+    overflow: hidden;
+    background: #ffffff;
 }
 
-.bg-gradient-info {
-    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+/* Premium Header Styles */
+.quick-actions-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem 2.5rem;
+    position: relative;
+    overflow: hidden;
 }
 
-.bg-purple {
-    background-color: #6f42c1 !important;
+.header-content-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    position: relative;
+    z-index: 2;
 }
 
-.bg-teal {
-    background-color: #20c997 !important;
+.header-icon-badge {
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-.bg-indigo {
-    background-color: #6610f2 !important;
+.header-icon-badge i {
+    font-size: 2rem;
+    color: #fff;
+    position: relative;
+    z-index: 2;
+}
+
+.icon-pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.3);
+    animation: pulse-animation 2s infinite;
+}
+
+@keyframes pulse-animation {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.5;
+    }
+}
+
+.header-text .header-title {
+    color: #fff;
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header-text .header-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+.header-decoration {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.decoration-circle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.circle-1 {
+    width: 200px;
+    height: 200px;
+    top: -100px;
+    right: -50px;
+}
+
+.circle-2 {
+    width: 150px;
+    height: 150px;
+    top: 50%;
+    right: 10%;
+    animation: float 6s ease-in-out infinite;
+}
+
+.circle-3 {
+    width: 100px;
+    height: 100px;
+    bottom: -50px;
+    right: 30%;
+    animation: float 8s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+/* Primary Actions Grid */
+.actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+.action-card {
+    position: relative;
+    display: block;
+    text-decoration: none;
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.75rem;
+    border: 2px solid #f0f0f0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+}
+
+.action-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.action-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    text-decoration: none;
+}
+
+.action-card:hover::before {
+    opacity: 1;
+}
+
+.action-card-inner {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    position: relative;
+    z-index: 2;
+}
+
+.action-icon-wrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.action-icon {
+    width: 65px;
+    height: 65px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    color: #fff;
+    position: relative;
+    z-index: 2;
+    transition: transform 0.3s ease;
+}
+
+.action-card:hover .action-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.icon-bg-effect {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+    opacity: 0.2;
+    filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.action-card:hover .icon-bg-effect {
+    opacity: 0.4;
+    transform: scale(1.2);
+}
+
+.action-content {
+    flex: 1;
+}
+
+.action-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #2d3748;
+    margin: 0 0 0.25rem 0;
+    transition: color 0.3s ease;
+}
+
+.action-description {
+    font-size: 0.875rem;
+    color: #718096;
+    margin: 0;
+}
+
+.action-arrow {
+    font-size: 1.25rem;
+    color: #cbd5e0;
+    transition: all 0.3s ease;
+}
+
+.action-card:hover .action-arrow {
+    color: #4a5568;
+    transform: translateX(5px);
+}
+
+.action-shine {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.action-card:hover .action-shine {
+    transform: translateX(100%);
+}
+
+/* Color Variants for Primary Actions */
+.action-primary .action-icon { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.action-primary .icon-bg-effect { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.action-primary:hover { border-color: #667eea; }
+
+.action-success .action-icon { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+.action-success .icon-bg-effect { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+.action-success:hover { border-color: #11998e; }
+
+.action-info .action-icon { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.action-info .icon-bg-effect { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.action-info:hover { border-color: #4facfe; }
+
+.action-purple .action-icon { background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%); }
+.action-purple .icon-bg-effect { background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%); }
+.action-purple:hover { border-color: #a8c0ff; }
+
+.action-warning .action-icon { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+.action-warning .icon-bg-effect { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+.action-warning:hover { border-color: #fa709a; }
+
+.action-dark .action-icon { background: linear-gradient(135deg, #434343 0%, #000000 100%); }
+.action-dark .icon-bg-effect { background: linear-gradient(135deg, #434343 0%, #000000 100%); }
+.action-dark:hover { border-color: #434343; }
+
+/* Secondary Actions Grid */
+.actions-grid-secondary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.action-card-secondary {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.action-card-secondary:hover {
+    background: #fff;
+    transform: translateX(5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    text-decoration: none;
+}
+
+.action-icon-small {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: #fff;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.action-card-secondary:hover .action-icon-small {
+    transform: scale(1.1);
+}
+
+.action-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.action-title-small {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #2d3748;
+    display: block;
+    margin-bottom: 0.15rem;
+}
+
+.action-subtitle-small {
+    font-size: 0.8rem;
+    color: #718096;
+    display: block;
+}
+
+.action-chevron {
+    font-size: 1rem;
+    color: #cbd5e0;
+    transition: all 0.3s ease;
+}
+
+.action-card-secondary:hover .action-chevron {
+    color: #4a5568;
+    transform: translateX(3px);
+}
+
+/* Color Variants for Secondary Actions */
+.action-secondary-purple .action-icon-small { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+.action-secondary-purple:hover { border-color: #667eea; }
+
+.action-secondary-info .action-icon-small { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+.action-secondary-info:hover { border-color: #4facfe; }
+
+.action-secondary-teal .action-icon-small { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+.action-secondary-teal:hover { border-color: #11998e; }
+
+.action-secondary-indigo .action-icon-small { background: linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%); }
+.action-secondary-indigo:hover { border-color: #a8c0ff; }
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .actions-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.25rem;
+    }
+    
+    .action-card {
+        padding: 1.5rem;
+    }
+    
+    .action-icon {
+        width: 55px;
+        height: 55px;
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .quick-actions-header {
+        padding: 1.5rem;
+    }
+    
+    .header-icon-badge {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .header-icon-badge i {
+        font-size: 1.5rem;
+    }
+    
+    .header-text .header-title {
+        font-size: 1.5rem;
+    }
+    
+    .header-text .header-subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .actions-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .actions-grid-secondary {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-card {
+        padding: 1.25rem;
+    }
+    
+    .action-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.35rem;
+    }
+    
+    .action-title {
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .header-content-wrapper {
+        gap: 1rem;
+    }
+    
+    .header-icon-badge {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .header-icon-badge i {
+        font-size: 1.25rem;
+    }
+    
+    .header-text .header-title {
+        font-size: 1.25rem;
+    }
+    
+    .header-text .header-subtitle {
+        font-size: 0.85rem;
+    }
+    
+    .action-card-inner {
+        gap: 1rem;
+    }
+    
+    .action-icon {
+        width: 45px;
+        height: 45px;
+        font-size: 1.25rem;
+    }
+    
+    .action-title {
+        font-size: 0.95rem;
+    }
+    
+    .action-description {
+        font-size: 0.8rem;
+    }
+    
+    .action-card-secondary {
+        padding: 1rem;
+    }
+    
+    .action-icon-small {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem;
+    }
 }
 
 /* Recent Activities Styles */
@@ -1466,170 +2005,6 @@ document.addEventListener('DOMContentLoaded', function() {
 .empty-state {
     max-width: 400px;
     margin: 0 auto;
-}
-
-.quick-actions-horizontal {
-    border-radius: 15px;
-    overflow: hidden;
-}
-
-.quick-action-horizontal {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    text-decoration: none;
-    color: inherit;
-    padding: 1.5rem 1rem;
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-    border: 1px solid #e9ecef;
-    height: 100%;
-    min-height: 140px;
-    position: relative;
-    overflow: hidden;
-}
-
-.quick-action-horizontal::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(0,0,0,0.05) 100%);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-
-.quick-action-horizontal:hover {
-    color: inherit;
-    text-decoration: none;
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    border-color: #dee2e6;
-}
-
-.quick-action-horizontal:hover::before {
-    opacity: 1;
-}
-
-.action-icon-horizontal {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-    position: relative;
-    z-index: 1;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-}
-
-.action-icon-horizontal i {
-    color: white;
-    font-size: 1.5rem;
-}
-
-.action-title-horizontal {
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-    line-height: 1.2;
-    position: relative;
-    z-index: 1;
-}
-
-.action-subtitle-horizontal {
-    font-size: 0.75rem;
-    color: #6c757d;
-    line-height: 1.3;
-    position: relative;
-    z-index: 1;
-}
-
-/* Hover effects for icons */
-.quick-action-horizontal:hover .action-icon-horizontal {
-    transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-}
-
-/* Responsive adjustments for horizontal Quick Actions */
-@media (max-width: 1200px) {
-    .action-icon-horizontal {
-        width: 50px;
-        height: 50px;
-    }
-    
-    .action-icon-horizontal i {
-        font-size: 1.3rem;
-    }
-    
-    .action-title-horizontal {
-        font-size: 0.85rem;
-    }
-    
-    .action-subtitle-horizontal {
-        font-size: 0.7rem;
-    }
-    
-    .quick-action-horizontal {
-        min-height: 120px;
-        padding: 1.25rem 0.75rem;
-    }
-}
-
-@media (max-width: 768px) {
-    .action-icon-horizontal {
-        width: 45px;
-        height: 45px;
-    }
-    
-    .action-icon-horizontal i {
-        font-size: 1.2rem;
-    }
-    
-    .action-title-horizontal {
-        font-size: 0.8rem;
-    }
-    
-    .action-subtitle-horizontal {
-        font-size: 0.65rem;
-    }
-    
-    .quick-action-horizontal {
-        min-height: 110px;
-        padding: 1rem 0.5rem;
-    }
-}
-
-@media (max-width: 576px) {
-    .quick-action-horizontal {
-        min-height: 100px;
-        padding: 0.75rem 0.5rem;
-    }
-    
-    .action-icon-horizontal {
-        width: 40px;
-        height: 40px;
-        margin-bottom: 0.75rem;
-    }
-    
-    .action-icon-horizontal i {
-        font-size: 1.1rem;
-    }
-    
-    .action-title-horizontal {
-        font-size: 0.75rem;
-        margin-bottom: 0.25rem;
-    }
-    
-    .action-subtitle-horizontal {
-        font-size: 0.6rem;
-    }
 }
 
 /* ============================================
