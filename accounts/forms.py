@@ -4,6 +4,13 @@ from django.contrib.auth import authenticate
 from .models import User, StudentProfile, TeacherProfile, ParentProfile, AdminProfile
 
 class CustomLoginForm(AuthenticationForm):
+    USER_TYPE_CHOICES = [
+        ('admin', 'Admin'),
+        ('teacher', 'Teacher'),
+        ('student', 'Student'),
+        ('parent', 'Parent'),
+    ]
+    
     username = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -16,6 +23,47 @@ class CustomLoginForm(AuthenticationForm):
             'placeholder': 'Password'
         })
     )
+    user_type = forms.ChoiceField(
+        choices=USER_TYPE_CHOICES,
+        widget=forms.RadioSelect(attrs={
+            'class': 'user-type-radio'
+        }),
+        required=True,
+        label='I am a'
+    )
+    
+    def clean(self):
+        username = self.cleaned_data.get('username')
+        password = self.cleaned_data.get('password')
+        user_type = self.cleaned_data.get('user_type')
+
+        if username and password:
+            self.user_cache = authenticate(
+                self.request,
+                username=username,
+                password=password
+            )
+            
+            if self.user_cache is None:
+                raise forms.ValidationError(
+                    "Invalid username or password.",
+                    code='invalid_login',
+                )
+            
+            # Verify user type matches
+            if self.user_cache.user_type != user_type:
+                raise forms.ValidationError(
+                    f"Invalid credentials for {user_type}. Please select the correct user type.",
+                    code='invalid_user_type',
+                )
+            
+            if not self.user_cache.is_active:
+                raise forms.ValidationError(
+                    "This account is inactive.",
+                    code='inactive',
+                )
+
+        return self.cleaned_data
 
 class UserRegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)

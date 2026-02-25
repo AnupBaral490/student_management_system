@@ -309,6 +309,122 @@
         backdrop-filter: blur(10px);
     }
 
+    /* User Type Selector Styles */
+    .user-type-label {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 600;
+        margin-bottom: 1rem;
+        display: block;
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+        text-align: center;
+    }
+
+    .user-type-selector {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .user-type-option {
+        cursor: pointer;
+        margin: 0;
+    }
+
+    .user-type-option input[type="radio"] {
+        display: none;
+    }
+
+    .user-type-card {
+        background: rgba(0, 0, 0, 0.3);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 14px;
+        padding: 1.2rem 0.8rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .user-type-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .user-type-option:hover .user-type-card {
+        border-color: rgba(102, 126, 234, 0.5);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.2);
+    }
+
+    .user-type-option:hover .user-type-card::before {
+        opacity: 1;
+    }
+
+    .user-type-option input[type="radio"]:checked + .user-type-card {
+        background: rgba(102, 126, 234, 0.2);
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2),
+                    0 8px 24px rgba(102, 126, 234, 0.3);
+    }
+
+    .user-type-option input[type="radio"]:checked + .user-type-card::before {
+        opacity: 1;
+    }
+
+    .user-type-icon {
+        font-size: 2rem;
+        margin-bottom: 0.6rem;
+        color: rgba(255, 255, 255, 0.7);
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 1;
+    }
+
+    .user-type-option:hover .user-type-icon {
+        color: #667eea;
+        transform: scale(1.1);
+    }
+
+    .user-type-option input[type="radio"]:checked + .user-type-card .user-type-icon {
+        color: #667eea;
+        transform: scale(1.15);
+    }
+
+    .user-type-text {
+        display: block;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 600;
+        font-size: 0.9rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .check-indicator {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        color: #667eea;
+        font-size: 1.2rem;
+        opacity: 0;
+        transform: scale(0);
+        transition: all 0.3s ease;
+    }
+
+    .user-type-option input[type="radio"]:checked + .user-type-card .check-indicator {
+        opacity: 1;
+        transform: scale(1);
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
         .login-wrapper {
@@ -337,6 +453,23 @@
         .logo-inner i {
             font-size: 2.5rem;
         }
+
+        .user-type-selector {
+            gap: 0.8rem;
+        }
+
+        .user-type-card {
+            padding: 1rem 0.6rem;
+        }
+
+        .user-type-icon {
+            font-size: 1.6rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-type-text {
+            font-size: 0.85rem;
+        }
     }
 
     @media (max-width: 480px) {
@@ -359,6 +492,23 @@
 
         .logo-section {
             margin-bottom: 1.5rem;
+        }
+
+        .user-type-selector {
+            grid-template-columns: 1fr;
+            gap: 0.7rem;
+        }
+
+        .user-type-card {
+            padding: 0.9rem 0.5rem;
+        }
+
+        .user-type-icon {
+            font-size: 1.5rem;
+        }
+
+        .user-type-text {
+            font-size: 0.8rem;
         }
     }
 
@@ -387,6 +537,19 @@
 
         .login-card {
             padding: 2rem;
+        }
+
+        .user-type-selector {
+            gap: 0.7rem;
+        }
+
+        .user-type-card {
+            padding: 0.9rem 0.6rem;
+        }
+
+        .user-type-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.4rem;
         }
     }
 </style>
@@ -420,22 +583,61 @@
         <form method="post" id="loginForm">
             {% csrf_token %}
             
-            {% for field in form %}
-                <div class="form-group">
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    <div class="input-group">
-                        {{ field }}
-                        {% if 'username' in field.name %}
-                            <i class="fas fa-user input-icon"></i>
-                        {% elif 'password' in field.name %}
-                            <i class="fas fa-lock input-icon"></i>
-                        {% endif %}
-                    </div>
-                    {% if field.errors %}
-                        <small style="color: #ff6b6b;">{{ field.errors.0 }}</small>
-                    {% endif %}
+            <!-- Username Field -->
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+                <div class="input-group">
+                    {{ form.username }}
+                    <i class="fas fa-user input-icon"></i>
                 </div>
-            {% endfor %}
+                {% if form.username.errors %}
+                    <small style="color: #ff6b6b;">{{ form.username.errors.0 }}</small>
+                {% endif %}
+            </div>
+            
+            <!-- Password Field -->
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+                <div class="input-group">
+                    {{ form.password }}
+                    <i class="fas fa-lock input-icon"></i>
+                </div>
+                {% if form.password.errors %}
+                    <small style="color: #ff6b6b;">{{ form.password.errors.0 }}</small>
+                {% endif %}
+            </div>
+            
+            <!-- User Type Selector -->
+            <div class="form-group">
+                <label class="user-type-label">{{ form.user_type.label }}</label>
+                <div class="user-type-selector">
+                    {% for value, label in form.user_type.field.choices %}
+                    <label class="user-type-option">
+                        <input type="radio" name="user_type" value="{{ value }}" {% if forloop.first %}checked{% endif %} required>
+                        <div class="user-type-card">
+                            <div class="user-type-icon">
+                                {% if value == 'admin' %}
+                                    <i class="fas fa-user-shield"></i>
+                                {% elif value == 'teacher' %}
+                                    <i class="fas fa-chalkboard-teacher"></i>
+                                {% elif value == 'student' %}
+                                    <i class="fas fa-user-graduate"></i>
+                                {% elif value == 'parent' %}
+                                    <i class="fas fa-users"></i>
+                                {% endif %}
+                            </div>
+                            <span class="user-type-text">{{ label }}</span>
+                            <div class="check-indicator">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </label>
+                    {% endfor %}
+                </div>
+                {% if form.user_type.errors %}
+                    <small style="color: #ff6b6b; display: block; margin-top: 0.5rem;">{{ form.user_type.errors.0 }}</small>
+                {% endif %}
+            </div>
 
             {% if form.non_field_errors %}
                 <div class="alert">
