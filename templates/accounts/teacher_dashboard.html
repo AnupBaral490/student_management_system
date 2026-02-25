@@ -82,7 +82,7 @@
 {% else %}
 
 <!-- Premium Statistics Grid -->
-<div class="row mb-4 g-3">
+<div class="row mb-4 g-3 stats-grid-mobile">
     <div class="col-xl-2 col-lg-4 col-md-6 col-6">
         <div class="stat-card-premium stat-primary">
             <div class="stat-card-inner">
@@ -2194,6 +2194,102 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 /* Notification Bell Enhancement */
+.notification-bell-premium-link {
+    display: inline-block;
+    text-decoration: none;
+    cursor: pointer !important;
+    position: relative;
+    z-index: 1000 !important;
+    pointer-events: auto !important;
+}
+
+.notification-bell-premium {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer !important;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    pointer-events: auto !important;
+    z-index: 1000 !important;
+}
+
+.notification-bell-premium-link:hover .notification-bell-premium {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: scale(1.1);
+}
+
+.notification-bell-premium i {
+    color: white;
+    font-size: 1.3rem;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.notification-pulse {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    animation: pulse-notification 2s infinite;
+    pointer-events: none !important;
+}
+
+@keyframes pulse-notification {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.15);
+        opacity: 0.5;
+    }
+}
+
+.notification-badge-premium {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4757;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.4rem;
+    border-radius: 10px;
+    min-width: 20px;
+    text-align: center;
+    z-index: 3;
+    box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4);
+    pointer-events: none !important;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    position: relative;
+    z-index: 100;
+}
+
+.header-bg-shape,
+.header-bg-pattern {
+    pointer-events: none !important;
+    z-index: 0 !important;
+}
+
+.header-content-premium {
+    position: relative;
+    z-index: 10;
+}
+
 .notification-bell-btn {
     border-radius: 50%;
     width: 45px;
@@ -2667,6 +2763,84 @@ document.addEventListener('DOMContentLoaded', function() {
 .chart-empty p {
     font-size: 0.95rem;
     margin: 0;
+}
+
+/* Mobile Responsive Statistics Grid */
+@media (max-width: 767px) {
+    .stats-grid-mobile {
+        gap: 0.75rem !important;
+    }
+    
+    .stats-grid-mobile .col-6 {
+        padding-left: 0.375rem;
+        padding-right: 0.375rem;
+    }
+    
+    .stat-card-premium {
+        margin-bottom: 0;
+    }
+    
+    .stat-icon-premium .icon-circle {
+        width: 45px;
+        height: 45px;
+    }
+    
+    .stat-icon-premium .icon-circle i {
+        font-size: 1.25rem;
+    }
+    
+    .stat-number-premium {
+        font-size: 1.5rem;
+    }
+    
+    .stat-label-premium {
+        font-size: 0.75rem;
+        line-height: 1.2;
+    }
+    
+    .stat-trend {
+        font-size: 0.7rem;
+    }
+    
+    .stat-trend i {
+        font-size: 0.65rem;
+    }
+}
+
+@media (max-width: 575px) {
+    .stats-grid-mobile {
+        gap: 0.5rem !important;
+    }
+    
+    .stats-grid-mobile .col-6 {
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+    
+    .stat-card-premium {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .stat-icon-premium .icon-circle {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .stat-icon-premium .icon-circle i {
+        font-size: 1.1rem;
+    }
+    
+    .stat-number-premium {
+        font-size: 1.35rem;
+    }
+    
+    .stat-label-premium {
+        font-size: 0.7rem;
+    }
+    
+    .stat-trend {
+        font-size: 0.65rem;
+    }
 }
 </style>
 
