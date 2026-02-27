@@ -2011,6 +2011,396 @@ document.addEventListener('DOMContentLoaded', function() {
    PROFESSIONAL TEACHER DASHBOARD ENHANCEMENTS
    ============================================ */
 
+/* Premium Teacher Dashboard Header */
+.teacher-dashboard-header-premium {
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%);
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(30, 60, 114, 0.4);
+    margin-bottom: 2rem;
+}
+
+/* Alternative professional gradients - uncomment to use */
+/* Option 1: Navy to Indigo
+background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+*/
+/* Option 2: Deep Blue to Purple
+background: linear-gradient(135deg, #1a2a6c 0%, #b21f1f 50%, #fdbb2d 100%);
+*/
+/* Option 3: Professional Teal
+background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
+*/
+
+.header-bg-shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(20px);
+}
+
+.header-bg-shape.shape-1 {
+    width: 400px;
+    height: 400px;
+    top: -200px;
+    right: -150px;
+    animation: float 8s ease-in-out infinite;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+}
+
+.header-bg-shape.shape-2 {
+    width: 250px;
+    height: 250px;
+    bottom: -125px;
+    left: 5%;
+    animation: float 10s ease-in-out infinite reverse;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+}
+
+.header-bg-shape.shape-3 {
+    width: 180px;
+    height: 180px;
+    top: 40%;
+    right: 25%;
+    animation: float 12s ease-in-out infinite;
+    background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) translateX(0);
+    }
+    50% {
+        transform: translateY(-30px) translateX(20px);
+    }
+}
+
+.header-bg-pattern {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        linear-gradient(30deg, rgba(255,255,255,.02) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,.02) 87.5%, rgba(255,255,255,.02)),
+        linear-gradient(150deg, rgba(255,255,255,.02) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,.02) 87.5%, rgba(255,255,255,.02)),
+        linear-gradient(30deg, rgba(255,255,255,.02) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,.02) 87.5%, rgba(255,255,255,.02)),
+        linear-gradient(150deg, rgba(255,255,255,.02) 12%, transparent 12.5%, transparent 87%, rgba(255,255,255,.02) 87.5%, rgba(255,255,255,.02));
+    background-size: 80px 140px;
+    background-position: 0 0, 0 0, 40px 70px, 40px 70px;
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.header-content-premium {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.header-left-premium {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex: 1;
+}
+
+.header-avatar-section {
+    flex-shrink: 0;
+}
+
+.avatar-wrapper {
+    position: relative;
+    width: 85px;
+    height: 85px;
+}
+
+.avatar-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 3px solid rgba(255, 255, 255, 0.4);
+    animation: pulse-ring 3s infinite;
+}
+
+@keyframes pulse-ring {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.08);
+        opacity: 0.6;
+    }
+}
+
+.avatar-icon {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%);
+    backdrop-filter: blur(15px);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: white;
+    border: 3px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.avatar-status {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
+    animation: pulse-status 2s infinite;
+}
+
+@keyframes pulse-status {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.5);
+    }
+    50% {
+        box-shadow: 0 2px 16px rgba(16, 185, 129, 0.8);
+    }
+}
+
+.header-text-premium {
+    flex: 1;
+}
+
+.greeting-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+    backdrop-filter: blur(10px);
+    padding: 0.5rem 1.2rem;
+    border-radius: 25px;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.greeting-badge i {
+    font-size: 1.1rem;
+    color: #fbbf24;
+    filter: drop-shadow(0 2px 4px rgba(251, 191, 36, 0.5));
+}
+
+.header-title-premium {
+    font-size: 2.75rem;
+    font-weight: 800;
+    color: white;
+    margin: 0 0 0.5rem 0;
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+}
+
+.header-subtitle-premium {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin: 0;
+    font-size: 1rem;
+}
+
+.role-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.15) 100%);
+    backdrop-filter: blur(10px);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    color: white;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.role-badge i {
+    font-size: 1rem;
+}
+
+.divider {
+    color: rgba(255, 255, 255, 0.5);
+    font-weight: 300;
+    font-size: 1.2rem;
+}
+
+.date-info {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 500;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.4rem 0.9rem;
+    border-radius: 15px;
+    backdrop-filter: blur(5px);
+}
+
+.date-info i {
+    font-size: 0.95rem;
+}
+
+.header-right-premium {
+    display: flex;
+    align-items: center;
+}
+
+.quick-action-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    color: white;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.quick-action-btn:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%);
+    transform: scale(1.08);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.quick-action-btn i {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* Responsive Header */
+@media (max-width: 991px) {
+    .teacher-dashboard-header-premium {
+        padding: 2rem 1.5rem;
+        border-radius: 20px;
+    }
+    
+    .header-title-premium {
+        font-size: 2.25rem;
+    }
+    
+    .avatar-wrapper {
+        width: 75px;
+        height: 75px;
+    }
+    
+    .avatar-icon {
+        font-size: 2.2rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .teacher-dashboard-header-premium {
+        padding: 1.75rem 1.25rem;
+        border-radius: 18px;
+    }
+    
+    .header-content-premium {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.25rem;
+    }
+    
+    .header-left-premium {
+        width: 100%;
+    }
+    
+    .header-title-premium {
+        font-size: 1.85rem;
+    }
+    
+    .header-subtitle-premium {
+        font-size: 0.9rem;
+    }
+    
+    .avatar-wrapper {
+        width: 65px;
+        height: 65px;
+    }
+    
+    .avatar-icon {
+        font-size: 1.9rem;
+    }
+    
+    .greeting-badge {
+        font-size: 0.85rem;
+        padding: 0.4rem 1rem;
+    }
+    
+    .role-badge {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.85rem;
+    }
+    
+    .header-right-premium {
+        width: 100%;
+        justify-content: flex-end;
+    }
+    
+    .quick-action-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 575px) {
+    .teacher-dashboard-header-premium {
+        padding: 1.5rem 1rem;
+        border-radius: 16px;
+    }
+    
+    .header-title-premium {
+        font-size: 1.6rem;
+    }
+    
+    .header-subtitle-premium {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .divider {
+        display: none;
+    }
+    
+    .avatar-wrapper {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .avatar-icon {
+        font-size: 1.75rem;
+    }
+}
+
 /* Modern Dashboard Header */
 .dashboard-title {
     font-size: 2.25rem;
