@@ -540,28 +540,56 @@
 <!-- Current Subjects Section (Full Width) -->
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card modern-card shadow-sm">
-            <div class="card-header modern-card-header bg-gradient-success">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h5 class="mb-0"><i class="fas fa-book-open me-2"></i>Current Subjects</h5>
-                    <span class="badge bg-white text-success">{{ current_subjects|length }} Subject{{ current_subjects|length|pluralize }}</span>
+        <div class="card modern-card shadow-lg subjects-section-premium">
+            <div class="card-header modern-card-header bg-gradient-subjects">
+                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                    <div class="d-flex align-items-center">
+                        <div class="header-icon-premium me-3">
+                            <i class="fas fa-book-open"></i>
+                            <div class="icon-glow-subjects"></div>
+                        </div>
+                        <div>
+                            <h5 class="mb-0">Current Subjects</h5>
+                            <small class="text-white-50">Your enrolled courses this semester</small>
+                        </div>
+                    </div>
+                    <span class="badge badge-subjects-count">
+                        <i class="fas fa-graduation-cap me-1"></i>
+                        {{ current_subjects|length }} Subject{{ current_subjects|length|pluralize }}
+                    </span>
                 </div>
             </div>
-            <div class="card-body p-4">
+            <div class="card-body p-4 subjects-body-premium">
                 {% if current_subjects %}
-                <div class="subjects-grid-fullwidth">
+                <div class="subjects-grid-premium">
                     {% for subject in current_subjects %}
-                    <div class="subject-card-modern">
-                        <div class="subject-card-header">
-                            <div class="subject-icon-modern">
-                                <i class="fas fa-book"></i>
+                    <div class="subject-card-premium">
+                        <div class="subject-card-inner">
+                            <div class="subject-card-header-premium">
+                                <div class="subject-icon-premium">
+                                    <i class="fas fa-book"></i>
+                                    <div class="subject-icon-bg"></div>
+                                </div>
+                                <div class="subject-credits-badge-premium">
+                                    <i class="fas fa-award me-1"></i>
+                                    {{ subject.credits }} Credits
+                                </div>
                             </div>
-                            <span class="subject-credits-badge">{{ subject.credits }} Credits</span>
+                            <div class="subject-card-body-premium">
+                                <h6 class="subject-name-premium">{{ subject.name }}</h6>
+                                <p class="subject-code-premium">
+                                    <i class="fas fa-hashtag"></i>
+                                    {{ subject.code }}
+                                </p>
+                            </div>
+                            <div class="subject-card-footer-premium">
+                                <div class="subject-progress-indicator">
+                                    <div class="progress-dot"></div>
+                                    <span>Active</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="subject-card-body">
-                            <h6 class="subject-name-modern">{{ subject.name }}</h6>
-                            <p class="subject-code-modern">{{ subject.code }}</p>
-                        </div>
+                        <div class="subject-card-shine"></div>
                     </div>
                     {% endfor %}
                 </div>
@@ -576,8 +604,6 @@
         </div>
     </div>
 </div>
-
-<!-- Recent Assignments Section (Full Width) -->
 <div class="row mb-4">
     <div class="col-12">
         <div class="card modern-card shadow-sm">
@@ -1097,14 +1123,342 @@
     margin-left: 1rem;
 }
 
-/* Subjects Grid */
+/* ============================================
+   PREMIUM SUBJECTS SECTION
+   ============================================ */
+
+.subjects-section-premium {
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.bg-gradient-subjects {
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 35%, #f093fb 70%, #feca57 100%);
+    padding: 1.75rem 2rem;
+    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+    animation: subjectsGlow 3s ease-in-out infinite;
+}
+
+@keyframes subjectsGlow {
+    0%, 100% {
+        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+    }
+    50% {
+        box-shadow: 0 10px 35px rgba(255, 107, 107, 0.6);
+    }
+}
+
+.header-icon-premium {
+    width: 55px;
+    height: 55px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.header-icon-premium i {
+    font-size: 1.5rem;
+    color: white;
+    z-index: 2;
+}
+
+.icon-glow-subjects {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.3);
+    animation: iconPulse 2s infinite;
+}
+
+@keyframes iconPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.5;
+    }
+}
+
+.badge-subjects-count {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.subjects-body-premium {
+    background: linear-gradient(135deg, rgba(255, 107, 107, 0.03) 0%, rgba(238, 90, 111, 0.03) 35%, rgba(240, 147, 251, 0.03) 70%, rgba(254, 202, 87, 0.03) 100%);
+}
+
+.subjects-grid-premium {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.subject-card-premium {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 2px solid #e9ecef;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.subject-card-premium:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(255, 107, 107, 0.25);
+    border-color: #ff6b6b;
+}
+
+.subject-card-inner {
+    padding: 1.75rem;
+    position: relative;
+    z-index: 2;
+}
+
+.subject-card-header-premium {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+}
+
+.subject-icon-premium {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+    transition: all 0.3s ease;
+}
+
+.subject-card-premium:hover .subject-icon-premium {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 8px 25px rgba(255, 107, 107, 0.5);
+}
+
+.subject-icon-premium i {
+    font-size: 1.75rem;
+    color: white;
+    z-index: 2;
+}
+
+.subject-icon-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.subject-card-premium:hover .subject-icon-bg {
+    opacity: 1;
+}
+
+.subject-credits-badge-premium {
+    background: linear-gradient(135deg, #feca57 0%, #ff9ff3 100%);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(254, 202, 87, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.subject-card-body-premium {
+    margin-bottom: 1rem;
+}
+
+.subject-name-premium {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
+    transition: color 0.3s ease;
+}
+
+.subject-card-premium:hover .subject-name-premium {
+    color: #ff6b6b;
+}
+
+.subject-code-premium {
+    font-size: 0.9rem;
+    color: #6c757d;
+    font-weight: 600;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #f8f9fa;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    display: inline-flex;
+}
+
+.subject-code-premium i {
+    font-size: 0.75rem;
+    color: #ff6b6b;
+}
+
+.subject-card-footer-premium {
+    padding-top: 1rem;
+    border-top: 2px solid #f0f0f0;
+}
+
+.subject-progress-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #10b981;
+    font-weight: 600;
+}
+
+.progress-dot {
+    width: 10px;
+    height: 10px;
+    background: #10b981;
+    border-radius: 50%;
+    animation: dotPulse 2s infinite;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
+@keyframes dotPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+    50% {
+        transform: scale(1.2);
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.8);
+    }
+}
+
+.subject-card-shine {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+}
+
+.subject-card-premium:hover .subject-card-shine {
+    transform: translateX(100%);
+}
+
+/* Responsive Subjects Grid */
+@media (max-width: 1400px) {
+    .subjects-grid-premium {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 991px) {
+    .subjects-grid-premium {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+    }
+    
+    .subject-card-inner {
+        padding: 1.5rem;
+    }
+    
+    .subject-icon-premium {
+        width: 55px;
+        height: 55px;
+    }
+    
+    .subject-icon-premium i {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .subjects-grid-premium {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .bg-gradient-subjects {
+        padding: 1.5rem 1.25rem;
+    }
+    
+    .header-icon-premium {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .header-icon-premium i {
+        font-size: 1.35rem;
+    }
+    
+    .badge-subjects-count {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+    }
+}
+
+@media (max-width: 575px) {
+    .subject-card-inner {
+        padding: 1.25rem;
+    }
+    
+    .subject-icon-premium {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .subject-icon-premium i {
+        font-size: 1.35rem;
+    }
+    
+    .subject-name-premium {
+        font-size: 1.05rem;
+    }
+    
+    .subject-credits-badge-premium {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.85rem;
+    }
+}
+
+/* Old Subjects Grid - Keep for backward compatibility */
 .subjects-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1rem;
 }
 
-/* Subjects Grid Full Width */
 .subjects-grid-fullwidth {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
