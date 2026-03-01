@@ -683,7 +683,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <td>{{ item.student.student_id }}</td>
                                 <td>{{ item.class.name }}</td>
                                 <td>
-                                    <span class="badge bg-danger fs-6">${{ item.total_unpaid|floatformat:2 }}</span>
+                                    <span class="badge bg-danger fs-6">Rs. {{ item.total_unpaid|floatformat:2 }}</span>
                                 </td>
                                 <td>
                                     <span class="badge bg-warning">{{ item.fee_count }} unpaid fee{{ item.fee_count|pluralize }}</span>
