@@ -10,6 +10,9 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('profile/', views.profile, name='profile'),
     # API endpoints
+    path('api/login/', api_views.api_login, name='api_login'),
+    path('api/logout/', api_views.api_logout, name='api_logout'),
+    path('api/user-profile/', api_views.api_user_profile, name='api_user_profile'),
     path('api/teacher-dashboard-stats/', api_views.teacher_dashboard_stats, name='teacher_dashboard_stats'),
     # Admin-only user management
     path('admin/create-user/', views.admin_create_user, name='admin_create_user'),

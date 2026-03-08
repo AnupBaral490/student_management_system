@@ -1,11 +1,14 @@
 from django.http import JsonResponse
+from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 from django.db import models
 from django.utils import timezone as django_timezone
-from .models import TeacherProfile
+from .models import TeacherProfile, User
 from academic.models import TeacherSubjectAssignment, Assignment, StudentEnrollment, AssignmentSubmission
 from attendance.models import AttendanceSession, AttendanceRecord
+import json
 
 @login_required
 @require_http_methods(["GET"])
@@ -179,3 +182,192 @@ def teacher_dashboard_stats(request):
         return JsonResponse({'error': 'Teacher profile not found'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def api_login(request):
+    """
+    API endpoint for user login
+    
+    Request Body (JSON):
+    {
+        "username": "user@example.com or username",
+        "password": "password123"
+    }
+    
+    Response (Success):
+    {
+        "success": true,
+        "message": "Login successful",
+        "user": {
+            "id": 1,
+            "username": "john_doe",
+            "email": "john@example.com",
+            "first_name": "John",
+            "last_name": "Doe",
+            "user_type": "student",
+            "full_name": "John Doe"
+        }
+    }
+    
+    Response (Error):
+    {
+        "success": false,
+        "message": "Invalid credentials"
+    }
+    """
+    try:
+        # Parse JSON body
+        data = json.loads(request.body)
+        username = data.get('username', '').strip()
+        password = data.get('password', '')
+        
+        # Validate input
+        if not username or not password:
+            return JsonResponse({
+                'success': False,
+                'message': 'Username and password are required'
+            }, status=400)
+        
+        # Authenticate user
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            # Login successful
+            login(request, user)
+            
+            return JsonResponse({
+                'success': True,
+                'message': 'Login successful',
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                    'first_name': user.first_name,
+                    'last_name': user.last_name,
+                    'user_type': user.user_type,
+                    'full_name': user.get_full_name() or user.username
+                }
+            }, status=200)
+        else:
+            # Invalid credentials
+            return JsonResponse({
+                'success': False,
+                'message': 'Invalid username or password'
+            }, status=401)
+            
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'success': False,
+            'message': 'Invalid JSON format'
+        }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Server error: {str(e)}'
+        }, status=500)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def api_logout(request):
+    """
+    API endpoint for user logout
+    
+    Response:
+    {
+        "success": true,
+        "message": "Logout successful"
+    }
+    """
+    try:
+        from django.contrib.auth import logout
+        logout(request)
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Logout successful'
+        }, status=200)
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Server error: {str(e)}'
+        }, status=500)
+
+
+@login_required
+@require_http_methods(["GET"])
+def api_user_profile(request):
+    """
+    API endpoint to get current user profile information
+    
+    Response:
+    {
+        "success": true,
+        "user": {
+            "id": 1,
+            "username": "john_doe",
+            "email": "john@example.com",
+            "first_name": "John",
+            "last_name": "Doe",
+            "user_type": "student",
+            "full_name": "John Doe",
+            "profile": {
+                // Profile specific data based on user_type
+            }
+        }
+    }
+    """
+    try:
+        user = request.user
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'user_type': user.user_type,
+            'full_name': user.get_full_name() or user.username,
+            'date_joined': user.date_joined.isoformat()
+        }
+        
+        # Add profile-specific data
+        profile_data = {}
+        
+        if user.user_type == 'student' and hasattr(user, 'student_profile'):
+            profile = user.student_profile
+            profile_data = {
+                'student_id': profile.student_id,
+                'date_of_birth': profile.date_of_birth.isoformat() if profile.date_of_birth else None,
+                'phone_number': profile.phone_number,
+                'address': profile.address
+            }
+        elif user.user_type == 'teacher' and hasattr(user, 'teacher_profile'):
+            profile = user.teacher_profile
+            profile_data = {
+                'employee_id': profile.employee_id,
+                'phone_number': profile.phone_number,
+                'qualification': profile.qualification,
+                'specialization': profile.specialization
+            }
+        elif user.user_type == 'parent' and hasattr(user, 'parent_profile'):
+            profile = user.parent_profile
+            profile_data = {
+                'phone_number': profile.phone_number,
+                'occupation': profile.occupation,
+                'children_count': profile.children.count()
+            }
+        
+        user_data['profile'] = profile_data
+        
+        return JsonResponse({
+            'success': True,
+            'user': user_data
+        }, status=200)
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Server error: {str(e)}'
+        }, status=500)
