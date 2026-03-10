@@ -616,10 +616,39 @@ def attendance_reports(request):
             messages.error(request, 'Teacher profile not found. Please contact the administrator.')
             return redirect('accounts:dashboard')
         
+        # Get filter parameters
+        selected_class = request.GET.get('class_filter', '')
+        selected_month = request.GET.get('month_filter', '')  # Empty means all months
+        
         # Teacher's class attendance reports
         teacher_assignments = TeacherSubjectAssignment.objects.filter(
             teacher=request.user.teacher_profile
         ).select_related('subject', 'class_assigned')
+        
+        # Get all classes for filter dropdown
+        teacher_classes = Class.objects.filter(
+            id__in=teacher_assignments.values_list('class_assigned_id', flat=True)
+        ).distinct()
+        
+        # Filter assignments if class is selected
+        if selected_class:
+            teacher_assignments = teacher_assignments.filter(class_assigned_id=selected_class)
+        
+        # Parse month filter (only if specified)
+        year = None
+        month = None
+        if selected_month:
+            try:
+                year, month = map(int, selected_month.split('-'))
+            except:
+                pass
+        
+        # Get all students from teacher's classes with their attendance data
+        student_reports = []
+        overall_present = 0
+        overall_total = 0
+        best_class = None
+        best_class_percentage = 0
         
         class_summaries = []
         for assignment in teacher_assignments:
@@ -627,29 +656,84 @@ def attendance_reports(request):
             enrollments = StudentEnrollment.objects.filter(
                 class_enrolled=assignment.class_assigned,
                 is_active=True
-            )
+            ).select_related('student__user')
             
             # Get attendance sessions for this assignment
             sessions = AttendanceSession.objects.filter(
                 teacher_assignment=assignment
             )
             
+            # Apply month filter only if specified
+            if year and month:
+                sessions = sessions.filter(date__year=year, date__month=month)
+            
             total_sessions = sessions.count()
             total_students = enrollments.count()
             
-            if total_sessions > 0 and total_students > 0:
-                # Calculate average attendance
-                total_records = AttendanceRecord.objects.filter(
-                    session__in=sessions
-                ).count()
-                present_records = AttendanceRecord.objects.filter(
-                    session__in=sessions,
-                    status__in=['present', 'late']
-                ).count()
+            class_present = 0
+            class_total = 0
+            
+            # Get detailed student attendance for this class
+            for enrollment in enrollments:
+                student = enrollment.student
                 
-                avg_attendance = (present_records / total_records * 100) if total_records > 0 else 0
+                # Get attendance records for this student in this class
+                records = AttendanceRecord.objects.filter(
+                    session__in=sessions,
+                    student=student
+                )
+                
+                total_classes = records.count()
+                present_count = records.filter(status='present').count()
+                absent_count = records.filter(status='absent').count()
+                late_count = records.filter(status='late').count()
+                excused_count = records.filter(status='excused').count()
+                
+                if total_classes > 0:
+                    attendance_percentage = ((present_count + late_count) / total_classes) * 100
+                    
+                    # Determine status
+                    if attendance_percentage >= 90:
+                        status = 'Excellent'
+                        status_class = 'success'
+                    elif attendance_percentage >= 80:
+                        status = 'Good'
+                        status_class = 'success'
+                    elif attendance_percentage >= 70:
+                        status = 'Average'
+                        status_class = 'warning'
+                    else:
+                        status = 'Poor'
+                        status_class = 'danger'
+                    
+                    student_reports.append({
+                        'student': student,
+                        'class_name': assignment.class_assigned.name,
+                        'total_classes': total_classes,
+                        'present': present_count,
+                        'absent': absent_count,
+                        'late': late_count,
+                        'excused': excused_count,
+                        'percentage': round(attendance_percentage, 1),
+                        'status': status,
+                        'status_class': status_class
+                    })
+                    
+                    class_present += present_count + late_count
+                    class_total += total_classes
+            
+            # Calculate class average
+            if class_total > 0:
+                avg_attendance = (class_present / class_total * 100)
+                
+                if avg_attendance > best_class_percentage:
+                    best_class_percentage = avg_attendance
+                    best_class = assignment.class_assigned.name
             else:
                 avg_attendance = 0
+            
+            overall_present += class_present
+            overall_total += class_total
             
             class_summaries.append({
                 'assignment': assignment,
@@ -658,8 +742,21 @@ def attendance_reports(request):
                 'avg_attendance': round(avg_attendance, 2)
             })
         
+        # Calculate overall attendance
+        overall_attendance = (overall_present / overall_total * 100) if overall_total > 0 else 0
+        
+        # Sort student reports by percentage (descending)
+        student_reports.sort(key=lambda x: x['percentage'], reverse=True)
+        
         context = {
-            'class_summaries': class_summaries
+            'class_summaries': class_summaries,
+            'student_reports': student_reports,
+            'overall_attendance': round(overall_attendance, 1),
+            'best_class': best_class,
+            'best_class_percentage': round(best_class_percentage, 1),
+            'teacher_classes': teacher_classes,
+            'selected_class': selected_class,
+            'selected_month': selected_month
         }
     
     else:  # Admin
