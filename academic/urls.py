@@ -10,6 +10,9 @@ urlpatterns = [
     
     # Department URLs
     path('departments/', views.department_list, name='department_list'),
+    path('departments/create/', views.create_department, name='create_department'),
+    path('departments/<int:department_id>/edit/', views.edit_department, name='edit_department'),
+    path('departments/<int:department_id>/delete/', views.delete_department, name='delete_department'),
     
     # Course URLs
     path('courses/', views.course_list, name='course_list'),

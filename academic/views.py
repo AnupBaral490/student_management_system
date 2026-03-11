@@ -36,6 +36,81 @@ def department_list(request):
     return render(request, 'academic/department_list.html', context)
 
 @login_required
+@user_passes_test(is_admin)
+def create_department(request):
+    """Create a new department"""
+    if request.method == 'POST':
+        form = DepartmentForm(request.POST)
+        if form.is_valid():
+            department = form.save()
+            messages.success(request, f'Department "{department.name}" created successfully!')
+            return redirect('academic:department_list')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = DepartmentForm()
+    
+    context = {
+        'form': form,
+        'title': 'Create Department',
+        'submit_text': 'Create Department'
+    }
+    return render(request, 'academic/department_form.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def edit_department(request, department_id):
+    """Edit an existing department"""
+    department = get_object_or_404(Department, id=department_id)
+    
+    if request.method == 'POST':
+        form = DepartmentForm(request.POST, instance=department)
+        if form.is_valid():
+            department = form.save()
+            messages.success(request, f'Department "{department.name}" updated successfully!')
+            return redirect('academic:department_list')
+        else:
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = DepartmentForm(instance=department)
+    
+    context = {
+        'form': form,
+        'department': department,
+        'title': f'Edit Department - {department.name}',
+        'submit_text': 'Update Department'
+    }
+    return render(request, 'academic/department_form.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def delete_department(request, department_id):
+    """Delete a department"""
+    department = get_object_or_404(Department, id=department_id)
+    
+    if request.method == 'POST':
+        # Check if department has courses
+        course_count = department.course_set.count()
+        if course_count > 0:
+            messages.error(request, f'Cannot delete department "{department.name}" because it has {course_count} course(s) associated with it.')
+            return redirect('academic:department_list')
+        
+        department_name = department.name
+        department.delete()
+        messages.success(request, f'Department "{department_name}" deleted successfully!')
+        return redirect('academic:department_list')
+    
+    # Get related data for confirmation
+    courses = department.course_set.all()
+    
+    context = {
+        'department': department,
+        'courses': courses,
+        'course_count': courses.count()
+    }
+    return render(request, 'academic/department_confirm_delete.html', context)
+
+@login_required
 def course_list(request):
     courses = Course.objects.select_related('department').annotate(
         subject_count=Count('subject'),
