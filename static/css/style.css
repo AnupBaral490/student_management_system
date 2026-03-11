@@ -6779,3 +6779,303 @@ body {
 .teacher-dashboard-header-premium .header-subtitle-premium {
     opacity: 1 !important;
 }
+
+/* =================================================
+   Admin User List - Grouped Sections
+================================================= */
+
+/* User Statistics Cards */
+.user-stats-card {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.user-stats-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.user-stats-card .card-body {
+    padding: 1.5rem;
+}
+
+.user-stats-card h4 {
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.user-stats-card p {
+    font-weight: 500;
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* User Group Sections */
+.user-group-section {
+    margin-bottom: 2rem;
+}
+
+.user-group-section .card {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.user-group-section .card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+.user-group-section .card-header {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.user-group-section .card-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+    pointer-events: none;
+}
+
+.user-group-section .card-header h4 {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
+    z-index: 1;
+}
+
+.user-group-section .card-header h4 i {
+    font-size: 1.4rem;
+    opacity: 0.9;
+}
+
+/* Parent Section Styling */
+.user-group-section .card-header.bg-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+    color: white !important;
+}
+
+/* Teacher Section Styling */
+.user-group-section .card-header.bg-success {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+    color: white !important;
+}
+
+/* Student Section Styling */
+.user-group-section .card-header.bg-warning {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%) !important;
+    color: white !important;
+}
+
+/* User Table Enhancements */
+.user-group-section .table {
+    margin-bottom: 0;
+    border-radius: 0 0 15px 15px;
+    overflow: hidden;
+}
+
+.user-group-section .table thead {
+    background-color: #f8f9fa;
+}
+
+.user-group-section .table thead th {
+    font-weight: 600;
+    color: #495057;
+    border-bottom: 2px solid #dee2e6;
+    padding: 1rem 0.75rem;
+}
+
+.user-group-section .table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.user-group-section .table tbody tr:hover {
+    background-color: #f8f9fa;
+    transform: scale(1.01);
+}
+
+.user-group-section .table tbody td {
+    padding: 1rem 0.75rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* Profile Picture Enhancements */
+.user-group-section .table tbody td img,
+.user-group-section .table tbody td .rounded-circle {
+    border: 3px solid #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.user-group-section .table tbody tr:hover td img,
+.user-group-section .table tbody tr:hover td .rounded-circle {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Action Buttons Enhancement */
+.user-group-section .btn-group .btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin: 0 2px;
+}
+
+.user-group-section .btn-group .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Empty State Styling */
+.user-group-section .text-center.text-muted {
+    padding: 3rem 1rem;
+    color: #6c757d !important;
+}
+
+.user-group-section .text-center.text-muted i {
+    opacity: 0.5;
+    margin-bottom: 1rem;
+}
+
+/* Badge Enhancements */
+.user-group-section .badge {
+    font-weight: 500;
+    padding: 0.4em 0.8em;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+/* Search Section Enhancement */
+.search-section .card {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 2rem;
+}
+
+.search-section .card-body {
+    padding: 1.5rem;
+}
+
+.search-section .form-control {
+    border-radius: 10px;
+    border: 2px solid #e9ecef;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-section .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    transform: translateY(-2px);
+}
+
+.search-section .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 10px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.search-section .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+}
+
+/* Responsive Adjustments for User List */
+@media (max-width: 768px) {
+    .user-group-section .card-header h4 {
+        font-size: 1.1rem;
+    }
+
+    .user-group-section .card-header {
+        padding: 1rem;
+    }
+
+    .user-group-section .table thead th,
+    .user-group-section .table tbody td {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+
+    .user-group-section .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.8rem;
+        margin: 1px;
+    }
+
+    .user-stats-card h4 {
+        font-size: 1.5rem;
+    }
+
+    .user-stats-card .card-body {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .user-group-section .table {
+        font-size: 0.8rem;
+    }
+
+    .user-group-section .btn-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .user-group-section .btn-group .btn {
+        width: 100%;
+        margin: 0;
+    }
+
+    .user-stats-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Animation for section loading */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.user-group-section {
+    animation: slideInUp 0.6s ease-out;
+}
+
+.user-group-section:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.user-group-section:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.user-group-section:nth-child(4) {
+    animation-delay: 0.3s;
+}

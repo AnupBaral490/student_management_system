@@ -14,32 +14,22 @@
     </div>
 </div>
 
-<!-- Filters -->
+<!-- Search Filter -->
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card">
+        <div class="card search-section">
             <div class="card-body">
                 <form method="get" class="row g-3">
-                    <div class="col-md-4">
-                        <label for="type" class="form-label">User Type</label>
-                        <select name="type" id="type" class="form-select">
-                            {% for value, label in user_types %}
-                                <option value="{{ value }}" {% if user_type == value %}selected{% endif %}>
-                                    {{ label }}
-                                </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="search" class="form-label">Search</label>
+                    <div class="col-md-8">
+                        <label for="search" class="form-label">Search Users</label>
                         <input type="text" name="search" id="search" class="form-control" 
                                placeholder="Search by name, username, or email..." value="{{ search }}">
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-4">
                         <label class="form-label">&nbsp;</label>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-search"></i> Filter
+                                <i class="fas fa-search"></i> Search
                             </button>
                         </div>
                     </div>
@@ -49,11 +39,51 @@
     </div>
 </div>
 
-<!-- Users Table -->
-<div class="row">
+<!-- User Statistics -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white user-stats-card">
+            <div class="card-body text-center">
+                <h4>{{ user_counts.total }}</h4>
+                <p class="mb-0">Total Users</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white user-stats-card">
+            <div class="card-body text-center">
+                <h4>{{ user_counts.parents }}</h4>
+                <p class="mb-0">Parents</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white user-stats-card">
+            <div class="card-body text-center">
+                <h4>{{ user_counts.teachers }}</h4>
+                <p class="mb-0">Teachers</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white user-stats-card">
+            <div class="card-body text-center">
+                <h4>{{ user_counts.students }}</h4>
+                <p class="mb-0">Students</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Parents Section -->
+<div class="row mb-4 user-group-section">
     <div class="col-12">
         <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0"><i class="fas fa-users"></i> Parents ({{ user_counts.parents }})</h4>
+            </div>
             <div class="card-body">
+                {% if grouped_users.parents %}
                 <div class="table-responsive">
                     <table class="table table-hover">
                         <thead>
@@ -62,47 +92,31 @@
                                 <th>Name</th>
                                 <th>Username</th>
                                 <th>Email</th>
-                                <th>User Type</th>
                                 <th>Status</th>
                                 <th>Joined</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for user in page_obj %}
+                            {% for user in grouped_users.parents %}
                             <tr>
                                 <td>
                                     {% if user.profile_picture %}
                                         <img src="{{ user.profile_picture.url }}" class="rounded-circle" width="40" height="40">
                                     {% else %}
-                                        <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <div class="bg-info rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
                                             <i class="fas fa-user text-white"></i>
                                         </div>
                                     {% endif %}
                                 </td>
                                 <td>
                                     <strong>{{ user.get_full_name|default:user.username }}</strong>
-                                    {% if user.user_type == 'student' and user.student_profile %}
-                                        <br><small class="text-muted">ID: {{ user.student_profile.student_id }}</small>
-                                    {% elif user.user_type == 'teacher' and user.teacher_profile %}
-                                        <br><small class="text-muted">ID: {{ user.teacher_profile.employee_id }}</small>
-                                    {% elif user.user_type == 'admin' and user.admin_profile %}
-                                        <br><small class="text-muted">ID: {{ user.admin_profile.employee_id }}</small>
+                                    {% if user.parent_profile %}
+                                        <br><small class="text-muted">Parent ID: {{ user.parent_profile.id }}</small>
                                     {% endif %}
                                 </td>
                                 <td>{{ user.username }}</td>
                                 <td>{{ user.email }}</td>
-                                <td>
-                                    {% if user.user_type == 'student' %}
-                                        <span class="badge bg-primary">{{ user.get_user_type_display }}</span>
-                                    {% elif user.user_type == 'teacher' %}
-                                        <span class="badge bg-success">{{ user.get_user_type_display }}</span>
-                                    {% elif user.user_type == 'parent' %}
-                                        <span class="badge bg-info">{{ user.get_user_type_display }}</span>
-                                    {% else %}
-                                        <span class="badge bg-secondary">{{ user.get_user_type_display }}</span>
-                                    {% endif %}
-                                </td>
                                 <td>
                                     {% if user.is_active %}
                                         <span class="badge bg-success">Active</span>
@@ -128,47 +142,179 @@
                                     </div>
                                 </td>
                             </tr>
-                            {% empty %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-users fa-3x mb-3"></i>
+                    <br>No parents found.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Teachers Section -->
+<div class="row mb-4 user-group-section">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="fas fa-chalkboard-teacher"></i> Teachers ({{ user_counts.teachers }})</h4>
+            </div>
+            <div class="card-body">
+                {% if grouped_users.teachers %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
                             <tr>
-                                <td colspan="8" class="text-center text-muted py-4">
-                                    <i class="fas fa-users fa-3x mb-3"></i>
-                                    <br>No users found matching your criteria.
+                                <th>Profile</th>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in grouped_users.teachers %}
+                            <tr>
+                                <td>
+                                    {% if user.profile_picture %}
+                                        <img src="{{ user.profile_picture.url }}" class="rounded-circle" width="40" height="40">
+                                    {% else %}
+                                        <div class="bg-success rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <strong>{{ user.get_full_name|default:user.username }}</strong>
+                                    {% if user.teacher_profile %}
+                                        <br><small class="text-muted">ID: {{ user.teacher_profile.employee_id }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.username }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    {% if user.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{% url 'accounts:admin_edit_user' user.id %}" 
+                                           class="btn btn-sm btn-outline-primary" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'accounts:admin_reset_password' user.id %}" 
+                                           class="btn btn-sm btn-outline-warning" title="Reset Password">
+                                            <i class="fas fa-key"></i>
+                                        </a>
+                                        <a href="{% url 'accounts:admin_delete_user' user.id %}" 
+                                           class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
-                
-                <!-- Pagination -->
-                {% if page_obj.has_other_pages %}
-                <nav aria-label="Users pagination">
-                    <ul class="pagination justify-content-center">
-                        {% if page_obj.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page=1{% if user_type != 'all' %}&type={{ user_type }}{% endif %}{% if search %}&search={{ search }}{% endif %}">First</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if user_type != 'all' %}&type={{ user_type }}{% endif %}{% if search %}&search={{ search }}{% endif %}">Previous</a>
-                            </li>
-                        {% endif %}
-                        
-                        <li class="page-item active">
-                            <span class="page-link">
-                                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-                            </span>
-                        </li>
-                        
-                        {% if page_obj.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if user_type != 'all' %}&type={{ user_type }}{% endif %}{% if search %}&search={{ search }}{% endif %}">Next</a>
-                            </li>
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if user_type != 'all' %}&type={{ user_type }}{% endif %}{% if search %}&search={{ search }}{% endif %}">Last</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-chalkboard-teacher fa-3x mb-3"></i>
+                    <br>No teachers found.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Students Section -->
+<div class="row mb-4 user-group-section">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-white">
+                <h4 class="mb-0"><i class="fas fa-user-graduate"></i> Students ({{ user_counts.students }})</h4>
+            </div>
+            <div class="card-body">
+                {% if grouped_users.students %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Profile</th>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in grouped_users.students %}
+                            <tr>
+                                <td>
+                                    {% if user.profile_picture %}
+                                        <img src="{{ user.profile_picture.url }}" class="rounded-circle" width="40" height="40">
+                                    {% else %}
+                                        <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <strong>{{ user.get_full_name|default:user.username }}</strong>
+                                    {% if user.student_profile %}
+                                        <br><small class="text-muted">ID: {{ user.student_profile.student_id }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.username }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    {% if user.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ user.date_joined|date:"M d, Y" }}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{% url 'accounts:admin_edit_user' user.id %}" 
+                                           class="btn btn-sm btn-outline-primary" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'accounts:admin_reset_password' user.id %}" 
+                                           class="btn btn-sm btn-outline-warning" title="Reset Password">
+                                            <i class="fas fa-key"></i>
+                                        </a>
+                                        <a href="{% url 'accounts:admin_delete_user' user.id %}" 
+                                           class="btn btn-sm btn-outline-danger" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center text-muted py-4">
+                    <i class="fas fa-user-graduate fa-3x mb-3"></i>
+                    <br>No students found.
+                </div>
                 {% endif %}
             </div>
         </div>

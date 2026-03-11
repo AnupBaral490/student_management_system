@@ -917,38 +917,38 @@ def admin_create_user(request):
 @login_required
 @user_passes_test(is_admin)
 def admin_user_list(request):
-    user_type = request.GET.get('type', 'all')
     search = request.GET.get('search', '')
     
-    users = User.objects.exclude(user_type='admin')
-    
-    if user_type != 'all':
-        users = users.filter(user_type=user_type)
+    # Base queryset excluding admin users
+    base_users = User.objects.exclude(user_type='admin')
     
     if search:
-        users = users.filter(
+        base_users = base_users.filter(
             models.Q(username__icontains=search) |
             models.Q(first_name__icontains=search) |
             models.Q(last_name__icontains=search) |
             models.Q(email__icontains=search)
         )
     
-    users = users.order_by('-date_joined')
+    # Group users by type
+    grouped_users = {
+        'parents': base_users.filter(user_type='parent').order_by('-date_joined'),
+        'teachers': base_users.filter(user_type='teacher').order_by('-date_joined'),
+        'students': base_users.filter(user_type='student').order_by('-date_joined'),
+    }
     
-    paginator = Paginator(users, 20)
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    # Get counts for each type
+    user_counts = {
+        'parents': grouped_users['parents'].count(),
+        'teachers': grouped_users['teachers'].count(),
+        'students': grouped_users['students'].count(),
+        'total': sum([grouped_users['parents'].count(), grouped_users['teachers'].count(), grouped_users['students'].count()])
+    }
     
     context = {
-        'page_obj': page_obj,
-        'user_type': user_type,
+        'grouped_users': grouped_users,
+        'user_counts': user_counts,
         'search': search,
-        'user_types': [
-            ('all', 'All Users'),
-            ('student', 'Students'),
-            ('teacher', 'Teachers'),
-            ('parent', 'Parents'),
-        ]
     }
     
     return render(request, 'accounts/admin_user_list.html', context)
