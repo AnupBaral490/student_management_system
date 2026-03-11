@@ -318,3 +318,67 @@ class AttendanceSummaryAdmin(admin.ModelAdmin):
         )
     get_attendance_percentage.short_description = 'Attendance %'
     get_attendance_percentage.admin_order_field = 'attendance_percentage'
+
+# Teacher Attendance Admin
+from .models import TeacherAttendance, TeacherActivityLog, TeacherLeave
+from .admin_views import TeacherAttendanceAdminExtended
+
+# Unregister the old TeacherAttendance admin if it exists
+try:
+    admin.site.unregister(TeacherAttendance)
+except admin.sites.NotRegistered:
+    pass
+
+# Register with extended functionality
+admin.site.register(TeacherAttendance, TeacherAttendanceAdminExtended)
+
+@admin.register(TeacherActivityLog)
+class TeacherActivityLogAdmin(admin.ModelAdmin):
+    list_display = ['get_teacher_name', 'activity_type', 'description', 'timestamp', 'ip_address']
+    list_filter = ['activity_type', 'timestamp']
+    search_fields = ['teacher__user__username', 'teacher__user__first_name', 'teacher__user__last_name', 'description']
+    date_hierarchy = 'timestamp'
+    readonly_fields = ['timestamp']
+    ordering = ['-timestamp']
+    list_per_page = 50
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('teacher__user')
+    
+    def get_teacher_name(self, obj):
+        return obj.teacher.user.get_full_name() or obj.teacher.user.username
+    get_teacher_name.short_description = 'Teacher'
+    get_teacher_name.admin_order_field = 'teacher__user__first_name'
+
+@admin.register(TeacherLeave)
+class TeacherLeaveAdmin(admin.ModelAdmin):
+    list_display = ['get_teacher_name', 'leave_type', 'start_date', 'end_date', 'get_status_badge', 'total_days', 'approved_by']
+    list_filter = ['leave_type', 'status', 'start_date']
+    search_fields = ['teacher__user__username', 'teacher__user__first_name', 'teacher__user__last_name', 'reason']
+    date_hierarchy = 'start_date'
+    readonly_fields = ['total_days', 'created_at', 'updated_at']
+    ordering = ['-start_date']
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('teacher__user', 'approved_by')
+    
+    def get_teacher_name(self, obj):
+        return obj.teacher.user.get_full_name() or obj.teacher.user.username
+    get_teacher_name.short_description = 'Teacher'
+    get_teacher_name.admin_order_field = 'teacher__user__first_name'
+    
+    def get_status_badge(self, obj):
+        colors = {
+            'pending': '#ffc107',
+            'approved': '#28a745',
+            'rejected': '#dc3545',
+            'cancelled': '#6c757d'
+        }
+        color = colors.get(obj.status, '#6c757d')
+        return format_html(
+            '<span style="background-color: {}; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold;">{}</span>',
+            color,
+            obj.get_status_display()
+        )
+    get_status_badge.short_description = 'Status'
+    get_status_badge.admin_order_field = 'status'
