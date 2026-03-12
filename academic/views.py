@@ -161,9 +161,20 @@ def subject_list(request):
         except (StudentProfile.DoesNotExist, AttributeError):
             subjects = Subject.objects.none()
     
+    # Calculate statistics
+    total_credits = sum(subject.credits for subject in subjects)
+    semester_stats = {}
+    for subject in subjects:
+        if subject.semester not in semester_stats:
+            semester_stats[subject.semester] = {'count': 0, 'credits': 0}
+        semester_stats[subject.semester]['count'] += 1
+        semester_stats[subject.semester]['credits'] += subject.credits
+    
     context = {
-        'subjects': subjects,
-        'can_manage': request.user.user_type == 'admin'
+        'subjects': subjects.order_by('semester', 'year', 'name'),
+        'can_manage': request.user.user_type == 'admin',
+        'total_credits': total_credits,
+        'semester_stats': semester_stats
     }
     return render(request, 'academic/subject_list.html', context)
 
