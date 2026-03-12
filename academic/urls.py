@@ -37,6 +37,17 @@ urlpatterns = [
     path('enrollments/create/', views.create_student_enrollment, name='create_student_enrollment'),
     path('enrollments/<int:enrollment_id>/edit/', views.edit_student_enrollment, name='edit_student_enrollment'),
     path('enrollments/report/', views.student_enrollment_report, name='student_enrollment_report'),
+    path('enrollments/semester-report/', views.semester_wise_enrollment_report, name='semester_wise_enrollment_report'),
+    path('enrollments/<int:enrollment_id>/toggle-status/', views.toggle_enrollment_status, name='toggle_enrollment_status'),
+    
+    # Semester-specific enrollment URLs
+    path('semester-enrollments/', views.manage_semester_enrollments, name='manage_semester_enrollments'),
+    path('semester-enrollments/create/', views.create_semester_enrollment, name='create_semester_enrollment'),
+    path('semester-enrollments/<int:enrollment_id>/edit/', views.edit_semester_enrollment, name='edit_semester_enrollment'),
+    path('semester-enrollments/<int:enrollment_id>/approve/', views.approve_semester_enrollment, name='approve_semester_enrollment'),
+    path('semester-enrollments/<int:enrollment_id>/reject/', views.reject_semester_enrollment, name='reject_semester_enrollment'),
+    path('semester-enrollments/bulk/', views.bulk_semester_enrollment, name='bulk_semester_enrollment'),
+    path('semester-enrollments/report/', views.semester_enrollment_report, name='semester_enrollment_report'),
     
     # Teacher Assignment URLs
     path('teacher-assignments/', views.teacher_assignments, name='teacher_assignments'),

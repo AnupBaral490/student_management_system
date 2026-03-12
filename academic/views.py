@@ -1035,7 +1035,7 @@ def edit_assignment(request, assignment_id):
 @login_required
 @user_passes_test(is_admin)
 def manage_student_enrollment(request):
-    """Admin view to manage student enrollments with department and course filtering"""
+    """Admin view to manage student enrollments with department, course, and semester filtering"""
     enrollments = StudentEnrollment.objects.select_related(
         'student__user', 
         'class_enrolled__course__department',
@@ -1046,6 +1046,8 @@ def manage_student_enrollment(request):
     # Apply filters
     department_filter = request.GET.get('department')
     course_filter = request.GET.get('course')
+    semester_filter = request.GET.get('semester')
+    year_filter = request.GET.get('year')
     status_filter = request.GET.get('status')
     search = request.GET.get('search', '')
     
@@ -1054,6 +1056,12 @@ def manage_student_enrollment(request):
     
     if course_filter:
         enrollments = enrollments.filter(class_enrolled__course_id=course_filter)
+    
+    if semester_filter:
+        enrollments = enrollments.filter(class_enrolled__semester=semester_filter)
+    
+    if year_filter:
+        enrollments = enrollments.filter(class_enrolled__year=year_filter)
     
     if status_filter:
         if status_filter == 'active':
@@ -1080,6 +1088,10 @@ def manage_student_enrollment(request):
     if department_filter:
         courses = courses.filter(department_id=department_filter)
     
+    # Get available semesters and years from existing enrollments
+    available_semesters = enrollments.values_list('class_enrolled__semester', flat=True).distinct().order_by('class_enrolled__semester')
+    available_years = enrollments.values_list('class_enrolled__year', flat=True).distinct().order_by('class_enrolled__year')
+    
     # Calculate statistics
     total_enrollments = enrollments.count()
     active_enrollments = enrollments.filter(is_active=True).count()
@@ -1097,18 +1109,50 @@ def manage_student_enrollment(request):
             'enrollment_count': dept_enrollment_count
         })
     
+    # Get semester-wise enrollment statistics
+    semester_stats = []
+    for semester in range(1, 9):  # Assuming max 8 semesters
+        semester_enrollment_count = StudentEnrollment.objects.filter(
+            class_enrolled__semester=semester,
+            is_active=True
+        ).count()
+        if semester_enrollment_count > 0:
+            semester_stats.append({
+                'semester': semester,
+                'enrollment_count': semester_enrollment_count
+            })
+    
+    # Get year-wise enrollment statistics
+    year_stats = []
+    for year in range(1, 5):  # Assuming max 4 years
+        year_enrollment_count = StudentEnrollment.objects.filter(
+            class_enrolled__year=year,
+            is_active=True
+        ).count()
+        if year_enrollment_count > 0:
+            year_stats.append({
+                'year': year,
+                'enrollment_count': year_enrollment_count
+            })
+    
     context = {
         'page_obj': page_obj,
         'departments': departments,
         'courses': courses,
+        'available_semesters': available_semesters,
+        'available_years': available_years,
         'department_filter': department_filter,
         'course_filter': course_filter,
+        'semester_filter': semester_filter,
+        'year_filter': year_filter,
         'status_filter': status_filter,
         'search': search,
         'total_enrollments': total_enrollments,
         'active_enrollments': active_enrollments,
         'inactive_enrollments': inactive_enrollments,
         'dept_stats': dept_stats,
+        'semester_stats': semester_stats,
+        'year_stats': year_stats,
     }
     
     return render(request, 'academic/manage_student_enrollment.html', context)
@@ -1171,6 +1215,397 @@ def edit_student_enrollment(request, enrollment_id):
     }
     
     return render(request, 'academic/edit_student_enrollment.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def semester_wise_enrollment_report(request):
+    """Generate semester-wise enrollment report"""
+    # Get filter parameters
+    department_filter = request.GET.get('department')
+    course_filter = request.GET.get('course')
+    academic_year_filter = request.GET.get('academic_year')
+    
+    # Base queryset
+    enrollments = StudentEnrollment.objects.select_related(
+        'student__user', 
+        'class_enrolled__course__department',
+        'class_enrolled__course',
+        'class_enrolled__academic_year'
+    ).filter(is_active=True)
+    
+    # Apply filters
+    if department_filter:
+        enrollments = enrollments.filter(class_enrolled__course__department_id=department_filter)
+    
+    if course_filter:
+        enrollments = enrollments.filter(class_enrolled__course_id=course_filter)
+    
+    if academic_year_filter:
+        enrollments = enrollments.filter(class_enrolled__academic_year_id=academic_year_filter)
+    
+    # Group enrollments by semester and year
+    semester_data = {}
+    for enrollment in enrollments:
+        year = enrollment.class_enrolled.year
+        semester = enrollment.class_enrolled.semester
+        course_name = enrollment.class_enrolled.course.name
+        department_name = enrollment.class_enrolled.course.department.name
+        
+        key = f"Year {year} - Semester {semester}"
+        if key not in semester_data:
+            semester_data[key] = {
+                'year': year,
+                'semester': semester,
+                'courses': {},
+                'total_students': 0,
+                'departments': set()
+            }
+        
+        if course_name not in semester_data[key]['courses']:
+            semester_data[key]['courses'][course_name] = {
+                'students': [],
+                'department': department_name,
+                'count': 0
+            }
+        
+        semester_data[key]['courses'][course_name]['students'].append(enrollment)
+        semester_data[key]['courses'][course_name]['count'] += 1
+        semester_data[key]['total_students'] += 1
+        semester_data[key]['departments'].add(department_name)
+    
+    # Convert departments set to list for template
+    for key in semester_data:
+        semester_data[key]['departments'] = list(semester_data[key]['departments'])
+    
+    # Sort semester data by year and semester
+    sorted_semester_data = dict(sorted(semester_data.items(), key=lambda x: (x[1]['year'], x[1]['semester'])))
+    
+    # Get filter options
+    departments = Department.objects.all()
+    courses = Course.objects.all()
+    academic_years = AcademicYear.objects.all().order_by('-year')
+    
+    if department_filter:
+        courses = courses.filter(department_id=department_filter)
+    
+    context = {
+        'semester_data': sorted_semester_data,
+        'departments': departments,
+        'courses': courses,
+        'academic_years': academic_years,
+        'department_filter': department_filter,
+        'course_filter': course_filter,
+        'academic_year_filter': academic_year_filter,
+        'total_semesters': len(semester_data),
+        'total_enrollments': sum(data['total_students'] for data in semester_data.values())
+    }
+    
+    return render(request, 'academic/semester_wise_enrollment_report.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def toggle_enrollment_status(request, enrollment_id):
+    """Toggle enrollment status (active/inactive)"""
+    if request.method == 'POST':
+        enrollment = get_object_or_404(StudentEnrollment, id=enrollment_id)
+        new_status = request.POST.get('is_active') == 'true'
+        
+        enrollment.is_active = new_status
+        enrollment.save()
+        
+        status_text = 'activated' if new_status else 'deactivated'
+        messages.success(request, f'Enrollment for "{enrollment.student.user.get_full_name()}" has been {status_text}.')
+    
+    return redirect('academic:manage_student_enrollment')
+
+
+# Semester-specific enrollment views
+@login_required
+@user_passes_test(is_admin)
+def manage_semester_enrollments(request):
+    """Manage semester-specific enrollments"""
+    from .models import SemesterEnrollment
+    from .forms import SemesterEnrollmentFilterForm
+    
+    # Get filter form
+    filter_form = SemesterEnrollmentFilterForm(request.GET)
+    
+    # Base queryset
+    enrollments = SemesterEnrollment.objects.select_related(
+        'student__user', 'course__department', 'academic_year', 'approved_by__user'
+    ).order_by('-created_at')
+    
+    # Apply filters
+    if filter_form.is_valid():
+        if filter_form.cleaned_data['department']:
+            enrollments = enrollments.filter(course__department=filter_form.cleaned_data['department'])
+        
+        if filter_form.cleaned_data['course']:
+            enrollments = enrollments.filter(course=filter_form.cleaned_data['course'])
+        
+        if filter_form.cleaned_data['year']:
+            enrollments = enrollments.filter(year=filter_form.cleaned_data['year'])
+        
+        if filter_form.cleaned_data['semester']:
+            enrollments = enrollments.filter(semester=filter_form.cleaned_data['semester'])
+        
+        if filter_form.cleaned_data['academic_year']:
+            enrollments = enrollments.filter(academic_year=filter_form.cleaned_data['academic_year'])
+        
+        if filter_form.cleaned_data['status']:
+            enrollments = enrollments.filter(enrollment_status=filter_form.cleaned_data['status'])
+        
+        if filter_form.cleaned_data['search']:
+            search_term = filter_form.cleaned_data['search']
+            enrollments = enrollments.filter(
+                Q(student__user__first_name__icontains=search_term) |
+                Q(student__user__last_name__icontains=search_term) |
+                Q(student__user__username__icontains=search_term) |
+                Q(student__student_id__icontains=search_term)
+            )
+    
+    # Pagination
+    paginator = Paginator(enrollments, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Calculate statistics
+    total_enrollments = enrollments.count()
+    status_stats = {}
+    for status_code, status_name in SemesterEnrollment.ENROLLMENT_STATUS_CHOICES:
+        count = enrollments.filter(enrollment_status=status_code).count()
+        if count > 0:
+            status_stats[status_name] = count
+    
+    # Semester-wise statistics
+    semester_stats = {}
+    for semester in range(1, 9):
+        count = enrollments.filter(semester=semester).count()
+        if count > 0:
+            semester_stats[f'Semester {semester}'] = count
+    
+    # Year-wise statistics
+    year_stats = {}
+    for year in range(1, 7):
+        count = enrollments.filter(year=year).count()
+        if count > 0:
+            year_stats[f'Year {year}'] = count
+    
+    context = {
+        'page_obj': page_obj,
+        'filter_form': filter_form,
+        'total_enrollments': total_enrollments,
+        'status_stats': status_stats,
+        'semester_stats': semester_stats,
+        'year_stats': year_stats,
+    }
+    
+    return render(request, 'academic/manage_semester_enrollments.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def create_semester_enrollment(request):
+    """Create a new semester enrollment"""
+    from .models import SemesterEnrollment
+    from .forms import SemesterEnrollmentForm
+    
+    if request.method == 'POST':
+        form = SemesterEnrollmentForm(request.POST)
+        if form.is_valid():
+            enrollment = form.save()
+            messages.success(request, f'Semester enrollment created for "{enrollment.student.user.get_full_name()}" in {enrollment.semester_display}!')
+            return redirect('academic:manage_semester_enrollments')
+    else:
+        form = SemesterEnrollmentForm()
+    
+    context = {
+        'form': form,
+        'title': 'Create Semester Enrollment'
+    }
+    
+    return render(request, 'academic/create_semester_enrollment.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def edit_semester_enrollment(request, enrollment_id):
+    """Edit a semester enrollment"""
+    from .models import SemesterEnrollment
+    from .forms import SemesterEnrollmentForm
+    
+    enrollment = get_object_or_404(SemesterEnrollment, id=enrollment_id)
+    
+    if request.method == 'POST':
+        form = SemesterEnrollmentForm(request.POST, instance=enrollment)
+        if form.is_valid():
+            enrollment = form.save()
+            messages.success(request, f'Semester enrollment updated for "{enrollment.student.user.get_full_name()}"!')
+            return redirect('academic:manage_semester_enrollments')
+    else:
+        form = SemesterEnrollmentForm(instance=enrollment)
+    
+    context = {
+        'form': form,
+        'enrollment': enrollment,
+        'title': 'Edit Semester Enrollment'
+    }
+    
+    return render(request, 'academic/edit_semester_enrollment.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def approve_semester_enrollment(request, enrollment_id):
+    """Approve a semester enrollment"""
+    from .models import SemesterEnrollment
+    
+    if request.method == 'POST':
+        enrollment = get_object_or_404(SemesterEnrollment, id=enrollment_id)
+        enrollment.approve_enrollment(request.user)
+        messages.success(request, f'Enrollment approved for "{enrollment.student.user.get_full_name()}"!')
+    
+    return redirect('academic:manage_semester_enrollments')
+
+@login_required
+@user_passes_test(is_admin)
+def reject_semester_enrollment(request, enrollment_id):
+    """Reject a semester enrollment"""
+    from .models import SemesterEnrollment
+    
+    if request.method == 'POST':
+        enrollment = get_object_or_404(SemesterEnrollment, id=enrollment_id)
+        reason = request.POST.get('reason', '')
+        enrollment.reject_enrollment(reason)
+        messages.success(request, f'Enrollment rejected for "{enrollment.student.user.get_full_name()}"!')
+    
+    return redirect('academic:manage_semester_enrollments')
+
+@login_required
+@user_passes_test(is_admin)
+def bulk_semester_enrollment(request):
+    """Bulk semester enrollment"""
+    from .models import SemesterEnrollment
+    from .forms import BulkSemesterEnrollmentForm
+    
+    if request.method == 'POST':
+        form = BulkSemesterEnrollmentForm(request.POST)
+        if form.is_valid():
+            course = form.cleaned_data['course']
+            year = form.cleaned_data['year']
+            semester = form.cleaned_data['semester']
+            academic_year = form.cleaned_data['academic_year']
+            students = form.cleaned_data['students']
+            section = form.cleaned_data['section']
+            enrollment_fee_amount = form.cleaned_data.get('enrollment_fee_amount')
+            enrollment_deadline = form.cleaned_data.get('enrollment_deadline')
+            
+            created_count = 0
+            for student in students:
+                # Check if enrollment already exists
+                existing = SemesterEnrollment.objects.filter(
+                    student=student,
+                    course=course,
+                    year=year,
+                    semester=semester,
+                    academic_year=academic_year
+                ).first()
+                
+                if not existing:
+                    SemesterEnrollment.objects.create(
+                        student=student,
+                        course=course,
+                        year=year,
+                        semester=semester,
+                        academic_year=academic_year,
+                        section=section,
+                        enrollment_fee_amount=enrollment_fee_amount,
+                        enrollment_deadline=enrollment_deadline,
+                        enrollment_status='approved'  # Auto-approve bulk enrollments
+                    )
+                    created_count += 1
+            
+            messages.success(request, f'Successfully created {created_count} semester enrollments!')
+            return redirect('academic:manage_semester_enrollments')
+    else:
+        form = BulkSemesterEnrollmentForm()
+    
+    context = {
+        'form': form,
+        'title': 'Bulk Semester Enrollment'
+    }
+    
+    return render(request, 'academic/bulk_semester_enrollment.html', context)
+
+@login_required
+def semester_enrollment_report(request):
+    """Generate semester enrollment report"""
+    from .models import SemesterEnrollment
+    from .forms import SemesterEnrollmentFilterForm
+    
+    # Get filter form
+    filter_form = SemesterEnrollmentFilterForm(request.GET)
+    
+    # Base queryset
+    enrollments = SemesterEnrollment.objects.select_related(
+        'student__user', 'course__department', 'academic_year'
+    ).filter(enrollment_status__in=['approved', 'completed'])
+    
+    # Apply filters
+    if filter_form.is_valid():
+        if filter_form.cleaned_data['department']:
+            enrollments = enrollments.filter(course__department=filter_form.cleaned_data['department'])
+        
+        if filter_form.cleaned_data['course']:
+            enrollments = enrollments.filter(course=filter_form.cleaned_data['course'])
+        
+        if filter_form.cleaned_data['year']:
+            enrollments = enrollments.filter(year=filter_form.cleaned_data['year'])
+        
+        if filter_form.cleaned_data['semester']:
+            enrollments = enrollments.filter(semester=filter_form.cleaned_data['semester'])
+        
+        if filter_form.cleaned_data['academic_year']:
+            enrollments = enrollments.filter(academic_year=filter_form.cleaned_data['academic_year'])
+    
+    # Group by semester
+    semester_data = {}
+    for enrollment in enrollments:
+        key = f"Year {enrollment.year} - Semester {enrollment.semester}"
+        if key not in semester_data:
+            semester_data[key] = {
+                'year': enrollment.year,
+                'semester': enrollment.semester,
+                'courses': {},
+                'total_students': 0,
+                'departments': set()
+            }
+        
+        course_name = enrollment.course.name
+        if course_name not in semester_data[key]['courses']:
+            semester_data[key]['courses'][course_name] = {
+                'students': [],
+                'department': enrollment.course.department.name,
+                'count': 0
+            }
+        
+        semester_data[key]['courses'][course_name]['students'].append(enrollment)
+        semester_data[key]['courses'][course_name]['count'] += 1
+        semester_data[key]['total_students'] += 1
+        semester_data[key]['departments'].add(enrollment.course.department.name)
+    
+    # Convert departments set to list
+    for key in semester_data:
+        semester_data[key]['departments'] = list(semester_data[key]['departments'])
+    
+    # Sort semester data
+    sorted_semester_data = dict(sorted(semester_data.items(), key=lambda x: (x[1]['year'], x[1]['semester'])))
+    
+    context = {
+        'semester_data': sorted_semester_data,
+        'filter_form': filter_form,
+        'total_semesters': len(semester_data),
+        'total_enrollments': sum(data['total_students'] for data in semester_data.values())
+    }
+    
+    return render(request, 'academic/semester_enrollment_report.html', context)
 
 def assignment_submissions(request, assignment_id):
     """View all submissions for an assignment"""

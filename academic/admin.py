@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.forms import ModelForm, ModelMultipleChoiceField, CheckboxSelectMultiple
 from .models import (
     AcademicYear, Department, Course, Subject, Class, 
-    StudentEnrollment, TeacherSubjectAssignment, Assignment, AssignmentSubmission
+    StudentEnrollment, SemesterEnrollment, TeacherSubjectAssignment, Assignment, AssignmentSubmission
 )
 from accounts.models import StudentProfile, TeacherProfile
 
@@ -434,3 +434,94 @@ class AssignmentSubmissionAdmin(admin.ModelAdmin):
     list_filter = ('submitted_at', 'is_late', 'graded_at', 'assignment__subject')
     date_hierarchy = 'submitted_at'
     autocomplete_fields = ['student', 'assignment', 'graded_by']
+
+@admin.register(SemesterEnrollment)
+class SemesterEnrollmentAdmin(admin.ModelAdmin):
+    list_display = (
+        'get_student_name', 'get_student_id', 'course', 'get_semester_display', 
+        'enrollment_status', 'enrollment_date', 'enrollment_fee_paid', 'approved_by'
+    )
+    search_fields = (
+        'student__user__username', 'student__student_id', 'student__user__first_name', 
+        'student__user__last_name', 'course__name', 'course__department__name'
+    )
+    list_filter = (
+        'enrollment_status',
+        'enrollment_fee_paid',
+        'is_active',
+        ('course', admin.RelatedOnlyFieldListFilter),
+        ('course__department', admin.RelatedOnlyFieldListFilter),
+        'year',
+        'semester',
+        ('academic_year', admin.RelatedOnlyFieldListFilter),
+        'enrollment_date',
+        'approved_date',
+    )
+    actions = ['approve_enrollments', 'reject_enrollments', 'mark_fee_paid', 'mark_fee_unpaid']
+    autocomplete_fields = ['student', 'approved_by']
+    ordering = ('course__name', 'year', 'semester', 'student__user__first_name')
+    list_per_page = 100
+    date_hierarchy = 'enrollment_date'
+    
+    fieldsets = (
+        ('Student Information', {
+            'fields': ('student',)
+        }),
+        ('Course Information', {
+            'fields': ('course', 'year', 'semester', 'academic_year', 'section')
+        }),
+        ('Enrollment Details', {
+            'fields': ('enrollment_status', 'enrollment_fee_amount', 'enrollment_fee_paid', 'enrollment_deadline')
+        }),
+        ('Approval Information', {
+            'fields': ('approved_by', 'approved_date', 'rejection_reason'),
+            'classes': ('collapse',)
+        }),
+        ('Status', {
+            'fields': ('is_active',)
+        })
+    )
+    
+    readonly_fields = ('enrollment_date', 'created_at', 'updated_at', 'approved_date')
+    
+    def get_student_name(self, obj):
+        return obj.student.user.get_full_name() or obj.student.user.username
+    get_student_name.short_description = 'Student Name'
+    get_student_name.admin_order_field = 'student__user__first_name'
+    
+    def get_student_id(self, obj):
+        return obj.student.student_id
+    get_student_id.short_description = 'Student ID'
+    get_student_id.admin_order_field = 'student__student_id'
+    
+    def get_semester_display(self, obj):
+        return f"Year {obj.year}, Sem {obj.semester}"
+    get_semester_display.short_description = 'Year/Semester'
+    get_semester_display.admin_order_field = 'year'
+    
+    def approve_enrollments(self, request, queryset):
+        updated = 0
+        for enrollment in queryset.filter(enrollment_status='pending'):
+            enrollment.approve_enrollment(request.user)
+            updated += 1
+        
+        self.message_user(request, f'{updated} enrollments were approved.')
+    approve_enrollments.short_description = "Approve selected enrollments"
+    
+    def reject_enrollments(self, request, queryset):
+        updated = queryset.filter(enrollment_status='pending').update(
+            enrollment_status='rejected',
+            rejection_reason='Bulk rejection by admin'
+        )
+        self.message_user(request, f'{updated} enrollments were rejected.')
+    reject_enrollments.short_description = "Reject selected enrollments"
+    
+    def mark_fee_paid(self, request, queryset):
+        updated = queryset.update(enrollment_fee_paid=True)
+        self.message_user(request, f'{updated} enrollments marked as fee paid.')
+    mark_fee_paid.short_description = "Mark fee as paid"
+    
+    def mark_fee_unpaid(self, request, queryset):
+        updated = queryset.update(enrollment_fee_paid=False)
+        self.message_user(request, f'{updated} enrollments marked as fee unpaid.')
+    mark_fee_unpaid.short_description = "Mark fee as unpaid"

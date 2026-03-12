@@ -3,21 +3,71 @@
 {% block title %}Manage Student Enrollments - SMS{% endblock %}
 
 {% block content %}
+{% csrf_token %}
+<style>
+.semester-badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+.enrollment-card {
+    transition: all 0.3s ease;
+}
+
+.enrollment-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.filter-section {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.stats-card {
+    transition: all 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: scale(1.05);
+}
+
+.semester-stats, .year-stats {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+    
+    .btn-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+}
+</style>
+
 <div class="row">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2><i class="fas fa-user-graduate"></i> Manage Student Enrollments</h2>
-            <a href="{% url 'academic:create_student_enrollment' %}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Enroll Student
-            </a>
+            <div>
+                <a href="{% url 'academic:semester_wise_enrollment_report' %}" class="btn btn-info me-2">
+                    <i class="fas fa-chart-line"></i> Semester Report
+                </a>
+                <a href="{% url 'academic:create_student_enrollment' %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Enroll Student
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Statistics Cards -->
 <div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card bg-primary text-white">
+    <div class="col-md-2">
+        <div class="card bg-primary text-white stats-card">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
@@ -31,8 +81,8 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-success text-white">
+    <div class="col-md-2">
+        <div class="card bg-success text-white stats-card">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
@@ -46,8 +96,8 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-warning text-white">
+    <div class="col-md-2">
+        <div class="card bg-warning text-white stats-card">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
@@ -61,8 +111,8 @@
             </div>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="card bg-info text-white">
+    <div class="col-md-2">
+        <div class="card bg-info text-white stats-card">
             <div class="card-body">
                 <div class="d-flex justify-content-between">
                     <div>
@@ -72,6 +122,92 @@
                     <div class="align-self-center">
                         <i class="fas fa-building fa-2x"></i>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card bg-secondary text-white stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ semester_stats|length }}</h4>
+                        <p class="mb-0">Active Semesters</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-calendar fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-2">
+        <div class="card bg-dark text-white stats-card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h4>{{ year_stats|length }}</h4>
+                        <p class="mb-0">Active Years</p>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="fas fa-graduation-cap fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Semester and Year Statistics -->
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card enrollment-card">
+            <div class="card-header">
+                <h6 class="m-0"><i class="fas fa-chart-bar"></i> Enrollment by Semester</h6>
+            </div>
+            <div class="card-body semester-stats">
+                <div class="row">
+                    {% for stat in semester_stats %}
+                    <div class="col-md-6 mb-3">
+                        <div class="border rounded p-3 text-center">
+                            <h6 class="text-primary">Semester {{ stat.semester }}</h6>
+                            <div class="d-flex justify-content-center">
+                                <span class="badge bg-primary semester-badge">{{ stat.enrollment_count }} students</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center text-muted">
+                        <i class="fas fa-calendar-times fa-2x mb-2"></i>
+                        <p>No active semester enrollments</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card enrollment-card">
+            <div class="card-header">
+                <h6 class="m-0"><i class="fas fa-chart-bar"></i> Enrollment by Year</h6>
+            </div>
+            <div class="card-body year-stats">
+                <div class="row">
+                    {% for stat in year_stats %}
+                    <div class="col-md-6 mb-3">
+                        <div class="border rounded p-3 text-center">
+                            <h6 class="text-success">Year {{ stat.year }}</h6>
+                            <div class="d-flex justify-content-center">
+                                <span class="badge bg-success semester-badge">{{ stat.enrollment_count }} students</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="col-12 text-center text-muted">
+                        <i class="fas fa-graduation-cap fa-2x mb-2"></i>
+                        <p>No active year enrollments</p>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -107,13 +243,13 @@
 <!-- Filters -->
 <div class="row mb-4">
     <div class="col-12">
-        <div class="card">
-            <div class="card-header">
+        <div class="card enrollment-card">
+            <div class="card-header filter-section">
                 <h6 class="m-0"><i class="fas fa-filter"></i> Filters</h6>
             </div>
             <div class="card-body">
                 <form method="get" class="row g-3">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label for="department" class="form-label">Department</label>
                         <select name="department" id="department" class="form-select">
                             <option value="">All Departments</option>
@@ -124,13 +260,35 @@
                             {% endfor %}
                         </select>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <label for="course" class="form-label">Course</label>
                         <select name="course" id="course" class="form-select">
                             <option value="">All Courses</option>
                             {% for course in courses %}
                                 <option value="{{ course.id }}" {% if course_filter == course.id|stringformat:"s" %}selected{% endif %}>
                                     {{ course.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <label for="year" class="form-label">Year</label>
+                        <select name="year" id="year" class="form-select">
+                            <option value="">All Years</option>
+                            {% for year in available_years %}
+                                <option value="{{ year }}" {% if year_filter == year|stringformat:"s" %}selected{% endif %}>
+                                    Year {{ year }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <label for="semester" class="form-label">Semester</label>
+                        <select name="semester" id="semester" class="form-select">
+                            <option value="">All Semesters</option>
+                            {% for semester in available_semesters %}
+                                <option value="{{ semester }}" {% if semester_filter == semester|stringformat:"s" %}selected{% endif %}>
+                                    Sem {{ semester }}
                                 </option>
                             {% endfor %}
                         </select>
@@ -177,7 +335,8 @@
                                     <th>Student ID</th>
                                     <th>Department</th>
                                     <th>Course</th>
-                                    <th>Class</th>
+                                    <th>Year/Semester</th>
+                                    <th>Class & Section</th>
                                     <th>Enrolled Date</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -213,7 +372,14 @@
                                         <br><small class="text-muted">{{ enrollment.class_enrolled.course.code }}</small>
                                     </td>
                                     <td>
-                                        Year {{ enrollment.class_enrolled.year }}, Sem {{ enrollment.class_enrolled.semester }} - {{ enrollment.class_enrolled.section }}
+                                        <div class="d-flex flex-column">
+                                            <span class="badge bg-primary mb-1">Year {{ enrollment.class_enrolled.year }}</span>
+                                            <span class="badge bg-success">Semester {{ enrollment.class_enrolled.semester }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong>{{ enrollment.class_enrolled.name }}</strong>
+                                        <br><small class="text-muted">Section: {{ enrollment.class_enrolled.section }}</small>
                                         <br><small class="text-muted">{{ enrollment.class_enrolled.academic_year.year }}</small>
                                     </td>
                                     <td>{{ enrollment.enrollment_date|date:"M d, Y" }}</td>
@@ -257,10 +423,10 @@
                             <ul class="pagination justify-content-center">
                                 {% if page_obj.has_previous %}
                                     <li class="page-item">
-                                        <a class="page-link" href="?page=1{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.course %}&course={{ request.GET.course }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">First</a>
+                                        <a class="page-link" href="?page=1{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.course %}&course={{ request.GET.course }}{% endif %}{% if request.GET.year %}&year={{ request.GET.year }}{% endif %}{% if request.GET.semester %}&semester={{ request.GET.semester }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">First</a>
                                     </li>
                                     <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.course %}&course={{ request.GET.course }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Previous</a>
+                                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.course %}&course={{ request.GET.course }}{% endif %}{% if request.GET.year %}&year={{ request.GET.year }}{% endif %}{% if request.GET.semester %}&semester={{ request.GET.semester }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Previous</a>
                                     </li>
                                 {% endif %}
 
@@ -270,10 +436,10 @@
 
                                 {% if page_obj.has_next %}
                                     <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.course %}&course={{ request.GET.course }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Next</a>
+                                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.course %}&course={{ request.GET.course }}{% endif %}{% if request.GET.year %}&year={{ request.GET.year }}{% endif %}{% if request.GET.semester %}&semester={{ request.GET.semester }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Next</a>
                                     </li>
                                     <li class="page-item">
-                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.course %}&course={{ request.GET.course }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Last</a>
+                                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.department %}&department={{ request.GET.department }}{% endif %}{% if request.GET.course %}&course={{ request.GET.course }}{% endif %}{% if request.GET.year %}&year={{ request.GET.year }}{% endif %}{% if request.GET.semester %}&semester={{ request.GET.semester }}{% endif %}{% if request.GET.status %}&status={{ request.GET.status }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}">Last</a>
                                     </li>
                                 {% endif %}
                             </ul>
@@ -304,19 +470,85 @@ document.getElementById('department').addEventListener('change', function() {
     courseSelect.innerHTML = '<option value="">All Courses</option>';
     
     if (departmentId) {
-        // Filter courses by department (you would implement this via AJAX)
-        // For now, we'll submit the form to reload with filtered courses
-        this.form.submit();
+        // Fetch courses for the selected department
+        fetch(`/academic/api/courses/?department=${departmentId}`)
+            .then(response => response.json())
+            .then(data => {
+                data.forEach(course => {
+                    const option = document.createElement('option');
+                    option.value = course.id;
+                    option.textContent = course.name;
+                    courseSelect.appendChild(option);
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching courses:', error);
+                // Fallback: submit form to reload with filtered courses
+                this.form.submit();
+            });
     }
 });
 
 // Toggle enrollment status function
 function toggleEnrollmentStatus(enrollmentId, newStatus) {
     if (confirm('Are you sure you want to change the enrollment status?')) {
-        // You would implement this via AJAX to update the status
-        // For now, we'll show a message
-        alert('Status toggle functionality would be implemented via AJAX');
+        // Create a form to submit the status change
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/academic/enrollments/${enrollmentId}/toggle-status/`;
+        
+        // Add CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
+        if (csrfToken) {
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = csrfToken.value;
+            form.appendChild(csrfInput);
+        }
+        
+        // Add status field
+        const statusInput = document.createElement('input');
+        statusInput.type = 'hidden';
+        statusInput.name = 'is_active';
+        statusInput.value = newStatus;
+        form.appendChild(statusInput);
+        
+        document.body.appendChild(form);
+        form.submit();
     }
 }
+
+// Add semester and year filtering functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-submit form when filters change for better UX
+    const filterSelects = ['department', 'course', 'year', 'semester', 'status'];
+    
+    filterSelects.forEach(selectId => {
+        const select = document.getElementById(selectId);
+        if (select) {
+            select.addEventListener('change', function() {
+                // Small delay to allow user to make multiple selections
+                setTimeout(() => {
+                    this.form.submit();
+                }, 300);
+            });
+        }
+    });
+    
+    // Search input with debounce
+    const searchInput = document.getElementById('search');
+    if (searchInput) {
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                if (this.value.length >= 3 || this.value.length === 0) {
+                    this.form.submit();
+                }
+            }, 500);
+        });
+    }
+});
 </script>
 {% endblock %}

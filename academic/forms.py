@@ -1,7 +1,7 @@
 from django import forms
 from .models import (
     AcademicYear, Department, Course, Subject, Class, 
-    StudentEnrollment, TeacherSubjectAssignment, Assignment, AssignmentSubmission
+    StudentEnrollment, SemesterEnrollment, TeacherSubjectAssignment, Assignment, AssignmentSubmission
 )
 from accounts.models import StudentProfile, TeacherProfile
 
@@ -141,6 +141,138 @@ class StudentEnrollmentForm(forms.ModelForm):
             self.fields['course'].queryset = Course.objects.filter(department=department)
             self.fields['course'].initial = course
             self.fields['class_enrolled'].queryset = Class.objects.filter(course=course)
+
+class SemesterEnrollmentForm(forms.ModelForm):
+    """Form for semester-specific enrollment"""
+    
+    class Meta:
+        model = SemesterEnrollment
+        fields = [
+            'student', 'course', 'year', 'semester', 'academic_year', 'section',
+            'enrollment_fee_amount', 'enrollment_deadline', 'enrollment_status'
+        ]
+        widgets = {
+            'student': forms.Select(attrs={'class': 'form-select'}),
+            'course': forms.Select(attrs={'class': 'form-select'}),
+            'year': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 6}),
+            'semester': forms.NumberInput(attrs={'class': 'form-control', 'min': 1, 'max': 8}),
+            'academic_year': forms.Select(attrs={'class': 'form-select'}),
+            'section': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'A, B, C, etc.'}),
+            'enrollment_fee_amount': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+            'enrollment_deadline': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'enrollment_status': forms.Select(attrs={'class': 'form-select'}),
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Set default values
+        if not self.instance.pk:
+            self.fields['enrollment_status'].initial = 'pending'
+            self.fields['section'].initial = 'A'
+
+class SemesterEnrollmentFilterForm(forms.Form):
+    """Filter form for semester enrollments"""
+    
+    department = forms.ModelChoiceField(
+        queryset=Department.objects.all(),
+        required=False,
+        empty_label="All Departments",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    
+    course = forms.ModelChoiceField(
+        queryset=Course.objects.all(),
+        required=False,
+        empty_label="All Courses",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    
+    year = forms.ChoiceField(
+        choices=[('', 'All Years')] + [(i, f'Year {i}') for i in range(1, 7)],
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    
+    semester = forms.ChoiceField(
+        choices=[('', 'All Semesters')] + [(i, f'Semester {i}') for i in range(1, 9)],
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    
+    academic_year = forms.ModelChoiceField(
+        queryset=AcademicYear.objects.all(),
+        required=False,
+        empty_label="All Academic Years",
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    
+    status = forms.ChoiceField(
+        choices=[('', 'All Status')] + SemesterEnrollment.ENROLLMENT_STATUS_CHOICES,
+        required=False,
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    
+    search = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Search by student name or ID...'
+        })
+    )
+
+class BulkSemesterEnrollmentForm(forms.Form):
+    """Form for bulk semester enrollment"""
+    
+    course = forms.ModelChoiceField(
+        queryset=Course.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        help_text="Select the course for bulk enrollment"
+    )
+    
+    year = forms.ChoiceField(
+        choices=[(i, f'Year {i}') for i in range(1, 7)],
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        help_text="Select the academic year"
+    )
+    
+    semester = forms.ChoiceField(
+        choices=[(i, f'Semester {i}') for i in range(1, 9)],
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        help_text="Select the semester"
+    )
+    
+    academic_year = forms.ModelChoiceField(
+        queryset=AcademicYear.objects.all(),
+        widget=forms.Select(attrs={'class': 'form-select'}),
+        help_text="Select the academic year"
+    )
+    
+    students = forms.ModelMultipleChoiceField(
+        queryset=StudentProfile.objects.all(),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+        help_text="Select students to enroll"
+    )
+    
+    section = forms.CharField(
+        max_length=10,
+        initial='A',
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        help_text="Section for all selected students"
+    )
+    
+    enrollment_fee_amount = forms.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        required=False,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+        help_text="Enrollment fee amount (optional)"
+    )
+    
+    enrollment_deadline = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        help_text="Enrollment deadline (optional)"
+    )
 
 class TeacherSubjectAssignmentForm(forms.ModelForm):
     class Meta:
