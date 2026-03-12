@@ -84,6 +84,8 @@ class TeacherAttendance(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='absent')
     check_in_time = models.TimeField(null=True, blank=True)
     check_out_time = models.TimeField(null=True, blank=True)
+    first_activity_time = models.DateTimeField(null=True, blank=True, help_text="Exact time of first activity")
+    last_activity_time = models.DateTimeField(null=True, blank=True, help_text="Exact time of last activity")
     total_hours = models.DecimalField(max_digits=5, decimal_places=2, default=0.00)
     is_auto_marked = models.BooleanField(default=True)
     remarks = models.TextField(blank=True)
@@ -99,8 +101,13 @@ class TeacherAttendance(models.Model):
         return f"{self.teacher.user.get_full_name()} - {self.date} - {self.status}"
     
     def calculate_hours(self):
-        """Calculate total hours worked"""
-        if self.check_in_time and self.check_out_time:
+        """Calculate total hours worked based on real activity times or manual times"""
+        if self.first_activity_time and self.last_activity_time:
+            # Use real activity times for accurate calculation
+            delta = self.last_activity_time - self.first_activity_time
+            self.total_hours = round(delta.total_seconds() / 3600, 2)
+        elif self.check_in_time and self.check_out_time:
+            # Fallback to manual times
             check_in = datetime.combine(self.date, self.check_in_time)
             check_out = datetime.combine(self.date, self.check_out_time)
             delta = check_out - check_in
@@ -108,30 +115,11 @@ class TeacherAttendance(models.Model):
         return self.total_hours
     
     def determine_status(self):
-        """Auto-determine status based on actual activities and check-in time"""
+        """Auto-determine status based on actual activities and real check-in time"""
         from academic.models import TeacherSubjectAssignment
         
         # Check if teacher has any subject assignments for today
         teacher_assignments = TeacherSubjectAssignment.objects.filter(teacher=self.teacher)
-        
-        if not teacher_assignments.exists():
-            # No assignments, use basic time-based logic
-            if not self.check_in_time:
-                self.status = 'absent'
-            else:
-                school_start = time(9, 0)
-                late_threshold = time(9, 30)
-                
-                if self.check_in_time <= school_start:
-                    self.status = 'present'
-                elif self.check_in_time <= late_threshold:
-                    self.status = 'late'
-                else:
-                    self.status = 'late'
-                
-                if self.total_hours > 0 and self.total_hours < 4:
-                    self.status = 'half_day'
-            return self.status
         
         # Check if teacher performed any real activities today
         has_real_activities = self.has_performed_duties()
@@ -139,25 +127,35 @@ class TeacherAttendance(models.Model):
         if not has_real_activities:
             # No real activities performed, mark as absent regardless of check-in
             self.status = 'absent'
-        else:
-            # Has real activities, determine based on check-in time and hours
-            if not self.check_in_time:
-                # Has activities but no check-in time recorded
+            return self.status
+        
+        # Has real activities, determine based on first activity time
+        actual_check_in_time = None
+        
+        if self.first_activity_time:
+            # Use real first activity time
+            actual_check_in_time = self.first_activity_time.time()
+        elif self.check_in_time:
+            # Fallback to manual check-in time
+            actual_check_in_time = self.check_in_time
+        
+        if actual_check_in_time:
+            school_start = time(9, 0)
+            late_threshold = time(9, 30)
+            
+            if actual_check_in_time <= school_start:
                 self.status = 'present'
+            elif actual_check_in_time <= late_threshold:
+                self.status = 'late'
             else:
-                school_start = time(9, 0)
-                late_threshold = time(9, 30)
-                
-                if self.check_in_time <= school_start:
-                    self.status = 'present'
-                elif self.check_in_time <= late_threshold:
-                    self.status = 'late'
-                else:
-                    self.status = 'late'
-                
-                # Check for half day (less than 4 hours but has activities)
-                if self.total_hours > 0 and self.total_hours < 4:
-                    self.status = 'half_day'
+                self.status = 'late'
+            
+            # Check for half day (less than 4 hours but has activities)
+            if self.total_hours > 0 and self.total_hours < 4:
+                self.status = 'half_day'
+        else:
+            # Has activities but no time recorded - mark as present
+            self.status = 'present'
         
         return self.status
     
@@ -250,11 +248,14 @@ class TeacherActivityLog(models.Model):
     ACTIVITY_CHOICES = (
         ('login', 'Login'),
         ('logout', 'Logout'),
+        ('first_login', 'First Login'),
         ('mark_attendance', 'Mark Student Attendance'),
         ('create_assignment', 'Create Assignment'),
         ('grade_exam', 'Grade Exam'),
         ('send_message', 'Send Message'),
         ('view_report', 'View Report'),
+        ('dashboard_access', 'Dashboard Access'),
+        ('system_navigation', 'System Navigation'),
         ('other', 'Other Activity'),
     )
     

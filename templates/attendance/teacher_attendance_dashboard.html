@@ -21,8 +21,14 @@
         </form>
     </div>
     <div class="col-md-6 text-end">
+        <a href="{% url 'attendance:teacher_detailed_activities' %}" class="btn btn-primary">
+            <i class="fas fa-tasks"></i> Detailed Activities
+        </a>
+        <a href="{% url 'attendance:teacher_activity_timeline' %}" class="btn btn-success">
+            <i class="fas fa-timeline"></i> Activity Timeline
+        </a>
         <a href="{% url 'attendance:teacher_attendance_reports' %}" class="btn btn-info">
-            <i class="fas fa-chart-bar"></i> Detailed Reports
+            <i class="fas fa-chart-bar"></i> Reports
         </a>
         <a href="{% url 'attendance:manual_teacher_attendance' %}" class="btn btn-warning">
             <i class="fas fa-edit"></i> Manual Entry
@@ -114,53 +120,82 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for attendance in detailed_attendance %}
+                            {% for item in enhanced_attendance %}
                             <tr>
                                 <td>
-                                    <strong>{{ attendance.teacher.user.get_full_name|default:attendance.teacher.user.username }}</strong><br>
-                                    <small class="text-muted">{{ attendance.teacher.user.email }}</small>
-                                </td>
-                                <td>
-                                    {% if attendance.status == 'present' %}
-                                        <span class="badge bg-success">Present</span>
-                                    {% elif attendance.status == 'late' %}
-                                        <span class="badge bg-warning">Late</span>
-                                    {% elif attendance.status == 'absent' %}
-                                        <span class="badge bg-danger">Absent</span>
-                                    {% elif attendance.status == 'on_leave' %}
-                                        <span class="badge bg-info">On Leave</span>
+                                    <strong>
+                                        {% if item.attendance.teacher.user.first_name or item.attendance.teacher.user.last_name %}
+                                            {{ item.attendance.teacher.user.get_full_name }}
+                                        {% else %}
+                                            {{ item.attendance.teacher.user.username|title }}
+                                        {% endif %}
+                                    </strong><br>
+                                    <small class="text-muted">{{ item.attendance.teacher.user.email|default:"No email" }}</small>
+                                    {% if item.has_real_activities %}
+                                        <br><span class="badge bg-success badge-sm">Real Activities</span>
                                     {% else %}
-                                        <span class="badge bg-secondary">{{ attendance.get_status_display }}</span>
+                                        <br><span class="badge bg-secondary badge-sm">No Activities</span>
                                     {% endif %}
                                 </td>
-                                <td>{{ attendance.check_in_time|default:"--" }}</td>
-                                <td>{{ attendance.check_out_time|default:"--" }}</td>
-                                <td>{{ attendance.total_hours|floatformat:1 }}h</td>
                                 <td>
-                                    {% with attendance.teacher.activity_logs.first as last_activity %}
+                                    {% if item.attendance.status == 'present' %}
+                                        <span class="badge bg-success">Present</span>
+                                    {% elif item.attendance.status == 'late' %}
+                                        <span class="badge bg-warning">Late</span>
+                                    {% elif item.attendance.status == 'absent' %}
+                                        <span class="badge bg-danger">Absent</span>
+                                    {% elif item.attendance.status == 'on_leave' %}
+                                        <span class="badge bg-info">On Leave</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ item.attendance.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if item.attendance.first_activity_time %}
+                                        {{ item.attendance.first_activity_time|time:"H:i" }}
+                                        <br><small class="text-muted">Real activity</small>
+                                    {% elif item.attendance.check_in_time %}
+                                        {{ item.attendance.check_in_time }}
+                                        <br><small class="text-muted">Manual entry</small>
+                                    {% else %}
+                                        --
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if item.attendance.last_activity_time %}
+                                        {{ item.attendance.last_activity_time|time:"H:i" }}
+                                        <br><small class="text-muted">Last activity</small>
+                                    {% elif item.attendance.check_out_time %}
+                                        {{ item.attendance.check_out_time }}
+                                        <br><small class="text-muted">Manual entry</small>
+                                    {% else %}
+                                        --
+                                    {% endif %}
+                                </td>
+                                <td>{{ item.attendance.total_hours|floatformat:1 }}h
+                                    {% if item.duties_performed %}
+                                        <br><small class="text-success">{{ item.duties_performed|length }} duties performed</small>
+                                    {% else %}
+                                        <br><small class="text-muted">No duties recorded</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% with item.attendance.teacher.activity_logs.first as last_activity %}
                                         {% if last_activity %}
                                             <small>{{ last_activity.timestamp|timesince }} ago</small><br>
                                             <small class="text-muted">{{ last_activity.get_activity_type_display }}</small>
                                         {% else %}
-                                            <small class="text-muted">No activity</small>
+                                            <small class="text-muted">No recent activity</small>
                                         {% endif %}
                                     {% endwith %}
                                 </td>
                             </tr>
-                            {% endfor %}
-                            
-                            <!-- Teachers without attendance records -->
-                            {% for teacher in teachers_without_attendance %}
-                            <tr class="table-light">
-                                <td>
-                                    <strong>{{ teacher.user.get_full_name|default:teacher.user.username }}</strong><br>
-                                    <small class="text-muted">{{ teacher.user.email }}</small>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">
+                                    <i class="fas fa-users fa-2x mb-2"></i><br>
+                                    No teacher attendance records found for {{ filter_date }}
                                 </td>
-                                <td><span class="badge bg-secondary">Not Marked</span></td>
-                                <td>--</td>
-                                <td>--</td>
-                                <td>0h</td>
-                                <td><small class="text-muted">No login today</small></td>
                             </tr>
                             {% endfor %}
                         </tbody>

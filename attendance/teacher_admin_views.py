@@ -94,7 +94,9 @@ def teacher_attendance_dashboard(request):
             'classes_attended': attendance_sessions.filter(is_completed=True).count(),
             'duties_performed': duties_performed,
             'subjects_not_attended': subjects_not_attended,
-            'has_real_activities': attendance.has_performed_duties()
+            'has_real_activities': attendance.has_performed_duties(),
+            'real_check_in': attendance.first_activity_time.time() if attendance.first_activity_time else None,
+            'real_check_out': attendance.last_activity_time.time() if attendance.last_activity_time else None,
         })
     
     # Calculate attendance percentage
@@ -365,6 +367,162 @@ def teacher_activity_logs(request):
     }
     
     return render(request, 'attendance/teacher_activity_logs.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def teacher_detailed_activities(request):
+    """Detailed breakdown of teacher activities by category with timestamps"""
+    today = timezone.now().date()
+    
+    # Get filter parameters
+    selected_teacher_id = request.GET.get('teacher')
+    selected_date = request.GET.get('date', today.strftime('%Y-%m-%d'))
+    
+    try:
+        filter_date = datetime.strptime(selected_date, '%Y-%m-%d').date()
+    except:
+        filter_date = today
+    
+    # Get all teachers for dropdown
+    teachers = TeacherProfile.objects.select_related('user').order_by('user__first_name')
+    
+    context = {
+        'teachers': teachers,
+        'selected_date': selected_date,
+        'filter_date': filter_date,
+    }
+    
+    if selected_teacher_id:
+        try:
+            selected_teacher = TeacherProfile.objects.select_related('user').get(id=selected_teacher_id)
+            context['selected_teacher'] = selected_teacher
+            context['selected_teacher_id'] = int(selected_teacher_id)
+            
+            # Get attendance record
+            try:
+                attendance_record = TeacherAttendance.objects.get(
+                    teacher=selected_teacher,
+                    date=filter_date
+                )
+                context['attendance_record'] = attendance_record
+            except TeacherAttendance.DoesNotExist:
+                context['attendance_record'] = None
+            
+            # Get all activities for the teacher on the selected date
+            all_activities = TeacherActivityLog.objects.filter(
+                teacher=selected_teacher,
+                timestamp__date=filter_date
+            ).order_by('-timestamp')
+            
+            # Categorize activities
+            attendance_activities = all_activities.filter(activity_type='mark_attendance')
+            assignment_activities = all_activities.filter(activity_type='create_assignment')
+            grading_activities = all_activities.filter(activity_type='grade_exam')
+            communication_activities = all_activities.filter(activity_type='send_message')
+            
+            # Activity counts
+            context.update({
+                'attendance_count': attendance_activities.count(),
+                'assignment_count': assignment_activities.count(),
+                'grading_count': grading_activities.count(),
+                'message_count': communication_activities.count(),
+                'total_activities': all_activities.count(),
+                
+                'attendance_activities': attendance_activities,
+                'assignment_activities': assignment_activities,
+                'grading_activities': grading_activities,
+                'communication_activities': communication_activities,
+            })
+            
+            # Calculate productivity metrics
+            educational_activities = attendance_activities.count() + assignment_activities.count() + grading_activities.count()
+            total_activities_count = all_activities.count()
+            
+            if total_activities_count > 0:
+                educational_percentage = (educational_activities / total_activities_count) * 100
+            else:
+                educational_percentage = 0
+            
+            context['educational_percentage'] = educational_percentage
+            
+            # Calculate duties completed vs missed
+            if attendance_record:
+                duties_performed = attendance_record.get_duties_performed()
+                subjects_not_attended = attendance_record.get_subjects_not_attended()
+                
+                context['duties_completed'] = len(duties_performed)
+                context['duties_missed'] = len(subjects_not_attended)
+            else:
+                context['duties_completed'] = 0
+                context['duties_missed'] = 0
+                
+        except TeacherProfile.DoesNotExist:
+            pass
+    
+    return render(request, 'attendance/teacher_detailed_activities.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def teacher_activity_timeline(request):
+    """Detailed timeline view of teacher activities with exact timestamps"""
+    today = timezone.now().date()
+    
+    # Get filter parameters
+    selected_teacher = request.GET.get('teacher')
+    selected_date = request.GET.get('date', today.strftime('%Y-%m-%d'))
+    selected_activity_type = request.GET.get('activity_type')
+    
+    try:
+        filter_date = datetime.strptime(selected_date, '%Y-%m-%d').date()
+    except:
+        filter_date = today
+    
+    # Base queryset for activities
+    activities = TeacherActivityLog.objects.select_related('teacher__user').filter(
+        timestamp__date=filter_date
+    ).order_by('-timestamp')
+    
+    # Apply filters
+    if selected_teacher:
+        activities = activities.filter(teacher_id=selected_teacher)
+    
+    if selected_activity_type:
+        activities = activities.filter(activity_type=selected_activity_type)
+    
+    # Statistics
+    total_activities = activities.count()
+    attendance_activities = activities.filter(activity_type='mark_attendance').count()
+    assignment_activities = activities.filter(activity_type='create_assignment').count()
+    
+    # Active teachers (last 30 minutes)
+    thirty_minutes_ago = timezone.now() - timedelta(minutes=30)
+    active_teachers = TeacherActivityLog.objects.filter(
+        timestamp__gte=thirty_minutes_ago
+    ).values('teacher').distinct().count()
+    
+    # Pagination
+    paginator = Paginator(activities, 20)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    # Get all teachers for filter dropdown
+    teachers = TeacherProfile.objects.select_related('user').order_by('user__first_name')
+    
+    context = {
+        'activities': page_obj,
+        'teachers': teachers,
+        'activity_types': TeacherActivityLog.ACTIVITY_CHOICES,
+        'selected_teacher': selected_teacher,
+        'selected_date': selected_date,
+        'selected_activity_type': selected_activity_type,
+        'filter_date': filter_date,
+        'total_activities': total_activities,
+        'attendance_activities': attendance_activities,
+        'assignment_activities': assignment_activities,
+        'active_teachers': active_teachers,
+    }
+    
+    return render(request, 'attendance/teacher_activity_timeline.html', context)
 
 @login_required
 @user_passes_test(is_admin)

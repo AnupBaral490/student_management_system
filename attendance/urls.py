@@ -15,6 +15,8 @@ urlpatterns = [
     
     # Teacher Attendance (Admin)
     path('teacher-dashboard/', teacher_admin_views.teacher_attendance_dashboard, name='teacher_attendance_dashboard'),
+    path('teacher-activities/', teacher_admin_views.teacher_detailed_activities, name='teacher_detailed_activities'),
+    path('teacher-timeline/', teacher_admin_views.teacher_activity_timeline, name='teacher_activity_timeline'),
     path('teacher-reports/', teacher_admin_views.teacher_attendance_reports, name='teacher_attendance_reports'),
     path('teacher-export/', teacher_admin_views.export_teacher_attendance, name='export_teacher_attendance'),
     path('teacher-activity/', teacher_admin_views.teacher_activity_logs, name='teacher_activity_logs'),
