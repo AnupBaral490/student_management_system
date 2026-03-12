@@ -651,6 +651,8 @@ def teacher_assignments(request):
         'assignments': assignments,
         'can_manage': request.user.user_type == 'admin'
     }
+    
+    return render(request, 'academic/teacher_assignments.html', context)
 @login_required
 def submit_assignment(request, assignment_id):
     """View for students to submit assignments"""
@@ -1607,6 +1609,8 @@ def semester_enrollment_report(request):
     
     return render(request, 'academic/semester_enrollment_report.html', context)
 
+@login_required
+@user_passes_test(is_teacher_or_admin)
 def assignment_submissions(request, assignment_id):
     """View all submissions for an assignment"""
     assignment = get_object_or_404(Assignment, id=assignment_id)
