@@ -55,7 +55,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'attendance.middleware.TeacherAttendanceMiddleware',  # Add teacher attendance tracking
+    'attendance.middleware.EnhancedTeacherAttendanceMiddleware',  # Enhanced automatic teacher attendance tracking
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]

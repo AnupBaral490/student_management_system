@@ -57,7 +57,7 @@ def teacher_attendance_dashboard(request):
         )
         
         # Update status based on real activities
-        attendance.determine_status()
+        attendance.determine_status_advanced()
         attendance.save()
         
         # Count statuses

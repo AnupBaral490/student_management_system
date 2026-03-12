@@ -69,7 +69,7 @@ class Command(BaseCommand):
                     
                     # Update status based on real activities
                     old_status = attendance.status
-                    attendance.determine_status()
+                    attendance.determine_status_advanced()
                     attendance.save()
                     
                     if old_status != attendance.status:
@@ -95,7 +95,7 @@ class Command(BaseCommand):
                 
                 for attendance in attendance_records:
                     old_status = attendance.status
-                    attendance.determine_status()
+                    attendance.determine_status_advanced()
                     attendance.save()
                     
                     if old_status != attendance.status:

@@ -594,7 +594,7 @@ def real_teacher_attendance(request):
         )
         
         # Update status based on real activities
-        attendance.determine_status()
+        attendance.determine_status_advanced()
         attendance.save()
         
         # Count statuses
@@ -921,7 +921,7 @@ def real_teacher_attendance(request):
         )
         
         # Update status based on real activities
-        attendance.determine_status()
+        attendance.determine_status_advanced()
         attendance.save()
         
         # Count statuses

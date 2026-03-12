@@ -80,7 +80,7 @@ class Command(BaseCommand):
             
             # Calculate hours and determine status
             attendance.calculate_hours()
-            attendance.determine_status()
+            attendance.determine_status_advanced()
             attendance.save()
             
             self.stdout.write(self.style.SUCCESS(f'\n✓ Inactive teacher test results:'))

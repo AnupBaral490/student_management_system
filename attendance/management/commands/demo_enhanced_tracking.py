@@ -170,7 +170,7 @@ class Command(BaseCommand):
         
         # Calculate hours and determine status
         attendance.calculate_hours()
-        attendance.determine_status()
+        attendance.determine_status_advanced()
         attendance.save()
     
     def generate_summary_report(self, today):
