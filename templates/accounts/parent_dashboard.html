@@ -6,10 +6,73 @@
 {% block content %}
 <div class="row mb-4">
     <div class="col-12">
-        <h2><i class="fas fa-home"></i> Parent Dashboard</h2>
-        <p class="text-muted">Welcome back, {{ user.get_full_name|default:user.username }}!</p>
+        <div class="welcome-banner">
+            <div class="welcome-content">
+                <div class="welcome-icon-wrapper">
+                    <div class="welcome-icon">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="welcome-status-badge">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                </div>
+                <div class="welcome-text">
+                    <h1 class="welcome-title">
+                        <span class="welcome-greeting">Welcome back,</span>
+                        <span class="welcome-name">{{ user.get_full_name|default:user.username }}!</span>
+                    </h1>
+                    <p class="welcome-subtitle">
+                        <i class="fas fa-calendar-day me-2"></i>
+                        <span id="currentDateTime"></span>
+                    </p>
+                    <div class="welcome-stats">
+                        {% if children_data %}
+                        <div class="welcome-stat-item">
+                            <i class="fas fa-users"></i>
+                            <span>{{ children_data|length }} Child{{ children_data|length|pluralize:"ren" }}</span>
+                        </div>
+                        {% if recent_notifications %}
+                        <div class="welcome-stat-item">
+                            <i class="fas fa-bell"></i>
+                            <span>{{ recent_notifications|length }} New Notification{{ recent_notifications|length|pluralize }}</span>
+                        </div>
+                        {% endif %}
+                        {% if upcoming_events %}
+                        <div class="welcome-stat-item">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>{{ upcoming_events|length }} Upcoming Event{{ upcoming_events|length|pluralize }}</span>
+                        </div>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="welcome-decoration">
+                <div class="decoration-circle circle-1"></div>
+                <div class="decoration-circle circle-2"></div>
+                <div class="decoration-circle circle-3"></div>
+            </div>
+        </div>
     </div>
 </div>
+
+<script>
+// Update current date and time
+function updateDateTime() {
+    const now = new Date();
+    const options = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    };
+    document.getElementById('currentDateTime').textContent = now.toLocaleDateString('en-US', options);
+}
+updateDateTime();
+setInterval(updateDateTime, 60000); // Update every minute
+</script>
 
 {% if children_data %}
 <!-- Children Quick Stats Cards -->
@@ -382,6 +445,251 @@
 /* ============================================
    MODERN PARENT DASHBOARD STYLES
    ============================================ */
+
+/* Enhanced Welcome Banner */
+.welcome-banner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 25px;
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+    margin-bottom: 30px;
+}
+
+.welcome-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.welcome-content {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    position: relative;
+    z-index: 2;
+}
+
+.welcome-icon-wrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.welcome-icon {
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+    color: white;
+    backdrop-filter: blur(10px);
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.welcome-status-badge {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 30px;
+    height: 30px;
+    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    border: 3px solid white;
+    box-shadow: 0 4px 12px rgba(67, 233, 123, 0.5);
+    animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.welcome-text {
+    flex-grow: 1;
+}
+
+.welcome-title {
+    margin: 0;
+    color: white;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.welcome-greeting {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 500;
+    opacity: 0.95;
+    letter-spacing: 0.5px;
+}
+
+.welcome-name {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: 800;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+    margin-top: 5px;
+    background: linear-gradient(90deg, #ffffff 0%, #f0f0f0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.welcome-subtitle {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1rem;
+    margin: 15px 0 20px 0;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.welcome-stats {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.welcome-stat-item {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 12px 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.welcome-stat-item:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+.welcome-stat-item i {
+    font-size: 1.2rem;
+    opacity: 0.9;
+}
+
+.welcome-decoration {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.decoration-circle {
+    position: absolute;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+}
+
+.circle-1 {
+    width: 300px;
+    height: 300px;
+    top: -100px;
+    right: -50px;
+    animation: rotate 20s linear infinite;
+}
+
+.circle-2 {
+    width: 200px;
+    height: 200px;
+    top: 50%;
+    right: 10%;
+    animation: rotate 15s linear infinite reverse;
+}
+
+.circle-3 {
+    width: 150px;
+    height: 150px;
+    bottom: -50px;
+    right: 30%;
+    animation: rotate 25s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Welcome Banner */
+@media (max-width: 768px) {
+    .welcome-banner {
+        padding: 30px 20px;
+    }
+    
+    .welcome-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+    }
+    
+    .welcome-icon {
+        width: 80px;
+        height: 80px;
+        font-size: 40px;
+    }
+    
+    .welcome-name {
+        font-size: 2rem;
+    }
+    
+    .welcome-greeting {
+        font-size: 1rem;
+    }
+    
+    .welcome-subtitle {
+        justify-content: center;
+        font-size: 0.9rem;
+    }
+    
+    .welcome-stats {
+        justify-content: center;
+        gap: 15px;
+    }
+    
+    .welcome-stat-item {
+        font-size: 0.85rem;
+        padding: 10px 15px;
+    }
+}
 
 /* Global Enhancements */
 body {
