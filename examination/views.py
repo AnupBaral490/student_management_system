@@ -28,9 +28,12 @@ def exam_list(request):
             exams = Examination.objects.none()
     elif request.user.user_type == 'teacher':
         # Show exams created by this teacher
-        exams = Examination.objects.filter(
-            created_by=request.user.teacher_profile
-        ).select_related('subject', 'exam_type', 'class_for')
+        if hasattr(request.user, 'teacher_profile'):
+            exams = Examination.objects.filter(
+                created_by=request.user.teacher_profile
+            ).select_related('subject', 'exam_type', 'class_for')
+        else:
+            exams = Examination.objects.none()
     else:  # admin
         # Show all exams
         exams = Examination.objects.all().select_related('subject', 'exam_type', 'created_by__user', 'class_for')
@@ -156,9 +159,12 @@ def result_list(request):
         
     elif request.user.user_type == 'teacher':
         # Show results for exams created by this teacher
-        results = ExamResult.objects.filter(
-            examination__created_by=request.user.teacher_profile
-        ).select_related('student__user', 'examination__subject', 'examination__exam_type')
+        if hasattr(request.user, 'teacher_profile'):
+            results = ExamResult.objects.filter(
+                examination__created_by=request.user.teacher_profile
+            ).select_related('student__user', 'examination__subject', 'examination__exam_type')
+        else:
+            results = ExamResult.objects.none()
         
         # Add percentage calculation to each result
         results_with_percentage = []
@@ -196,16 +202,37 @@ def result_list(request):
 @user_passes_test(is_teacher_or_admin)
 def create_exam(request):
     """Create a new examination"""
+    # Check if user is authorized
+    if not is_teacher_or_admin(request.user):
+        messages.error(request, 'You do not have permission to create exams.')
+        return redirect('accounts:dashboard')
+    
+    # Get teacher profile if user is a teacher, otherwise None for admin
+    teacher_profile = None
+    if request.user.user_type == 'teacher':
+        if not hasattr(request.user, 'teacher_profile'):
+            messages.error(request, 'Teacher profile not found. Please contact the administrator.')
+            return redirect('accounts:dashboard')
+        teacher_profile = request.user.teacher_profile
+    
     if request.method == 'POST':
-        form = ExaminationForm(request.POST, teacher=request.user.teacher_profile)
+        form = ExaminationForm(request.POST, teacher=teacher_profile)
         if form.is_valid():
             exam = form.save(commit=False)
-            exam.created_by = request.user.teacher_profile
+            # Set created_by based on user type
+            if teacher_profile:
+                exam.created_by = teacher_profile
+            else:
+                # For admin users, try to assign to first available teacher or leave None
+                from accounts.models import TeacherProfile
+                first_teacher = TeacherProfile.objects.first()
+                if first_teacher:
+                    exam.created_by = first_teacher
             exam.save()
             messages.success(request, f'Exam "{exam.name}" created successfully!')
             return redirect('examination:exam_list')
     else:
-        form = ExaminationForm(teacher=request.user.teacher_profile)
+        form = ExaminationForm(teacher=teacher_profile)
     
     context = {'form': form}
     return render(request, 'examination/create_exam.html', context)
@@ -217,8 +244,15 @@ def enter_results(request, exam_id):
     exam = get_object_or_404(Examination, id=exam_id)
     
     # Check if user has permission to enter results for this exam
-    if request.user.user_type == 'teacher' and exam.created_by != request.user.teacher_profile:
-        messages.error(request, 'You do not have permission to enter results for this exam.')
+    if request.user.user_type == 'teacher':
+        if not hasattr(request.user, 'teacher_profile'):
+            messages.error(request, 'Teacher profile not found. Please contact the administrator.')
+            return redirect('examination:exam_list')
+        if exam.created_by != request.user.teacher_profile:
+            messages.error(request, 'You do not have permission to enter results for this exam.')
+            return redirect('examination:exam_list')
+    elif request.user.user_type != 'admin':
+        messages.error(request, 'You do not have permission to enter results.')
         return redirect('examination:exam_list')
     
     # Get students enrolled in the exam's class
@@ -244,6 +278,17 @@ def enter_results(request, exam_id):
                     marks = float(request.POST[marks_key])
                     remarks = request.POST.get(remarks_key, '')
                     
+                    # Determine who entered the result
+                    entered_by = None
+                    if request.user.user_type == 'teacher' and hasattr(request.user, 'teacher_profile'):
+                        entered_by = request.user.teacher_profile
+                    elif request.user.user_type == 'admin':
+                        # For admin, use the exam creator or first available teacher
+                        entered_by = exam.created_by
+                        if not entered_by:
+                            from accounts.models import TeacherProfile
+                            entered_by = TeacherProfile.objects.first()
+                    
                     # Create or update result
                     result, created = ExamResult.objects.get_or_create(
                         examination=exam,
@@ -251,14 +296,14 @@ def enter_results(request, exam_id):
                         defaults={
                             'marks_obtained': marks,
                             'remarks': remarks,
-                            'entered_by': request.user.teacher_profile
+                            'entered_by': entered_by
                         }
                     )
                     
                     if not created:
                         result.marks_obtained = marks
                         result.remarks = remarks
-                        result.entered_by = request.user.teacher_profile
+                        result.entered_by = entered_by
                         result.save()
                     
                     results_saved += 1
