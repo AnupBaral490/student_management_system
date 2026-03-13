@@ -32,7 +32,7 @@
                             <span>{{ children_data|length }} Child{{ children_data|length|pluralize:"ren" }}</span>
                         </div>
                         {% if recent_notifications %}
-                        <div class="welcome-stat-item">
+                        <div class="welcome-stat-item has-notifications">
                             <i class="fas fa-bell"></i>
                             <span>{{ recent_notifications|length }} New Notification{{ recent_notifications|length|pluralize }}</span>
                         </div>
@@ -448,13 +448,14 @@ setInterval(updateDateTime, 60000); // Update every minute
 
 /* Enhanced Welcome Banner */
 .welcome-banner {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 25px;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    border-radius: 20px;
     padding: 40px;
     position: relative;
     overflow: hidden;
-    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     margin-bottom: 30px;
+    border: 2px solid #e9ecef;
 }
 
 .welcome-banner::before {
@@ -464,7 +465,7 @@ setInterval(updateDateTime, 60000); // Update every minute
     right: -20%;
     width: 500px;
     height: 500px;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(52, 152, 219, 0.03) 0%, transparent 70%);
     animation: pulse 4s ease-in-out infinite;
 }
 
@@ -489,16 +490,15 @@ setInterval(updateDateTime, 60000); // Update every minute
 .welcome-icon {
     width: 100px;
     height: 100px;
-    background: rgba(255, 255, 255, 0.2);
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 50px;
     color: white;
-    backdrop-filter: blur(10px);
-    border: 4px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    border: 4px solid #e3f2fd;
+    box-shadow: 0 8px 25px rgba(52, 152, 219, 0.3);
     animation: float 3s ease-in-out infinite;
 }
 
@@ -513,7 +513,7 @@ setInterval(updateDateTime, 60000); // Update every minute
     right: 5px;
     width: 30px;
     height: 30px;
-    background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -521,7 +521,7 @@ setInterval(updateDateTime, 60000); // Update every minute
     color: white;
     font-size: 16px;
     border: 3px solid white;
-    box-shadow: 0 4px 12px rgba(67, 233, 123, 0.5);
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
     animation: bounce 2s ease-in-out infinite;
 }
 
@@ -536,7 +536,7 @@ setInterval(updateDateTime, 60000); // Update every minute
 
 .welcome-title {
     margin: 0;
-    color: white;
+    color: #1a1a1a;
     font-weight: 800;
     line-height: 1.2;
 }
@@ -544,30 +544,31 @@ setInterval(updateDateTime, 60000); // Update every minute
 .welcome-greeting {
     display: block;
     font-size: 1.2rem;
-    font-weight: 500;
-    opacity: 0.95;
+    font-weight: 600;
+    color: #495057;
     letter-spacing: 0.5px;
 }
 
 .welcome-name {
     display: block;
     font-size: 2.5rem;
-    font-weight: 800;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+    font-weight: 900;
+    color: #1a1a1a;
     margin-top: 5px;
-    background: linear-gradient(90deg, #ffffff 0%, #f0f0f0 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .welcome-subtitle {
-    color: rgba(255, 255, 255, 0.95);
+    color: #6c757d;
     font-size: 1rem;
     margin: 15px 0 20px 0;
-    font-weight: 500;
+    font-weight: 600;
     display: flex;
     align-items: center;
+}
+
+.welcome-subtitle i {
+    color: #3498db;
 }
 
 .welcome-stats {
@@ -578,30 +579,59 @@ setInterval(updateDateTime, 60000); // Update every minute
 }
 
 .welcome-stat-item {
-    background: rgba(255, 255, 255, 0.15);
+    background: white;
     padding: 12px 20px;
     border-radius: 12px;
     display: flex;
     align-items: center;
     gap: 10px;
-    color: white;
-    font-weight: 600;
+    color: #2c3e50;
+    font-weight: 700;
     font-size: 0.95rem;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 2px solid #e9ecef;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    position: relative;
 }
 
 .welcome-stat-item:hover {
-    background: rgba(255, 255, 255, 0.25);
+    background: #f8f9fa;
     transform: translateY(-3px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    border-color: #3498db;
 }
 
 .welcome-stat-item i {
-    font-size: 1.2rem;
-    opacity: 0.9;
+    font-size: 1.3rem;
+    color: #3498db;
+}
+
+.welcome-stat-item.has-notifications {
+    position: relative;
+}
+
+.welcome-stat-item.has-notifications::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 12px;
+    height: 12px;
+    background: #e74c3c;
+    border-radius: 50%;
+    border: 2px solid white;
+    animation: pulse-notification 2s ease-in-out infinite;
+}
+
+@keyframes pulse-notification {
+    0%, 100% { 
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(231, 76, 60, 0.7);
+    }
+    50% { 
+        transform: scale(1.1);
+        box-shadow: 0 0 0 6px rgba(231, 76, 60, 0);
+    }
 }
 
 .welcome-decoration {
@@ -617,7 +647,7 @@ setInterval(updateDateTime, 60000); // Update every minute
 .decoration-circle {
     position: absolute;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(52, 152, 219, 0.05) 0%, transparent 70%);
 }
 
 .circle-1 {
