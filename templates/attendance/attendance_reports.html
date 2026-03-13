@@ -139,7 +139,8 @@
                                     <td>
                                         <strong>{{ report.student.user.get_full_name|default:report.student.user.username }}</strong><br>
                                         <small class="text-muted">{{ report.student.student_id }}</small><br>
-                                        <small class="text-muted">{{ report.class_name }}</small>
+                                        <small class="text-muted">{{ report.class_name }}</small><br>
+                                        <small class="text-info">{{ report.subject_name }}</small>
                                     </td>
                                     <td>{{ report.total_classes }}</td>
                                     <td><span class="badge bg-success">{{ report.present }}</span></td>

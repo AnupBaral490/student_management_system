@@ -73,7 +73,8 @@ class Command(BaseCommand):
                                 TeacherSubjectAssignment.objects.create(
                                     teacher=teacher,
                                     subject=subject,
-                                    class_assigned=class_obj
+                                    class_assigned=class_obj,
+                                    academic_year=class_obj.academic_year
                                 )
                                 self.stdout.write(self.style.SUCCESS(
                                     f'  ✓ Created: {teacher.user.get_full_name()} → {subject.name} → {class_obj}'
