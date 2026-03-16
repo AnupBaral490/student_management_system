@@ -202,6 +202,12 @@
                         <span>Activities</span>
                     </button>
                 </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="fees-tab" data-bs-toggle="pill" data-bs-target="#fees" type="button" role="tab">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Fee Management</span>
+                    </button>
+                </li>
             </ul>
             
             <div class="tab-content admin-tab-content" id="adminControlTabsContent">
@@ -589,6 +595,60 @@
                                 <small>System is ready and waiting for new activities</small>
                             </div>
                             {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fee Management Tab -->
+                <div class="tab-pane fade" id="fees" role="tabpanel">
+                    <div class="row g-3">
+                        <div class="col-lg-4 col-md-6">
+                            <a href="/admin/fees/feestructure/" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-primary">
+                                    <i class="fas fa-file-invoice-dollar"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Fee Structures</h6>
+                                    <p class="admin-feature-desc">Manage class-wise fee structures</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="/admin/fees/studentfee/" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-success">
+                                    <i class="fas fa-receipt"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Student Fees</h6>
+                                    <p class="admin-feature-desc">Track individual student fees</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="/admin/fees/feepayment/" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-info">
+                                    <i class="fas fa-credit-card"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Fee Payments</h6>
+                                    <p class="admin-feature-desc">Record and manage payments</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
+                        </div>
+                        <div class="col-lg-4 col-md-6">
+                            <a href="/admin/fees/feewaiver/" class="admin-feature-card">
+                                <div class="admin-feature-icon admin-feature-icon-warning">
+                                    <i class="fas fa-percent"></i>
+                                </div>
+                                <div class="admin-feature-content">
+                                    <h6 class="admin-feature-title">Fee Waivers</h6>
+                                    <p class="admin-feature-desc">Manage scholarships and waivers</p>
+                                </div>
+                                <i class="fas fa-arrow-right admin-feature-arrow"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
